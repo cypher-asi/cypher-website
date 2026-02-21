@@ -1,0 +1,58 @@
+/* Fixed overlay centered in the topbar row */
+.wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 101;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 52px;
+  pointer-events: none;
+}
+
+.sectionNav {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  pointer-events: auto;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 2px;
+  padding: 2px;
+}
+
+.item {
+  all: unset;
+  padding: 5px 12px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #969696;
+  cursor: pointer;
+  border-radius: 1px;
+  transition:
+    color 200ms ease,
+    background 200ms ease;
+  font-family: var(--font-mono), 'JetBrains Mono', monospace;
+  white-space: nowrap;
+}
+
+.item:hover {
+  color: #969696;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.active {
+  color: #f0f0ec;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Hide on narrow viewports where topbar is tight */
+@media (max-width: 768px) {
+  .wrapper {
+    display: none;
+  }
+}

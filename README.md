@@ -1,6 +1,6 @@
 # Cypher Web
 
-Minimal Next.js site powered by the [ZUI](../zui) design system from `@cypher-asi/zui`.
+Marketing and ecosystem site for **Cypher** — built with [Next.js 15](https://nextjs.org/) (App Router) and the [ZUI](../zui) design system (`@cypher-asi/zui`). Presents the tools, protocols, and vision behind autonomous agent infrastructure for the Machine Age.
 
 ## Prerequisites
 
@@ -43,6 +43,15 @@ npm run lint      # Lint with ESLint
 npm run typecheck # Type-check with tsc (no emit)
 ```
 
+## Pages
+
+| Route | Description |
+|-------|-------------|
+| `/` | Landing page — animated headline ("Tools for the Machine Age") over a Three.js ASCII grid background |
+| `/vision` | Mission statement — "Building Infrastructure for the Machine Age" with four pillars (Agent-First Architecture, Trustless Coordination, Composable Swarms, Open & Permissionless) |
+| `/components` | Interactive ZUI showcase — buttons, inputs, toggles, cards, badges, spinners, and typography |
+| `/docs` | Getting-started guide — installation, ZUI linking, and project structure |
+
 ## Developing ZUI
 
 ZUI ships TypeScript source directly (no build step). When you edit files inside `../zui/src/`, changes are picked up by Next.js automatically because:
@@ -57,16 +66,27 @@ In most cases, **saving a ZUI file triggers a hot reload** in the Next.js dev se
 ```
 src/
   app/
-    layout.tsx              # Root layout — imports ZUI styles + ThemeProvider
-    page.tsx                # Home page (/)
+    layout.tsx              # Root layout — fonts, ZUI styles, ThemeProvider
+    page.tsx                # Home / landing page
+    page.module.css
     docs/
       page.tsx              # Docs page (/docs)
+      page.module.css
     components/
-      page.tsx              # ZUI Showcase (/components) — server component
+      page.tsx              # ZUI showcase (/components)
+      page.module.css
+    vision/
+      page.tsx              # Vision / mission page (/vision)
+      page.module.css
     _components/
       ThemeWrapper.tsx      # "use client" wrapper for ThemeProvider
-      Nav.tsx               # Site navigation (client component)
-      ZuiDemo.tsx           # "use client" component that renders ZUI widgets
+      Nav.tsx               # Navigation with mega-menu dropdowns
+      Nav.module.css
+      Headline.tsx          # Home page animated headline
+      TypewriterText.tsx    # Typewriter text effect
+      AsciiBackground.tsx   # Three.js ASCII grid animation
+      ZuiDemo.tsx           # Interactive ZUI component demo
+      ZuiDemo.module.css
     styles/
       globals.css           # Base resets + layout primitives
 ```
@@ -75,7 +95,8 @@ src/
 
 - **CSS Modules** for all component/page styles (`*.module.css`)
 - **ZUI global CSS** imported once in `layout.tsx` via `import '@cypher-asi/zui/styles'`
-- **Client boundary**: any component using ZUI hooks or interactive components is marked `"use client"` (e.g., `ThemeWrapper.tsx`, `ZuiDemo.tsx`, `Nav.tsx`)
+- **Client boundary**: any component using ZUI hooks, Three.js, or interactive components is marked `"use client"` (e.g., `ThemeWrapper.tsx`, `AsciiBackground.tsx`, `ZuiDemo.tsx`, `Nav.tsx`)
+- **Fonts**: Inter (sans-serif) and JetBrains Mono (monospace) via `next/font/google`
 
 ## Troubleshooting
 

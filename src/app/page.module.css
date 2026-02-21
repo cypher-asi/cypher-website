@@ -57,10 +57,10 @@
   left: 50%;
   transform: translate(-50%, -50%);
   width: min(2214px, 200vw);
-  height: clamp(235px, 50vh, 505px);
+  height: clamp(400px, 80vh, 900px);
   max-width: none;
   border-radius: 0;
-  background: #000;
+  background: transparent;
 }
 
 .bottomSpacer {

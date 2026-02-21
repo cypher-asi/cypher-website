@@ -1,229 +1,159 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { Topbar, MenuMega, Button } from '@cypher-asi/zui';
-import type { MenuMegaColumnProps } from '@cypher-asi/zui';
-import {
-  ArrowUpRight,
-  ChevronDown,
-  Cpu,
-  Globe,
-  Layers,
-  Code,
-  Zap,
-  Network,
-  Brain,
-  MessageSquare,
-  Shield,
-  BookOpen,
-  Search,
-} from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { Topbar } from '@cypher-asi/zui';
+import { ArrowUpRight, ChevronRight } from 'lucide-react';
 import { TypewriterText } from './TypewriterText';
 import type { TypewriterSegment } from './TypewriterText';
+import { SectionNav } from './SectionNav';
 import styles from './Nav.module.css';
 
-// ============================================================================
-// Mega Menu Data
-// ============================================================================
-
-const productColumns: MenuMegaColumnProps[] = [
-  {
-    items: [
-      { id: 'aura', icon: <Cpu size={18} />, label: 'AURA', description: 'Deploy agent swarms' },
-      { id: 'zero-os', icon: <Layers size={18} />, label: 'ZERO OS', description: 'Securely chat and collaborate' },
-      { id: 'machina', icon: <Network size={18} />, label: 'MACHINA', description: 'Manage servers for agents' },
-      { id: 'z-chain', icon: <Zap size={18} />, label: 'Z CHAIN', description: 'Transact quickly and securely' },
-    ],
-  },
-];
-
-const worldColumns: MenuMegaColumnProps[] = [
-  {
-    items: [
-      { id: 'wilder-world', icon: <Globe size={18} />, label: 'WILDER WORLD', description: 'Join a new dimension of reality' },
-      { id: 'shanty-town', icon: <Globe size={18} />, label: 'SHANTY TOWN', description: 'A new frontier awaits' },
-    ],
-  },
-];
-
-const protocolColumns: MenuMegaColumnProps[] = [
-  {
-    items: [
-      { id: 'zero-id', icon: <Shield size={18} />, label: 'ZERO ID', description: 'A secure auth & identity system' },
-      { id: 'zns', icon: <Globe size={18} />, label: 'ZNS', description: 'An onchain naming system' },
-      { id: 'zero-sdk', icon: <Code size={18} />, label: 'ZERO SDK', description: 'A secure communication system' },
-      { id: 'aura-runtime', icon: <Cpu size={18} />, label: 'AURA RUNTIME', description: 'A secure & auditable agent runtime' },
-      { id: 'aura-swarm', icon: <Brain size={18} />, label: 'AURA SWARM', description: 'A system for building agentic swarms' },
-      { id: 'the-grid', icon: <Network size={18} />, label: 'THE GRID', description: 'A distributed compute network' },
-    ],
-  },
-];
-
-const researchColumns: MenuMegaColumnProps[] = [
-  {
-    items: [
-      { id: 'papers', icon: <BookOpen size={18} />, label: 'Papers', description: 'Published research and findings' },
-      { id: 'search', icon: <Search size={18} />, label: 'Explorer', description: 'Search the knowledge base' },
-      { id: 'docs', icon: <Code size={18} />, label: 'Documentation', description: 'Guides and references' },
-    ],
-  },
-];
-
-// ============================================================================
-// Menu configuration
-// ============================================================================
-
-interface NavMenuConfig {
+interface SubItem {
   id: string;
   label: string;
-  columns: MenuMegaColumnProps[];
-  width: number;
-  hasDropdown?: boolean;
   href?: string;
 }
 
-const menus: NavMenuConfig[] = [
-  { id: 'products', label: 'TOOLS', columns: productColumns, width: 300 },
-  { id: 'worlds', label: 'WORLDS', columns: worldColumns, width: 300 },
-  { id: 'protocols', label: 'PROTOCOLS', columns: protocolColumns, width: 300 },
-  { id: 'research', label: 'RESEARCH', columns: researchColumns, width: 300 },
-  { id: 'vision', label: 'VISION', columns: [], width: 300, hasDropdown: false, href: '/vision' },
-];
-
-// ============================================================================
-// TopbarNavItem
-// ============================================================================
-
-interface TopbarNavItemProps {
-  config: NavMenuConfig;
-  isOpen: boolean;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
-  onClose: () => void;
+interface NavSection {
+  id: string;
+  label: string;
+  href?: string;
+  subItems?: SubItem[];
 }
 
-function TopbarNavItem({
-  config,
+const sections: NavSection[] = [
+  { id: 'zero', label: 'ZERO', href: '/zero' },
+  {
+    id: 'agents',
+    label: 'AGENTS',
+    subItems: [
+      { id: 'aura-code', label: 'AURA CODE', href: '/agents/aura-code' },
+      { id: 'aura-swarm', label: 'AURA SWARM', href: '/agents/aura-swarm' },
+      { id: 'aura-3d', label: 'AURA 3D', href: '/agents/aura-3d' },
+    ],
+  },
+  {
+    id: 'compute',
+    label: 'COMPUTE',
+    subItems: [
+      { id: 'machina', label: 'MACHINA', href: '/compute/machina' },
+      { id: 'the-grid', label: 'THE GRID', href: '/compute/the-grid' },
+    ],
+  },
+  {
+    id: 'worlds',
+    label: 'WORLDS',
+    subItems: [
+      { id: 'wilder-world', label: 'WILDER WORLD', href: '/worlds/wilder-world' },
+      { id: 'shanty-town', label: 'SHANTY TOWN', href: '/worlds/shanty-town' },
+    ],
+  },
+  {
+    id: 'protocols',
+    label: 'PROTOCOLS',
+    subItems: [
+      { id: 'zero-id', label: 'ZERO ID', href: '/protocols/zero-id' },
+      { id: 'zero-name-service', label: 'ZNS', href: '/protocols/zns' },
+      { id: 'metropolis', label: 'METROPOLIS', href: '/protocols/metropolis' },
+      { id: 'aura-os', label: 'AURA OS', href: '/protocols/aura-os' },
+    ],
+  },
+  { id: 'research', label: 'RESEARCH', href: '/research' },
+  { id: 'updates', label: 'UPDATES', href: '/updates' },
+  { id: 'vision', label: 'VISION', href: '/vision' },
+  { id: 'z', label: 'Z', href: '/z' },
+];
+
+function AccordionSection({
+  section,
   isOpen,
-  onMouseEnter,
-  onMouseLeave,
-  onClose,
-}: TopbarNavItemProps) {
-  const [selected, setSelected] = useState('');
-  const canOpenMenu = config.hasDropdown !== false;
+  onToggle,
+  pathname,
+}: {
+  section: NavSection;
+  isOpen: boolean;
+  onToggle: () => void;
+  pathname: string;
+}) {
+  const hasChildren = section.subItems && section.subItems.length > 0;
 
-  useEffect(() => {
-    if (!isOpen) return;
-    function handleEscape(e: KeyboardEvent) {
-      if (e.key === 'Escape') onClose();
-    }
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, onClose]);
+  if (!hasChildren) {
+    const isActive = section.href === pathname;
+    return (
+      <div className={styles.section}>
+        <Link
+          href={section.href!}
+          className={`${styles.sectionTrigger} ${isActive ? styles.active : ''}`}
+        >
+          <span>{section.label}</span>
+        </Link>
+      </div>
+    );
+  }
 
-  const buttonContent = (
-    <>
-      {config.label}
-      {canOpenMenu && (
-        <ChevronDown
-          size={14}
-          className={`${styles.chevron} ${isOpen ? styles.chevronOpen : ''}`}
-        />
-      )}
-    </>
-  );
+  const activeSubItem = section.subItems!.some((item) => item.href === pathname);
 
   return (
-    <div
-      className={styles.navItem}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
-      {config.href ? (
-        <Link href={config.href} className={styles.navLink}>
-          <Button
-            variant="ghost"
-            size="sm"
-            className={styles.navButton}
-          >
-            {buttonContent}
-          </Button>
-        </Link>
-      ) : (
-        <Button
-          variant="ghost"
-          size="sm"
-          className={canOpenMenu && isOpen ? styles.navButtonActive : styles.navButton}
-        >
-          {buttonContent}
-        </Button>
-      )}
-      {canOpenMenu && isOpen && (
-        <div className={styles.megaDropdown} style={{ width: config.width }}>
-          <MenuMega
-            columns={config.columns}
-            value={selected}
-            onChange={(id) => {
-              setSelected(id);
-              onClose();
-            }}
-            background="solid"
-            border="future"
-            rounded="md"
-          />
+    <div className={styles.section}>
+      <button
+        className={`${styles.sectionTrigger} ${isOpen ? styles.sectionTriggerOpen : ''}`}
+        onClick={onToggle}
+        aria-expanded={isOpen}
+      >
+        <span>{section.label}</span>
+        <ChevronRight
+          size={12}
+          className={`${styles.chevron} ${isOpen ? styles.chevronOpen : ''}`}
+        />
+      </button>
+      <div
+        className={`${styles.accordionContent} ${isOpen ? styles.accordionContentOpen : ''}`}
+      >
+        <div className={styles.accordionInner}>
+          {section.subItems!.map((item) => {
+            const isActive = item.href === pathname;
+            return (
+              <Link
+                key={item.id}
+                href={item.href ?? '#'}
+                className={`${styles.subItemLink} ${isActive ? styles.active : ''}`}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
         </div>
-      )}
+      </div>
     </div>
   );
 }
 
-// ============================================================================
-// Nav
-// ============================================================================
-
 export function Nav() {
-  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
-  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pathname = usePathname();
+  const [openSectionId, setOpenSectionId] = useState<string | null>(null);
 
-  const cancelCloseTimer = useCallback(() => {
-    if (closeTimerRef.current) {
-      clearTimeout(closeTimerRef.current);
-      closeTimerRef.current = null;
-    }
-  }, []);
+  const handleToggle = (id: string) => {
+    setOpenSectionId((prev) => (prev === id ? null : id));
+  };
 
-  const handleEnter = useCallback(
-    (id: string) => {
-      cancelCloseTimer();
-      setOpenMenuId(id);
-    },
-    [cancelCloseTimer]
+  const titleSegments: TypewriterSegment[] = useMemo(
+    () => [
+      { text: '/', style: { color: '#969696' } },
+      { text: 'CYPHER' },
+    ],
+    []
   );
-
-  const handleLeave = useCallback(() => {
-    cancelCloseTimer();
-    closeTimerRef.current = setTimeout(() => setOpenMenuId(null), 150);
-  }, [cancelCloseTimer]);
-
-  const handleClose = useCallback(() => {
-    cancelCloseTimer();
-    setOpenMenuId(null);
-  }, [cancelCloseTimer]);
-
-  useEffect(() => {
-    return () => cancelCloseTimer();
-  }, [cancelCloseTimer]);
-
-  const titleSegments: TypewriterSegment[] = useMemo(() => [
-    { text: '/', style: { color: '#969696' } },
-    { text: 'CYPHER' },
-  ], []);
 
   return (
     <>
       <Topbar
-        title={<Link href="/" className={styles.titleLink}><TypewriterText segments={titleSegments} speed={80} /></Link>}
+        title={
+          <Link href="/" className={styles.titleLink}>
+            <TypewriterText segments={titleSegments} speed={80} />
+          </Link>
+        }
         className={styles.siteTopbar}
         actions={
           <a href="#" className={styles.devButton}>
@@ -232,15 +162,15 @@ export function Nav() {
           </a>
         }
       />
+      <SectionNav />
       <nav className={styles.sideNav}>
-        {menus.map((menu) => (
-          <TopbarNavItem
-            key={menu.id}
-            config={menu}
-            isOpen={openMenuId === menu.id}
-            onMouseEnter={() => (menu.hasDropdown === false ? handleClose() : handleEnter(menu.id))}
-            onMouseLeave={menu.hasDropdown === false ? handleClose : handleLeave}
-            onClose={handleClose}
+        {sections.map((section) => (
+          <AccordionSection
+            key={section.id}
+            section={section}
+            isOpen={openSectionId === section.id}
+            onToggle={() => handleToggle(section.id)}
+            pathname={pathname}
           />
         ))}
       </nav>

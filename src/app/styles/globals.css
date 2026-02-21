@@ -10,12 +10,18 @@ html,
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #000 !important;
+  background: radial-gradient(ellipse at center, #0c0c0c 0%, #000000 60%) !important;
 }
 
 body {
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
   min-height: 100dvh;
+  overflow-x: hidden;
+  scrollbar-width: none;
+}
+
+body::-webkit-scrollbar {
+  display: none;
 }
 
 a {

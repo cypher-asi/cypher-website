@@ -47,7 +47,7 @@
 }
 
 /* ============================================================================
-   Side Navigation (bottom-left vertical stack)
+   Side Navigation (bottom-left accordion)
    ============================================================================ */
 
 .sideNav {
@@ -57,11 +57,8 @@
   z-index: 100;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-}
-
-.navItem {
-  position: relative;
+  gap: 2px;
+  width: 140px;
 }
 
 .titleLink {
@@ -69,63 +66,116 @@
   color: inherit;
 }
 
-.navLink {
+/* ============================================================================
+   Section (each accordion item)
+   ============================================================================ */
+
+.section {
+  display: flex;
+  flex-direction: column;
+}
+
+.sectionLink {
   text-decoration: none;
-  color: inherit;
+  color: #969696;
 }
 
-.navButton {
+.sectionButton {
   padding-inline: 2px;
   font-size: 12.5px;
   min-width: 115px !important;
-  color: #f0f0ec !important;
+  color: #969696 !important;
   justify-content: flex-start;
 }
 
-.navButtonActive {
-  padding-inline: 2px;
+.sectionTrigger {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 6px 2px;
   font-size: 12.5px;
-  min-width: 115px !important;
-  color: #f0f0ec !important;
-  justify-content: flex-start;
-  background-color: var(--color-overlay-light, rgba(255, 255, 255, 0.06));
+  font-weight: 500;
+  font-family: inherit;
+  letter-spacing: 0.02em;
+  color: #969696;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 150ms ease;
+}
+
+.sectionTrigger:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.sectionTriggerOpen {
+  color: #969696;
 }
 
 /* ============================================================================
-   Chevron animation
+   Chevron rotation
    ============================================================================ */
 
 .chevron {
+  flex-shrink: 0;
   transform: rotate(0deg);
-  transition: transform 150ms ease;
+  transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  color: inherit;
 }
 
 .chevronOpen {
-  transform: rotate(180deg);
+  transform: rotate(90deg);
 }
 
 /* ============================================================================
-   Mega menu dropdown panel
+   Accordion expand / collapse via grid-template-rows
    ============================================================================ */
 
-.megaDropdown {
-  position: absolute;
-  bottom: 0;
-  left: 100%;
-  margin-left: var(--space-2, 8px);
-  z-index: var(--z-dropdown, 50);
-  box-shadow: var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.3));
-  animation: slideRight 200ms ease-out;
-  transform-origin: left center;
+.accordionContent {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes slideRight {
-  from {
-    opacity: 0;
-    transform: translateX(-16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+.accordionContentOpen {
+  grid-template-rows: 1fr;
+}
+
+.accordionInner {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+/* ============================================================================
+   Sub-item links
+   ============================================================================ */
+
+.subItemLink {
+  display: block;
+  padding: 5px 2px 5px 12px;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: #707070;
+  text-decoration: none;
+  border-radius: 3px;
+  transition:
+    color 150ms ease,
+    background 150ms ease;
+}
+
+.subItemLink:hover {
+  color: #969696;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* ============================================================================
+   Active state (current page)
+   ============================================================================ */
+
+.active {
+  color: #f0f0ec !important;
 }

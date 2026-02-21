@@ -17,8 +17,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Cypher Web',
-  description: 'Cypher ecosystem site — powered by ZUI',
+  title: 'Cypher',
+  description: 'Cypher ecosystem site—powered by ZUI',
 };
 
 export default function RootLayout({

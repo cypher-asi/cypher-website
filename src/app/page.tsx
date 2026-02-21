@@ -1,4 +1,4 @@
-import { AsciiPanel } from './_components/AsciiBackground';
+import { AsciiCube } from './_components/AsciiCube';
 import { Headline } from './_components/Headline';
 import styles from './page.module.css';
 
@@ -7,7 +7,7 @@ export default function Home() {
     <>
       <Headline />
       <div className={styles.page}>
-        <AsciiPanel className={styles.asciiPanel} />
+        <AsciiCube className={styles.asciiPanel} />
         <div className={styles.bottomSpacer} />
       </div>
     </>

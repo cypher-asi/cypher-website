@@ -154,9 +154,9 @@ export function ZuiDemo() {
           <Heading level={2}>Heading 2</Heading>
           <Heading level={3}>Heading 3</Heading>
           <Heading level={4}>Heading 4</Heading>
-          <Text variant="primary">Primary text — the default body style.</Text>
-          <Text variant="secondary">Secondary text — used for supporting content.</Text>
-          <Text variant="muted" size="sm">Muted small — captions and metadata.</Text>
+          <Text variant="primary">Primary text—the default body style.</Text>
+          <Text variant="secondary">Secondary text—used for supporting content.</Text>
+          <Text variant="muted" size="sm">Muted small—captions and metadata.</Text>
         </div>
       </section>
     </div>
