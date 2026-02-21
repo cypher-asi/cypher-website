@@ -1,0 +1,131 @@
+.siteTopbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  backdrop-filter: blur(16px);
+  border-bottom: none;
+  background: transparent !important;
+  height: auto;
+  padding: 16px;
+}
+
+/* ============================================================================
+   Developers button (top-right)
+   ============================================================================ */
+
+.devButton {
+  --corner-len: 10px;
+  --corner-color: #969696;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: #f0f0ec;
+  border: none;
+  border-radius: 0;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 200ms ease;
+  background:
+    linear-gradient(var(--corner-color), var(--corner-color)) no-repeat top left / var(--corner-len) 1px,
+    linear-gradient(var(--corner-color), var(--corner-color)) no-repeat top left / 1px var(--corner-len),
+    linear-gradient(var(--corner-color), var(--corner-color)) no-repeat top right / var(--corner-len) 1px,
+    linear-gradient(var(--corner-color), var(--corner-color)) no-repeat top right / 1px var(--corner-len),
+    linear-gradient(var(--corner-color), var(--corner-color)) no-repeat bottom left / var(--corner-len) 1px,
+    linear-gradient(var(--corner-color), var(--corner-color)) no-repeat bottom left / 1px var(--corner-len),
+    linear-gradient(var(--corner-color), var(--corner-color)) no-repeat bottom right / var(--corner-len) 1px,
+    linear-gradient(var(--corner-color), var(--corner-color)) no-repeat bottom right / 1px var(--corner-len);
+}
+
+.devButton:hover {
+  --corner-color: rgba(255, 255, 255, 0.5);
+}
+
+/* ============================================================================
+   Side Navigation (bottom-left vertical stack)
+   ============================================================================ */
+
+.sideNav {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.navItem {
+  position: relative;
+}
+
+.titleLink {
+  text-decoration: none;
+  color: inherit;
+}
+
+.navLink {
+  text-decoration: none;
+  color: inherit;
+}
+
+.navButton {
+  padding-inline: 2px;
+  font-size: 12.5px;
+  min-width: 115px !important;
+  color: #f0f0ec !important;
+  justify-content: flex-start;
+}
+
+.navButtonActive {
+  padding-inline: 2px;
+  font-size: 12.5px;
+  min-width: 115px !important;
+  color: #f0f0ec !important;
+  justify-content: flex-start;
+  background-color: var(--color-overlay-light, rgba(255, 255, 255, 0.06));
+}
+
+/* ============================================================================
+   Chevron animation
+   ============================================================================ */
+
+.chevron {
+  transform: rotate(0deg);
+  transition: transform 150ms ease;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+/* ============================================================================
+   Mega menu dropdown panel
+   ============================================================================ */
+
+.megaDropdown {
+  position: absolute;
+  bottom: 0;
+  left: 100%;
+  margin-left: var(--space-2, 8px);
+  z-index: var(--z-dropdown, 50);
+  box-shadow: var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.3));
+  animation: slideRight 200ms ease-out;
+  transform-origin: left center;
+}
+
+@keyframes slideRight {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

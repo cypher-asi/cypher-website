@@ -1,0 +1,119 @@
+.page {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  gap: 3rem;
+  min-height: calc(100dvh - 52px);
+}
+
+.sidebar {
+  position: sticky;
+  top: 68px;
+  align-self: start;
+}
+
+.sidebarHeading {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.4));
+  margin-bottom: 0.75rem;
+}
+
+.sidebarLinks {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.sidebarLink,
+.sidebarLinkActive {
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  color: var(--color-text-secondary, rgba(255, 255, 255, 0.6));
+}
+
+.sidebarLink:hover {
+  color: var(--color-text-primary, #fff);
+  background: var(--color-bg-hover, rgba(255, 255, 255, 0.05));
+}
+
+.sidebarLinkActive {
+  color: var(--color-text-primary, #fff);
+  background: var(--color-bg-hover, rgba(255, 255, 255, 0.08));
+}
+
+.content {
+  min-width: 0;
+}
+
+.heading {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary, #fff);
+  margin-bottom: 1rem;
+}
+
+.subheading {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #fff);
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.paragraph {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--color-text-secondary, rgba(255, 255, 255, 0.7));
+}
+
+.paragraph code {
+  padding: 0.125rem 0.375rem;
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  background: var(--color-bg-surface, rgba(255, 255, 255, 0.06));
+}
+
+.list {
+  padding-left: 1.25rem;
+  color: var(--color-text-secondary, rgba(255, 255, 255, 0.7));
+  font-size: 0.9375rem;
+  line-height: 1.8;
+}
+
+.list code {
+  padding: 0.125rem 0.375rem;
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  background: var(--color-bg-surface, rgba(255, 255, 255, 0.06));
+}
+
+.codeBlock {
+  margin-top: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  overflow-x: auto;
+  background: var(--color-bg-surface, rgba(0, 0, 0, 0.3));
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
+  color: var(--color-text-secondary, rgba(255, 255, 255, 0.7));
+}
+
+@media (max-width: 640px) {
+  .page {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+  }
+}
