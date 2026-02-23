@@ -4,9 +4,14 @@ import { useEffect, useLayoutEffect, useRef, useState, useCallback } from 'react
 import { createPortal } from 'react-dom';
 import styles from './Lightbox.module.css';
 
-interface LightboxProps {
+export interface LightboxSlide {
   src: string;
   alt: string;
+}
+
+interface LightboxProps {
+  slides: LightboxSlide[];
+  currentIndex: number;
   originRect: DOMRect;
   originEl?: HTMLElement;
   onClose: () => void;
@@ -21,8 +26,9 @@ function dragProgress(absDrag: number, threshold: number) {
   return { scale: 1 - t * 0.12, bgOpacity: 0.92 * (1 - t * 0.5) };
 }
 
-export function Lightbox({ src, alt, originRect, originEl, onClose }: LightboxProps) {
+export function Lightbox({ slides, currentIndex, originRect, originEl, onClose }: LightboxProps) {
   const [phase, setPhase] = useState<'enter' | 'open' | 'exit'>('enter');
+  const [activeIndex, setActiveIndex] = useState(currentIndex);
   const imgRef = useRef<HTMLImageElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const dragY = useRef(0);
@@ -30,6 +36,18 @@ export function Lightbox({ src, alt, originRect, originEl, onClose }: LightboxPr
   const snapBackTimer = useRef<ReturnType<typeof setTimeout>>();
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
+
+  const activeSlide = slides[activeIndex];
+  const hasPrev = activeIndex > 0;
+  const hasNext = activeIndex < slides.length - 1;
+  const showNav = slides.length > 1;
+
+  const goTo = useCallback((index: number) => {
+    if (closingRef.current) return;
+    const clamped = Math.max(0, Math.min(index, slides.length - 1));
+    if (clamped === activeIndex) return;
+    setActiveIndex(clamped);
+  }, [activeIndex, slides.length]);
 
   const close = useCallback(() => {
     if (closingRef.current) return;
@@ -48,7 +66,6 @@ export function Lightbox({ src, alt, originRect, originEl, onClose }: LightboxPr
 
   const exitRectRef = useRef<DOMRect>(originRect);
 
-  // Clear gesture inline styles so CSS transitions drive the exit animation
   useLayoutEffect(() => {
     if (phase !== 'exit') return;
     if (originEl) {
@@ -70,11 +87,13 @@ export function Lightbox({ src, alt, originRect, originEl, onClose }: LightboxPr
     const SCROLL_KEYS = new Set(['Space', 'PageUp', 'PageDown', 'Home', 'End', 'ArrowUp', 'ArrowDown']);
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') close();
+      if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(activeIndex - 1); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); goTo(activeIndex + 1); }
       if (SCROLL_KEYS.has(e.code)) e.preventDefault();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [close]);
+  }, [close, goTo, activeIndex]);
 
   useEffect(() => {
     if (phase !== 'exit') return;
@@ -137,7 +156,6 @@ export function Lightbox({ src, alt, originRect, originEl, onClose }: LightboxPr
     dragY.current = 0;
   }, []);
 
-  // Wheel: block background scroll + dismiss gesture when open
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
@@ -162,32 +180,67 @@ export function Lightbox({ src, alt, originRect, originEl, onClose }: LightboxPr
     };
   }, [phase, applyDrag, gestureDismiss, snapBack]);
 
-  // Touch dismiss gesture
   useEffect(() => {
     if (phase !== 'open') return;
 
+    let touchStartX = 0;
     let touchStartY = 0;
+    let lastTouchX = 0;
+    let axis: 'x' | 'y' | null = null;
 
     const onTouchStart = (e: TouchEvent) => {
       if (closingRef.current) return;
+      touchStartX = e.touches[0].clientX;
       touchStartY = e.touches[0].clientY;
+      lastTouchX = touchStartX;
       dragY.current = 0;
+      axis = null;
     };
 
     const onTouchMove = (e: TouchEvent) => {
       if (closingRef.current) return;
       e.preventDefault();
-      dragY.current = e.touches[0].clientY - touchStartY;
-      applyDrag(dragY.current, TOUCH_DISMISS_THRESHOLD);
+      const dx = e.touches[0].clientX - touchStartX;
+      const dy = e.touches[0].clientY - touchStartY;
+      lastTouchX = e.touches[0].clientX;
+
+      if (!axis) {
+        if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
+          axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+        }
+        return;
+      }
+
+      if (axis === 'y') {
+        dragY.current = dy;
+        applyDrag(dragY.current, TOUCH_DISMISS_THRESHOLD);
+      }
     };
+
+    const SWIPE_THRESHOLD = 50;
 
     const onTouchEnd = () => {
       if (closingRef.current) return;
-      if (Math.abs(dragY.current) > TOUCH_DISMISS_THRESHOLD) {
-        gestureDismiss(dragY.current > 0 ? 1 : -1);
-      } else {
-        snapBack();
+
+      if (axis === 'x') {
+        const swipeDx = lastTouchX - touchStartX;
+        if (Math.abs(swipeDx) > SWIPE_THRESHOLD) {
+          setActiveIndex((prev) => {
+            const next = swipeDx < 0 ? prev + 1 : prev - 1;
+            return Math.max(0, Math.min(next, slides.length - 1));
+          });
+        }
       }
+
+      if (axis === 'y') {
+        if (Math.abs(dragY.current) > TOUCH_DISMISS_THRESHOLD) {
+          gestureDismiss(dragY.current > 0 ? 1 : -1);
+        } else {
+          snapBack();
+        }
+      }
+
+      axis = null;
     };
 
     window.addEventListener('touchstart', onTouchStart, { passive: true });
@@ -248,8 +301,8 @@ export function Lightbox({ src, alt, originRect, originEl, onClose }: LightboxPr
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         ref={imgRef}
-        src={src}
-        alt={alt}
+        src={activeSlide.src}
+        alt={activeSlide.alt}
         className={`${styles.image} ${phase === 'exit' ? styles.imageExiting : ''}`}
         style={{
           left: imgStyle.left,
@@ -262,6 +315,32 @@ export function Lightbox({ src, alt, originRect, originEl, onClose }: LightboxPr
           close();
         }}
       />
+
+      {showNav && phase === 'open' && (
+        <>
+          <button
+            className={`${styles.navArrow} ${styles.navPrev} ${!hasPrev ? styles.navDisabled : ''}`}
+            onClick={(e) => { e.stopPropagation(); goTo(activeIndex - 1); }}
+            aria-label="Previous image"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M15 5L8 12L15 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+          <button
+            className={`${styles.navArrow} ${styles.navNext} ${!hasNext ? styles.navDisabled : ''}`}
+            onClick={(e) => { e.stopPropagation(); goTo(activeIndex + 1); }}
+            aria-label="Next image"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M9 5L16 12L9 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+          <div className={styles.counter}>
+            {activeIndex + 1} / {slides.length}
+          </div>
+        </>
+      )}
     </div>,
     document.body,
   );

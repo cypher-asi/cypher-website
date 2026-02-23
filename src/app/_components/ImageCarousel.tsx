@@ -3,6 +3,7 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { Lightbox } from './Lightbox';
+import type { LightboxSlide } from './Lightbox';
 import styles from './ImageCarousel.module.css';
 
 export interface CarouselSlide {
@@ -20,8 +21,7 @@ interface ImageCarouselProps {
 }
 
 interface LightboxState {
-  src: string;
-  alt: string;
+  imageIndex: number;
   rect: DOMRect;
   originEl: HTMLElement;
 }
@@ -182,6 +182,19 @@ export function ImageCarousel({ slides, className, sizes, unoptimized }: ImageCa
     scrollToSlide(direction === 'left' ? currentIdx - 1 : currentIdx + 1);
   }, [getSlideIndex, scrollToSlide]);
 
+  const imageSlides: LightboxSlide[] = slides
+    .filter((s): s is CarouselSlide & { src: string } => !!s.src)
+    .map((s) => ({ src: s.src, alt: s.alt ?? '' }));
+
+  const imageIndexMap = new Map<number, number>();
+  let imgIdx = 0;
+  for (let i = 0; i < slides.length; i++) {
+    if (slides[i].src) {
+      imageIndexMap.set(i, imgIdx);
+      imgIdx++;
+    }
+  }
+
   return (
     <div className={`${styles.carousel} ${className ?? ''}`}>
       <div className={styles.track} ref={trackRef}>
@@ -193,7 +206,8 @@ export function ImageCarousel({ slides, className, sizes, unoptimized }: ImageCa
                 if (!slide.src) return;
                 const el = e.currentTarget as HTMLElement;
                 const rect = el.getBoundingClientRect();
-                setLightbox({ src: slide.src, alt: slide.alt ?? '', rect, originEl: el });
+                const lbIndex = imageIndexMap.get(i) ?? 0;
+                setLightbox({ imageIndex: lbIndex, rect, originEl: el });
               }}
             >
               {slide.src ? (
@@ -251,8 +265,8 @@ export function ImageCarousel({ slides, className, sizes, unoptimized }: ImageCa
 
       {lightbox && (
         <Lightbox
-          src={lightbox.src}
-          alt={lightbox.alt}
+          slides={imageSlides}
+          currentIndex={lightbox.imageIndex}
           originRect={lightbox.rect}
           originEl={lightbox.originEl}
           onClose={() => setLightbox(null)}

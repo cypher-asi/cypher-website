@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { Topbar } from '@cypher-asi/zui';
 import { ArrowUpRight, ChevronRight } from 'lucide-react';
 import { TypewriterText } from './TypewriterText';
@@ -52,11 +52,11 @@ const sections: NavSection[] = [
     ],
   },
   {
-    id: 'worlds',
-    label: 'WORLDS',
+    id: 'simulation',
+    label: 'SIMULATION',
     subItems: [
-      { id: 'wilder-world', label: 'WILDER WORLD', href: '/worlds/wilder-world' },
-      { id: 'shanty-town', label: 'SHANTY TOWN', href: '/worlds/shanty-town' },
+      { id: 'wilder-world', label: 'WILDER WORLD', href: '/simulation/wilder-world' },
+      { id: 'shanty-town', label: 'SHANTY TOWN', href: '/simulation/shanty-town' },
     ],
   },
   {
@@ -142,18 +142,38 @@ function AccordionSection({
 export function Nav() {
   const pathname = usePathname();
   const [openSectionId, setOpenSectionId] = useState<string | null>(null);
+  const openTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
-  const router = useRouter();
+  useEffect(() => {
+    clearTimeout(openTimerRef.current);
+
+    const match = sections.find((s) =>
+      s.subItems?.some(
+        (item) =>
+          item.href &&
+          (pathname === item.href || pathname.startsWith(item.href + '/'))
+      )
+    );
+
+    const targetId = match?.id ?? null;
+
+    setOpenSectionId((prev) => {
+      if (prev === targetId) return prev;
+      if (prev && targetId) {
+        // Close current first, then open new after animation
+        openTimerRef.current = setTimeout(() => {
+          setOpenSectionId(targetId);
+        }, 300);
+        return null;
+      }
+      return targetId;
+    });
+
+    return () => clearTimeout(openTimerRef.current);
+  }, [pathname]);
 
   const handleToggle = (id: string) => {
-    if (openSectionId === id) {
-      setOpenSectionId(null);
-      return;
-    }
-    setOpenSectionId(id);
-    const section = sections.find((s) => s.id === id);
-    const firstHref = section?.subItems?.[0]?.href;
-    if (firstHref) router.push(firstHref);
+    setOpenSectionId((prev) => (prev === id ? null : id));
   };
 
   const titleSegments: TypewriterSegment[] = useMemo(

@@ -98,7 +98,7 @@ export default function ZeroPage() {
           <span className={styles.accent}>for an Agentic World.</span>
         </h1>
         <p className={styles.subtitle}>
-        ZERO OS is a new operating system that unifies your devices, data, and AI into one secure environment that goes wherever you do.
+        ZERO OS is a new computer operating system that unifies your devices, data, and AI into one secure environment that goes wherever you do.
         </p>
       </header>
 
@@ -106,11 +106,23 @@ export default function ZeroPage() {
         <ImageCarousel slides={heroSlides} unoptimized />
       </div>
 
-      <p className={styles.pillarsLead}>
-        A new operating system designed for security, agentic automation, and portability.
-      </p>
 
-      <section className={styles.pillars}>
+      <section id="promise" className={styles.promisePillars}>
+        <div className={styles.promise}>
+          <p className={styles.promiseLead}>
+            Computing today is fragmented and insecure. <br />
+            Your computers, phone, cloud accounts, and <br /> 
+            AI tools all operate under different trust models.
+          </p>
+          <p className={styles.promiseBody}>
+            ZERO OS unifies them into one cryptographically secure environment where your
+            identity, data, and automation live together—not scattered across
+            machines and platforms. In this new paradigm, you don&apos;t log into single devices, you carry 
+            a single secure environment with you.
+          </p>
+        </div>
+
+        <div className={styles.pillars}>
         <div className={styles.pillarCard}>
           <div className={styles.pillarIllustration}>
             <svg width="260" height="230" viewBox="0 0 260 230" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -186,19 +198,7 @@ export default function ZeroPage() {
             One environment moves with you across browser, VM, and bare metal without reconfiguration.
           </p>
         </div>
-      </section>
-
-      <section id="promise" className={styles.promise}>
-        <p className={styles.promiseLead}>
-          Computing today is fragmented. Your laptop, phone, cloud accounts, and
-          AI tools all operate under different trust models.
-        </p>
-        <p className={styles.promiseBody}>
-          ZERO OS unifies them into one cryptographically secure desktop where your
-          identity, data, and automation live together—not scattered across
-          platforms. You don&apos;t log into environments. You carry your
-          environment with you.
-        </p>
+        </div>
       </section>
 
       <section id="features" className={styles.features}>
@@ -214,7 +214,6 @@ export default function ZeroPage() {
         </div>
       </section>
 
-      <section className={styles.divider} />
 
       {/* 2. What ZERO Lets You Do */}
       <section id="capabilities" className={styles.capabilities}>
@@ -364,7 +363,6 @@ export default function ZeroPage() {
         </p>
       </section>
 
-      <section className={styles.divider} />
 
       {/* 3. Why You Can Trust It */}
       <section id="trust" className={styles.trust}>
@@ -408,7 +406,6 @@ export default function ZeroPage() {
         </div>
       </section>
 
-      <section className={styles.divider} />
 
       {/* 4. Built to Be Verifiable */}
       <section id="open" className={styles.open}>
@@ -424,9 +421,22 @@ export default function ZeroPage() {
           determinism, minimalism, and inspectability so behavior can be trusted—not
           assumed.
         </p>
+        <div className={styles.openActions}>
+          <a href="#" className={styles.openAction}>
+            Read the Docs
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M1 7h12M8 2l5 5-5 5" />
+            </svg>
+          </a>
+          <a href="https://github.com/cypher-asi/zero-os" target="_blank" rel="noopener noreferrer" className={styles.openAction}>
+            Review the Code
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M1 7h12M8 2l5 5-5 5" />
+            </svg>
+          </a>
+        </div>
       </section>
 
-      <section className={styles.divider} />
 
       {/* 8. Get Started */}
       <section id="start" className={styles.start}>
@@ -459,7 +469,6 @@ export default function ZeroPage() {
         </p>
       </section>
 
-      <section className={styles.divider} />
 
       <section className={styles.closing}>
         <p className={styles.closingText}>
@@ -468,7 +477,6 @@ export default function ZeroPage() {
         </p>
       </section>
 
-      <section className={styles.divider} />
 
       <section id="faq" className={styles.faqSection}>
         <div className={styles.sectionHeader}>
