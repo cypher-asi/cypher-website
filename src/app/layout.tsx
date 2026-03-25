@@ -4,6 +4,7 @@ import '@cypher-asi/zui/styles';
 import './styles/globals.css';
 import { Nav } from './_components/Nav';
 import { ThemeWrapper } from './_components/ThemeWrapper';
+import { MusicProvider } from './_components/MusicContext';
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-sans',
@@ -30,8 +31,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body>
         <ThemeWrapper>
-          <Nav />
-          <main>{children}</main>
+          <MusicProvider>
+            <Nav />
+            <main>{children}</main>
+          </MusicProvider>
         </ThemeWrapper>
       </body>
     </html>

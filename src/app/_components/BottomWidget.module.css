@@ -78,6 +78,20 @@
   border-color: transparent;
 }
 
+.musicActive {
+  color: #0ff !important;
+  animation: musicPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes musicPulse {
+  0%, 100% {
+    box-shadow: 0 0 4px rgba(0, 255, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+  }
+}
+
 @media (max-width: 768px) {
   .widget {
     display: none;

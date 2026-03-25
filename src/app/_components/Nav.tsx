@@ -3,11 +3,12 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import { Topbar, useTheme } from '@cypher-asi/zui';
-import { ArrowUpRight, ChevronRight, Menu, X, Sun, Moon, FileText } from 'lucide-react';
+import { ArrowUpRight, ChevronRight, Menu, X, Sun, Moon, AudioLines } from 'lucide-react';
 import { TypewriterText } from './TypewriterText';
 import type { TypewriterSegment } from './TypewriterText';
 import { SectionNav } from './SectionNav';
 import { BottomWidget } from './BottomWidget';
+import { useMusic } from './MusicContext';
 import styles from './Nav.module.css';
 
 interface SubItem {
@@ -138,10 +139,11 @@ function XIcon({ size = 12 }: { size?: number }) {
 }
 
 export function Nav() {
-  const [openSectionId, setOpenSectionId] = useState<string | null>(null);
+  const [openSectionId, setOpenSectionId] = useState<string | null>('projects');
   const [sideCollapsed, setSideCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { resolvedTheme, setTheme } = useTheme();
+  const { isPlaying, toggle: toggleMusic } = useMusic();
 
   useEffect(() => {
     if (mobileOpen) {
@@ -249,14 +251,13 @@ export function Nav() {
           ))}
         </div>
         <div className={styles.drawerFooter}>
-          <Link
-            href="/docs"
-            className={styles.drawerIconBtn}
-            onClick={() => setMobileOpen(false)}
-            aria-label="Docs"
+          <button
+            className={`${styles.drawerIconBtn} ${isPlaying ? styles.musicActive : ''}`}
+            onClick={toggleMusic}
+            aria-label={isPlaying ? 'Stop music' : 'Play music'}
           >
-            <FileText size={15} />
-          </Link>
+            <AudioLines size={15} />
+          </button>
           <a
             href="https://github.com/cypher-asi"
             target="_blank"

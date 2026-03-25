@@ -171,14 +171,14 @@
   font-size: 11px;
   font-weight: 400;
   letter-spacing: 0.04em;
-  color: var(--color-text-muted);
+  color: var(--color-text-primary);
   text-decoration: none;
   border-radius: 3px;
   transition: color 300ms ease;
 }
 
 .subItemLink:hover {
-  color: var(--color-text-secondary);
+  color: var(--color-text-primary);
 }
 
 .externalIcon {
@@ -357,5 +357,19 @@
 
   .drawerIconBtn:hover {
     color: var(--color-text-primary);
+  }
+
+  .musicActive {
+    color: #0ff !important;
+    animation: drawerMusicPulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes drawerMusicPulse {
+    0%, 100% {
+      text-shadow: 0 0 4px rgba(0, 255, 255, 0.3);
+    }
+    50% {
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+    }
   }
 }
