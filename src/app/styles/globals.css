@@ -1,3 +1,27 @@
+/* Site-specific theme tokens (supplement ZUI's themes.css) */
+:root,
+[data-theme='dark'] {
+  --site-bg-from: #0c0c0c;
+  --site-bg-to: #000000;
+  --site-border-action: rgba(255, 255, 255, 0.16);
+  --site-border-action-hover: rgba(255, 255, 255, 0.36);
+  --site-border-quote: rgba(255, 255, 255, 0.12);
+  --site-illustration-stroke: rgba(255, 255, 255, 0.32);
+  --site-illustration-fill: rgba(255, 255, 255, 0.45);
+  --site-fade-to: #000000;
+}
+
+[data-theme='light'] {
+  --site-bg-from: #d8d8dd;
+  --site-bg-to: #e0e0e5;
+  --site-border-action: rgba(0, 0, 0, 0.16);
+  --site-border-action-hover: rgba(0, 0, 0, 0.36);
+  --site-border-quote: rgba(0, 0, 0, 0.12);
+  --site-illustration-stroke: rgba(0, 0, 0, 0.5);
+  --site-illustration-fill: rgba(0, 0, 0, 0.6);
+  --site-fade-to: #e0e0e5;
+}
+
 *,
 *::before,
 *::after {
@@ -14,11 +38,12 @@ html,
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: radial-gradient(ellipse at center, #0c0c0c 0%, #000000 60%) !important;
+  background: radial-gradient(ellipse at center, var(--site-bg-from) 0%, var(--site-bg-to) 60%) !important;
 }
 
 body {
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  color: var(--color-text-primary);
   min-height: 100dvh;
   overflow-x: hidden;
   scrollbar-width: none;

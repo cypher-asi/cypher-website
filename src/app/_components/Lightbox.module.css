@@ -2,7 +2,7 @@
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: rgba(0, 0, 0, 0);
+  background: color-mix(in srgb, var(--color-bg) 0%, transparent);
   transition: background 400ms cubic-bezier(0.4, 0, 0.2, 1);
   cursor: zoom-out;
   overscroll-behavior: none;
@@ -10,7 +10,7 @@
 }
 
 .overlayVisible {
-  background: rgba(0, 0, 0, 0.92);
+  background: var(--color-backdrop);
 }
 
 .image {
@@ -49,16 +49,16 @@
   height: 48px;
   border: none;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.8);
+  background: var(--color-overlay-medium);
+  color: var(--color-inverse-muted);
   cursor: pointer;
   backdrop-filter: blur(8px);
   transition: background 200ms, color 200ms, opacity 200ms;
 }
 
 .navArrow:hover {
-  background: rgba(255, 255, 255, 0.16);
-  color: #fff;
+  background: var(--site-border-action);
+  color: var(--color-inverse);
 }
 
 .navPrev {
@@ -82,7 +82,7 @@
   z-index: 10001;
   font-size: 13px;
   font-variant-numeric: tabular-nums;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--color-text-secondary);
   letter-spacing: 0.05em;
   user-select: none;
 }

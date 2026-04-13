@@ -32,10 +32,10 @@ const sections: NavSection[] = [
     label: 'NETWORKS',
     subItems: [
       { id: 'aura', label: 'AURA', href: 'https://aura.ai', external: true },
-      { id: 'zero', label: 'ZERO', href: 'https://zero.tech', external: true },
+      { id: 'the-grid', label: 'THE GRID', href: 'https://thegrid.com', external: true },
       { id: 'wilder-world', label: 'WILDER WORLD', href: 'https://wilderworld.com', external: true },
       { id: 'z-chain', label: 'Z CHAIN', href: 'https://zchain.org', external: true },
-      { id: 'the-grid', label: 'THE GRID', href: 'https://thegrid.com', external: true },
+      { id: 'zero', label: 'ZERO', href: 'https://zero.tech', external: true },
     ],
   },
   {

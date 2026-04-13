@@ -13,5 +13,5 @@
   font-weight: 300;
   letter-spacing: -0.02em;
   line-height: 1.2;
-  color: #f0f0ec;
+  color: var(--color-text-primary);
 }

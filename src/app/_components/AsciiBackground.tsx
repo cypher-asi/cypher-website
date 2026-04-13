@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { useTheme } from '@cypher-asi/zui';
 import * as THREE from 'three';
 
 type TalkEvent =
@@ -21,6 +22,12 @@ const DOT_SCALE = 0.78;
 const CELL_SPACING = 1.0;
 const SECTION_GAP = 2;
 
+const THEME_PALETTES = {
+  dark: { bg: 0x000000, off: 0 },
+  light: { bg: 0xffffff, off: 1 },
+} as const;
+const LIGHT_CONTRAST = 1.5;
+
 function rowOffsetUnits(row: number): number {
   const section = Math.floor(row / ROWS_PER_SECTION);
   return row + section * (SECTION_GAP - 1);
@@ -33,13 +40,20 @@ function colOffsetUnits(col: number): number {
 
 export function AsciiPanel({ className }: Options) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const { resolvedTheme } = useTheme();
+  const isDarkRef = useRef(resolvedTheme !== 'light');
+
+  useEffect(() => {
+    isDarkRef.current = resolvedTheme !== 'light';
+  }, [resolvedTheme]);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x000000);
+    const bgColor = new THREE.Color(isDarkRef.current ? 0x000000 : 0xffffff);
+    scene.background = bgColor;
 
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.01, 10);
     camera.position.set(0, 0, 2);
@@ -334,6 +348,10 @@ export function AsciiPanel({ className }: Options) {
       const dt = Math.min(0.033, Math.max(0.001, t - lastT));
       lastT = t;
 
+      const dark = isDarkRef.current;
+      const palette = dark ? THEME_PALETTES.dark : THEME_PALETTES.light;
+      bgColor.set(palette.bg);
+
       updateTargets(t);
       updateRowVisibility(t, dt);
 
@@ -360,9 +378,9 @@ export function AsciiPanel({ className }: Options) {
         const ca = cellActive[i];
 
         if (ca < 0.01) {
-          squareColors[i * 3 + 0] = 0;
-          squareColors[i * 3 + 1] = 0;
-          squareColors[i * 3 + 2] = 0;
+          squareColors[i * 3 + 0] = palette.off;
+          squareColors[i * 3 + 1] = palette.off;
+          squareColors[i * 3 + 2] = palette.off;
 
           pos.set(cellX[i], cellY[i], 0);
           scl.set(0, 0, 1);
@@ -374,18 +392,19 @@ export function AsciiPanel({ className }: Options) {
           m.compose(pos, quat, scl);
           dotMesh.setMatrixAt(i, m);
 
-          dotColors[i * 3 + 0] = 0;
-          dotColors[i * 3 + 1] = 0;
-          dotColors[i * 3 + 2] = 0;
+          dotColors[i * 3 + 0] = palette.off;
+          dotColors[i * 3 + 1] = palette.off;
+          dotColors[i * 3 + 2] = palette.off;
           continue;
         }
 
         const e = energy[i];
         const variation = 0.6 + 0.4 * (0.5 + 0.5 * Math.sin(noise[i] * 100.0 + t * 0.15));
         const v = e * 0.55 * ca * variation;
-        squareColors[i * 3 + 0] = v;
-        squareColors[i * 3 + 1] = v;
-        squareColors[i * 3 + 2] = v;
+        const sv = dark ? v : Math.max(0, 1.0 - v * LIGHT_CONTRAST);
+        squareColors[i * 3 + 0] = sv;
+        squareColors[i * 3 + 1] = sv;
+        squareColors[i * 3 + 2] = sv;
 
         const sz = dotSize * ca;
         pos.set(cellX[i], cellY[i], 0);
@@ -402,9 +421,10 @@ export function AsciiPanel({ className }: Options) {
         dotMesh.setMatrixAt(i, m);
 
         const tone = dv * 0.18;
-        dotColors[i * 3 + 0] = tone;
-        dotColors[i * 3 + 1] = tone;
-        dotColors[i * 3 + 2] = tone;
+        const dt2 = dark ? tone : Math.max(0, 1.0 - tone * LIGHT_CONTRAST);
+        dotColors[i * 3 + 0] = dt2;
+        dotColors[i * 3 + 1] = dt2;
+        dotColors[i * 3 + 2] = dt2;
       }
 
       squareMesh.instanceMatrix.needsUpdate = true;

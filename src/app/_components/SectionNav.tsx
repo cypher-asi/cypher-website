@@ -23,7 +23,7 @@ export function SectionNav() {
           }
         }
       },
-      { rootMargin: '-30% 0px -50% 0px', threshold: 0 }
+      { rootMargin: '-20% 0px -60% 0px', threshold: 0 }
     );
 
     for (const { id } of sections) {
@@ -35,10 +35,15 @@ export function SectionNav() {
   }, [sections]);
 
   const handleClick = useCallback((id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    const section = document.getElementById(id);
+    if (!section) return;
+    const inner = (section.firstElementChild as HTMLElement) ?? section;
+    const rect = inner.getBoundingClientRect();
+    const topbarHeight = 56;
+    const visibleHeight = window.innerHeight - topbarHeight;
+    const elementCenter = window.scrollY + rect.top + rect.height / 2;
+    const scrollTarget = elementCenter - topbarHeight - visibleHeight / 2;
+    window.scrollTo({ top: scrollTarget, behavior: 'smooth' });
   }, []);
 
   if (!sections?.length) return null;

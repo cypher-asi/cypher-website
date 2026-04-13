@@ -4,13 +4,13 @@ export default function VisionPage() {
   return (
     <div className={styles.page}>
       <header id="hero" className={styles.hero}>
-        <p className={styles.eyebrow}>OUR VISION</p>
+        <p className={styles.eyebrow}>OUR MISSION</p>
         <h1 className={styles.heading}>
-          Secure Systems for the <br /> <span className={styles.accent}>Machine Age</span>
+          To encode wisdom into <br /> <span className={styles.accent}>autonomous machines.</span>
         </h1>
         <p className={styles.subtitle}>
-          We believe the next era of computing will be defined not by humans
-          operating software, but by autonomous agents collaborating at scale.
+          We believe the next era of society will be defined not by humans
+          operating companies, but by autonomous agents collaborating at scale.
         </p>
       </header>
 
@@ -73,9 +73,8 @@ export default function VisionPage() {
 
       <section id="statement" className={styles.statement}>
         <blockquote className={styles.quote}>
-          &ldquo;We are not building for the next product cycle. We are building
-          for a future where billions of autonomous agents transact, create, and
-          evolve—and the infrastructure they run on matters.&rdquo;
+          &ldquo;Something can be true and not wise, but something cannot be
+          wise and not true.&rdquo;
         </blockquote>
       </section>
     </div>

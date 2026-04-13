@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { useTheme } from '@cypher-asi/zui';
 import * as THREE from 'three';
 
 type CubeEvent =
@@ -14,13 +15,19 @@ const ROW_SECTIONS = 5;
 const ROWS_PER_SECTION = 8;
 const FACE_ROWS = ROW_SECTIONS * ROWS_PER_SECTION;
 const NUM_FACES = 6;
-const CUBE_HALF = 2.5;
+const CUBE_HALF = 2.35;
 const DOT_SCALE = 0.78;
 const SECTION_GAP = 1.5;
 const ROW_OFF_RATIO = 0.08;
 const CELL_FADE_SPEED = 6.0;
 const STAGGER_SPREAD = 0.8;
 const LOAD_ROW_INTERVAL = 0.015;
+
+const THEME_PALETTES = {
+  dark: { face: 0x020202, edge: 0x111111, off: 0 },
+  light: { face: 0xf0f0f0, edge: 0xc8c8c8, off: 1 },
+} as const;
+const LIGHT_CONTRAST = 1.5;
 
 function faceRowOffset(row: number): number {
   return row + Math.floor(row / ROWS_PER_SECTION) * SECTION_GAP;
@@ -40,6 +47,12 @@ const FACE_CONFIGS = [
 
 export function AsciiCube({ className }: Options) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const { resolvedTheme } = useTheme();
+  const isDarkRef = useRef(resolvedTheme !== 'light');
+
+  useEffect(() => {
+    isDarkRef.current = resolvedTheme !== 'light';
+  }, [resolvedTheme]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -75,11 +88,11 @@ export function AsciiCube({ className }: Options) {
     scene.add(cubeGroup);
 
     const innerGeom = new THREE.BoxGeometry(CUBE_HALF * 2, CUBE_HALF * 2, CUBE_HALF * 2);
-    const innerMat = new THREE.MeshBasicMaterial({ color: 0x020202 });
+    const innerMat = new THREE.MeshBasicMaterial({ color: isDarkRef.current ? 0x020202 : 0xfafafa });
     cubeGroup.add(new THREE.Mesh(innerGeom, innerMat));
 
     const edgesGeom = new THREE.EdgesGeometry(innerGeom);
-    const edgesMat = new THREE.LineBasicMaterial({ color: 0x111111 });
+    const edgesMat = new THREE.LineBasicMaterial({ color: isDarkRef.current ? 0x111111 : 0xe0e0e0 });
     cubeGroup.add(new THREE.LineSegments(edgesGeom, edgesMat));
 
     const faceExtent = CUBE_HALF * 2;
@@ -346,6 +359,11 @@ export function AsciiCube({ className }: Options) {
       const dt = Math.min(0.033, Math.max(0.001, t - lastT));
       lastT = t;
 
+      const dark = isDarkRef.current;
+      const palette = dark ? THEME_PALETTES.dark : THEME_PALETTES.light;
+      innerMat.color.set(palette.face);
+      edgesMat.color.set(palette.edge);
+
       cubeGroup.rotation.z = Math.PI / 4;
       cubeGroup.rotation.y += dt * 0.08;
 
@@ -376,20 +394,21 @@ export function AsciiCube({ className }: Options) {
         const fd = faceDefs[faceIdx];
 
         if (ca < 0.01) {
-          squareColors[i * 3] = squareColors[i * 3 + 1] = squareColors[i * 3 + 2] = 0;
+          squareColors[i * 3] = squareColors[i * 3 + 1] = squareColors[i * 3 + 2] = palette.off;
           pos.set(bx, by, bz);
           scl.set(0, 0, 1);
           m.compose(pos, fd.quat, scl);
           squareMesh.setMatrixAt(i, m);
           dotMesh.setMatrixAt(i, m);
-          dotColors[i * 3] = dotColors[i * 3 + 1] = dotColors[i * 3 + 2] = 0;
+          dotColors[i * 3] = dotColors[i * 3 + 1] = dotColors[i * 3 + 2] = palette.off;
           continue;
         }
 
         const e = energy[i];
         const variation = 0.6 + 0.4 * (0.5 + 0.5 * Math.sin(noise[i] * 100.0 + t * 0.15));
         const v = e * 0.55 * ca * variation;
-        squareColors[i * 3] = squareColors[i * 3 + 1] = squareColors[i * 3 + 2] = v;
+        const sv = dark ? v : Math.max(0, 1.0 - v * LIGHT_CONTRAST);
+        squareColors[i * 3] = squareColors[i * 3 + 1] = squareColors[i * 3 + 2] = sv;
 
         const sz = dotSize * ca;
         pos.set(bx, by, bz);
@@ -406,7 +425,8 @@ export function AsciiCube({ className }: Options) {
         dotMesh.setMatrixAt(i, m);
 
         const tone = dv * 0.18;
-        dotColors[i * 3] = dotColors[i * 3 + 1] = dotColors[i * 3 + 2] = tone;
+        const dt2 = dark ? tone : Math.max(0, 1.0 - tone * LIGHT_CONTRAST);
+        dotColors[i * 3] = dotColors[i * 3 + 1] = dotColors[i * 3 + 2] = dt2;
       }
 
       squareMesh.instanceMatrix.needsUpdate = true;

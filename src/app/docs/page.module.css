@@ -1,70 +1,78 @@
 .page {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 2rem 1.5rem;
-  gap: 3rem;
-  min-height: calc(100dvh - 52px);
+  min-height: 100dvh;
 }
 
 .sidebar {
-  position: sticky;
-  top: 68px;
-  align-self: start;
+  position: fixed;
+  top: 80px;
+  left: 188px;
+  z-index: 90;
+  width: 140px;
+  transition: left 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:global([data-nav-collapsed]) .sidebar {
+  left: 24px;
+}
+
+.content {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 6rem 2rem 4rem;
 }
 
 .sidebarHeading {
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-text-muted, rgba(255, 255, 255, 0.4));
-  margin-bottom: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  margin-bottom: 0.5rem;
+  font-family: var(--font-mono), 'Fira Code', monospace;
 }
 
 .sidebarLinks {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 0.125rem;
+  gap: 2px;
 }
 
 .sidebarLink,
 .sidebarLinkActive {
-  padding: 0.375rem 0.75rem;
-  border-radius: 6px;
-  font-size: 0.875rem;
+  padding: 6px 2px;
+  border-radius: 4px;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   cursor: pointer;
-  color: var(--color-text-secondary, rgba(255, 255, 255, 0.6));
+  color: var(--color-text-secondary);
+  transition:
+    color 200ms ease,
+    background 200ms ease;
 }
 
 .sidebarLink:hover {
-  color: var(--color-text-primary, #fff);
-  background: var(--color-bg-hover, rgba(255, 255, 255, 0.05));
+  color: var(--color-text-secondary);
+  background: var(--color-overlay-light);
 }
 
 .sidebarLinkActive {
-  color: var(--color-text-primary, #fff);
-  background: var(--color-bg-hover, rgba(255, 255, 255, 0.08));
-}
-
-.content {
-  min-width: 0;
+  color: var(--color-text-primary);
 }
 
 .heading {
   font-size: 2rem;
   font-weight: 700;
   letter-spacing: -0.02em;
-  color: var(--color-text-primary, #fff);
+  color: var(--color-text-primary);
   margin-bottom: 1rem;
 }
 
 .subheading {
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--color-text-primary, #fff);
+  color: var(--color-text-primary);
   margin-top: 2rem;
   margin-bottom: 0.75rem;
 }
@@ -72,19 +80,19 @@
 .paragraph {
   font-size: 0.9375rem;
   line-height: 1.7;
-  color: var(--color-text-secondary, rgba(255, 255, 255, 0.7));
+  color: var(--color-text-secondary);
 }
 
 .paragraph code {
   padding: 0.125rem 0.375rem;
   border-radius: 4px;
   font-size: 0.8125rem;
-  background: var(--color-bg-surface, rgba(255, 255, 255, 0.06));
+  background: var(--color-overlay-light);
 }
 
 .list {
   padding-left: 1.25rem;
-  color: var(--color-text-secondary, rgba(255, 255, 255, 0.7));
+  color: var(--color-text-secondary);
   font-size: 0.9375rem;
   line-height: 1.8;
 }
@@ -93,7 +101,7 @@
   padding: 0.125rem 0.375rem;
   border-radius: 4px;
   font-size: 0.8125rem;
-  background: var(--color-bg-surface, rgba(255, 255, 255, 0.06));
+  background: var(--color-overlay-light);
 }
 
 .codeBlock {
@@ -103,17 +111,19 @@
   font-size: 0.8125rem;
   line-height: 1.7;
   overflow-x: auto;
-  background: var(--color-bg-surface, rgba(0, 0, 0, 0.3));
-  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
-  color: var(--color-text-secondary, rgba(255, 255, 255, 0.7));
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 1200px) {
+  .sidebar {
+    display: none;
+  }
 }
 
 @media (max-width: 640px) {
-  .page {
-    grid-template-columns: 1fr;
-  }
-
-  .sidebar {
-    position: static;
+  .content {
+    padding: 5rem 1.25rem 3rem;
   }
 }

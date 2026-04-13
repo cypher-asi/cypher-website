@@ -22,7 +22,7 @@
   font-size: 12.5px;
   font-weight: 500;
   letter-spacing: 0.02em;
-  color: #969696;
+  color: var(--color-text-secondary);
   cursor: pointer;
   border-radius: 4px;
   transition:
@@ -34,12 +34,12 @@
 }
 
 .item:hover {
-  color: #969696;
-  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-text-secondary);
+  background: var(--color-overlay-light);
 }
 
 .active {
-  color: #f0f0ec;
+  color: var(--color-text-primary);
 }
 
 /* Hide when right margin is too narrow */
