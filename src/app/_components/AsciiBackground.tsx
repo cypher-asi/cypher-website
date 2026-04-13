@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { useTheme } from '@cypher-asi/zui';
+import { useTheme } from './ThemeContext';
 import * as THREE from 'three';
 
 type TalkEvent =

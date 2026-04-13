@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
-import '@cypher-asi/zui/styles';
 import './styles/globals.css';
 import { Nav } from './_components/Nav';
 import { ThemeWrapper } from './_components/ThemeWrapper';
@@ -19,7 +18,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: 'Cypher',
-  description: 'Cypher ecosystem site—powered by ZUI',
+  description: 'Cypher ecosystem site',
 };
 
 export default function RootLayout({

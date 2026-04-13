@@ -1,6 +1,6 @@
 'use client';
 
-import { ThemeProvider } from '@cypher-asi/zui';
+import { ThemeProvider } from './ThemeContext';
 
 export function ThemeWrapper({ children }: { children: React.ReactNode }) {
   return (

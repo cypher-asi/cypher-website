@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import Link from 'next/link';
-import { Topbar, useTheme } from '@cypher-asi/zui';
+import { useTheme } from './ThemeContext';
 import { ArrowUpRight, ChevronRight, Menu, X, Sun, Moon, AudioLines } from 'lucide-react';
 import { TypewriterText } from './TypewriterText';
 import type { TypewriterSegment } from './TypewriterText';
@@ -176,8 +176,8 @@ export function Nav() {
 
   return (
     <>
-      <Topbar
-        title={
+      <header className={styles.siteTopbar}>
+        <div className={styles.topbarLeft}>
           <Link href="/" className={styles.titleLink}>
             <TypewriterText
               key={sideCollapsed ? 'collapsed' : 'expanded'}
@@ -185,24 +185,21 @@ export function Nav() {
               speed={80}
             />
           </Link>
-        }
-        className={styles.siteTopbar}
-        actions={
-          <>
-            <a href="https://aura.ai" target="_blank" rel="noopener noreferrer" className={styles.devButton}>
-              DEPLOY AGENTS
-              <ArrowUpRight size={14} style={{ color: 'var(--color-text-secondary)' }} />
-            </a>
-            <button
-              className={styles.hamburger}
-              onClick={() => setMobileOpen(true)}
-              aria-label="Open menu"
-            >
-              <Menu size={20} />
-            </button>
-          </>
-        }
-      />
+        </div>
+        <div className={styles.topbarActions}>
+          <a href="https://aura.ai" target="_blank" rel="noopener noreferrer" className={styles.devButton}>
+            DEPLOY AGENTS
+            <ArrowUpRight size={14} style={{ color: 'var(--color-text-secondary)' }} />
+          </a>
+          <button
+            className={styles.hamburger}
+            onClick={() => setMobileOpen(true)}
+            aria-label="Open menu"
+          >
+            <Menu size={20} />
+          </button>
+        </div>
+      </header>
       <SectionNav />
       <nav className={`${styles.sideNav} ${sideCollapsed ? styles.sideNavCollapsed : ''}`}>
         {sections.map((section) => (

@@ -33,7 +33,7 @@ export function Lightbox({ slides, currentIndex, originRect, originEl, onClose }
   const overlayRef = useRef<HTMLDivElement>(null);
   const dragY = useRef(0);
   const closingRef = useRef(false);
-  const snapBackTimer = useRef<ReturnType<typeof setTimeout>>();
+  const snapBackTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
 

@@ -33,8 +33,8 @@ export function ImageCarousel({ slides, className, sizes, unoptimized }: ImageCa
   const [lightbox, setLightbox] = useState<LightboxState | null>(null);
   const dragRef = useRef({ isDown: false, startX: 0, scrollStart: 0, startIdx: 0, hasDragged: false });
   const wheelCooldownRef = useRef(false);
-  const wheelTimerRef = useRef<ReturnType<typeof setTimeout>>();
-  const snapTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const wheelTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const snapTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const getSlideIndex = useCallback(() => {
     const el = trackRef.current;

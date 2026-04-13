@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, type CSSProperties, type ReactNode } from 'react';
+import { useState, useEffect, useRef, type CSSProperties, type ReactNode, type JSX } from 'react';
 
 export interface TypewriterSegment {
   text: string;

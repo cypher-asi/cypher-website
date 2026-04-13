@@ -1,6 +1,6 @@
 'use client';
 
-import { useTheme } from '@cypher-asi/zui';
+import { useTheme } from './ThemeContext';
 import { ChevronLeft, Sun, Moon, AudioLines } from 'lucide-react';
 import { useMusic } from './MusicContext';
 import styles from './BottomWidget.module.css';
