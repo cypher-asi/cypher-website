@@ -11,6 +11,7 @@
 }
 
 .topbarInner {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -24,6 +25,12 @@
   align-items: center;
   gap: 22px;
   min-width: 0;
+}
+
+.topbarRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .titleLink {
@@ -80,6 +87,10 @@
    Top navigation (right)
    ============================================================================ */
 .topNav {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -125,7 +136,7 @@
   grid-template-rows: 0fr;
   opacity: 0;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(10, 10, 12, 0.92) 0%, rgba(10, 10, 12, 0.86) 100%);
+  background: var(--mega-bg, linear-gradient(180deg, rgba(10, 10, 12, 0.92) 0%, rgba(10, 10, 12, 0.86) 100%));
   backdrop-filter: blur(14px);
   border-top: 1px solid var(--color-overlay-light);
   border-bottom: 1px solid var(--color-overlay-light);

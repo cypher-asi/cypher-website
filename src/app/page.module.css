@@ -67,13 +67,11 @@
 
 .frame {
   position: relative;
-  width: clamp(320px, 46vw, 620px);
-  height: clamp(320px, 46vw, 620px);
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.04),
-    0 30px 80px rgba(0, 0, 0, 0.45);
+  width: clamp(340px, 62vw, 860px);
+  height: clamp(340px, 56vh, 720px);
+  background: var(--frame-bg, #ffffff);
+  border: 1px solid var(--frame-border, rgba(0, 0, 0, 0.12));
+  box-shadow: var(--frame-shadow, 0 30px 80px rgba(0, 0, 0, 0.45));
   overflow: hidden;
   animation: fadeIn 900ms ease-out both;
   animation-delay: 150ms;
@@ -83,7 +81,7 @@
   position: absolute;
   width: 12px;
   height: 12px;
-  border-color: rgba(0, 0, 0, 0.55);
+  border-color: var(--frame-corner, rgba(0, 0, 0, 0.55));
   border-style: solid;
   border-width: 0;
   z-index: 3;

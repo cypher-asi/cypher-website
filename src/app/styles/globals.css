@@ -262,6 +262,63 @@
 }
 
 /* ============================================================================
+   Homepage inverse theme
+   The homepage renders the opposite palette of the active theme: a light
+   background while the site is in dark mode, and a dark background in light
+   mode. Tokens are swapped at the document root so the nav/text/background all
+   follow the inverse.
+   ============================================================================ */
+.home-invert[data-theme='dark'] {
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+  --color-text-muted: #9ca3af;
+
+  --color-selection: rgba(0, 0, 0, 0.1);
+  --color-overlay-subtle: rgba(0, 0, 0, 0.03);
+  --color-overlay-light: rgba(0, 0, 0, 0.05);
+  --color-overlay-medium: rgba(0, 0, 0, 0.07);
+  --color-overlay-heavy: rgba(0, 0, 0, 0.1);
+  --color-overlay-focus: rgba(0, 0, 0, 0.2);
+  --color-inverse: #111827;
+  --color-inverse-muted: rgba(0, 0, 0, 0.8);
+
+  --site-bg-from: #d8d8dd;
+  --site-bg-to: #e0e0e5;
+  --site-fade-to: #e0e0e5;
+
+  --frame-bg: #ffffff;
+  --frame-border: rgba(0, 0, 0, 0.12);
+  --frame-corner: rgba(0, 0, 0, 0.55);
+  --frame-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
+  --mega-bg: linear-gradient(180deg, rgba(246, 246, 248, 0.94) 0%, rgba(240, 240, 243, 0.9) 100%);
+}
+
+.home-invert[data-theme='light'] {
+  --color-text-primary: #e6e8eb;
+  --color-text-secondary: #969696;
+  --color-text-muted: #6b7280;
+
+  --color-selection: rgba(255, 255, 255, 0.2);
+  --color-overlay-subtle: rgba(255, 255, 255, 0.04);
+  --color-overlay-light: rgba(255, 255, 255, 0.06);
+  --color-overlay-medium: rgba(255, 255, 255, 0.08);
+  --color-overlay-heavy: rgba(255, 255, 255, 0.1);
+  --color-overlay-focus: rgba(255, 255, 255, 0.25);
+  --color-inverse: #ffffff;
+  --color-inverse-muted: rgba(255, 255, 255, 0.8);
+
+  --site-bg-from: #0c0c0c;
+  --site-bg-to: #000000;
+  --site-fade-to: #000000;
+
+  --frame-bg: #0a0a0a;
+  --frame-border: rgba(255, 255, 255, 0.14);
+  --frame-corner: rgba(255, 255, 255, 0.55);
+  --frame-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  --mega-bg: linear-gradient(180deg, rgba(10, 10, 12, 0.92) 0%, rgba(10, 10, 12, 0.86) 100%);
+}
+
+/* ============================================================================
    Reset
    ============================================================================ */
 *,

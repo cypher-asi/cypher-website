@@ -164,6 +164,7 @@ export function Nav() {
   const [openSectionId, setOpenSectionId] = useState<string | null>('products');
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [widgetCollapsed, setWidgetCollapsed] = useState(false);
   const { resolvedTheme, setTheme } = useTheme();
   const { isPlaying, toggle: toggleMusic } = useMusic();
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -213,15 +214,6 @@ export function Nav() {
                 className={styles.brand}
               />
             </Link>
-            <a
-              href="https://aura.ai"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.launchButton}
-            >
-              Launch Agents
-              <ArrowUpRight size={14} style={{ color: 'var(--color-text-secondary)' }} />
-            </a>
           </div>
 
           <nav className={styles.topNav}>
@@ -263,13 +255,24 @@ export function Nav() {
             })}
           </nav>
 
-          <button
-            className={styles.hamburger}
-            onClick={() => setMobileOpen(true)}
-            aria-label="Open menu"
-          >
-            <Menu size={20} />
-          </button>
+          <div className={styles.topbarRight}>
+            <a
+              href="https://aura.ai"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.launchButton}
+            >
+              Launch Agents
+              <ArrowUpRight size={14} style={{ color: 'var(--color-text-secondary)' }} />
+            </a>
+            <button
+              className={styles.hamburger}
+              onClick={() => setMobileOpen(true)}
+              aria-label="Open menu"
+            >
+              <Menu size={20} />
+            </button>
+          </div>
         </div>
 
         {/* Hover mega-panel that animates down */}
@@ -322,7 +325,10 @@ export function Nav() {
       </header>
 
       <SectionNav />
-      <BottomWidget collapsed={false} onToggle={() => {}} />
+      <BottomWidget
+        collapsed={widgetCollapsed}
+        onToggle={() => setWidgetCollapsed((c) => !c)}
+      />
 
       {/* Mobile drawer */}
       <div
