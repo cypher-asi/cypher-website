@@ -275,6 +275,9 @@
   --frame-corner: rgba(255, 255, 255, 0.5);
   --frame-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
   --mega-bg: linear-gradient(180deg, rgba(10, 10, 12, 0.92) 0%, rgba(10, 10, 12, 0.86) 100%);
+  /* headline sits on the light frame interior -> use dark text */
+  --frame-text: #141416;
+  --frame-text-muted: rgba(20, 20, 22, 0.55);
 }
 
 .home-invert[data-theme='light'] {
@@ -284,6 +287,9 @@
   --frame-corner: rgba(0, 0, 0, 0.5);
   --frame-shadow: 0 30px 80px rgba(0, 0, 0, 0.18);
   --mega-bg: linear-gradient(180deg, rgba(246, 246, 248, 0.94) 0%, rgba(240, 240, 243, 0.9) 100%);
+  /* headline sits on the dark frame interior -> use light text */
+  --frame-text: #f0f0f2;
+  --frame-text-muted: rgba(240, 240, 242, 0.6);
 }
 
 /* ============================================================================
@@ -410,4 +416,18 @@ code {
   font-feature-settings:
     'liga' on,
     'calt' on;
+}
+
+/* Page content blur while the desktop mega-panel is open */
+.page-blurred {
+  filter: blur(6px);
+  transition: filter 300ms ease;
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-blurred {
+    transition-duration: 1ms;
+  }
 }

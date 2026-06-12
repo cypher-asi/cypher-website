@@ -32,7 +32,7 @@ export default function RootLayout({
         <ThemeWrapper>
           <MusicProvider>
             <Nav />
-            <main>{children}</main>
+            <main id="page-main">{children}</main>
           </MusicProvider>
         </ThemeWrapper>
       </body>

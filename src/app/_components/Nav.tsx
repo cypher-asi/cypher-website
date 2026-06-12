@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { useState, useMemo, useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useTheme } from './ThemeContext';
 import { ArrowUpRight, ChevronRight, Menu, X, Sun, Moon, AudioLines } from 'lucide-react';
@@ -162,12 +162,16 @@ function AccordionSection({
 
 export function Nav() {
   const [openSectionId, setOpenSectionId] = useState<string | null>('products');
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [displayedSection, setDisplayedSection] = useState<NavSection | null>(null);
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [panelHeight, setPanelHeight] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [widgetCollapsed, setWidgetCollapsed] = useState(false);
   const { resolvedTheme, setTheme } = useTheme();
   const { isPlaying, toggle: toggleMusic } = useMusic();
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const unmountTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const megaContentRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (mobileOpen) {
@@ -184,13 +188,69 @@ export function Nav() {
 
   const openPanel = useCallback((id: string) => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
-    setHoveredId(id);
+    if (unmountTimer.current) clearTimeout(unmountTimer.current);
+    const next = sections.find((s) => s.id === id) ?? null;
+    if (next) setDisplayedSection(next);
+    setPanelOpen(true);
   }, []);
 
   const scheduleClose = useCallback(() => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
-    closeTimer.current = setTimeout(() => setHoveredId(null), 140);
+    closeTimer.current = setTimeout(() => setPanelOpen(false), 140);
   }, []);
+
+  // Measure the panel height whenever the displayed section or open state changes.
+  useLayoutEffect(() => {
+    if (panelOpen && displayedSection) {
+      setPanelHeight(megaContentRef.current?.scrollHeight ?? 0);
+    } else {
+      setPanelHeight(0);
+    }
+  }, [displayedSection, panelOpen]);
+
+  // Re-measure on viewport changes while open.
+  useEffect(() => {
+    if (!panelOpen) return;
+    const el = megaContentRef.current;
+    if (!el) return;
+    const measure = () => {
+      if (megaContentRef.current) {
+        setPanelHeight(megaContentRef.current.scrollHeight);
+      }
+    };
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    window.addEventListener('resize', measure);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', measure);
+    };
+  }, [panelOpen, displayedSection]);
+
+  // Clear timers on unmount.
+  useEffect(() => {
+    return () => {
+      if (closeTimer.current) clearTimeout(closeTimer.current);
+      if (unmountTimer.current) clearTimeout(unmountTimer.current);
+    };
+  }, []);
+
+  // Blur the page content beneath the topbar while the mega-panel is open.
+  useEffect(() => {
+    const main = document.getElementById('page-main');
+    if (!main) return;
+    main.classList.toggle('page-blurred', panelOpen);
+    return () => main.classList.remove('page-blurred');
+  }, [panelOpen]);
+
+  const handlePanelTransitionEnd = useCallback(
+    (e: React.TransitionEvent<HTMLDivElement>) => {
+      if (e.propertyName === 'height' && !panelOpen) {
+        setDisplayedSection(null);
+      }
+    },
+    [panelOpen]
+  );
 
   const expandedSegments: TypewriterSegment[] = useMemo(
     () => [
@@ -200,7 +260,7 @@ export function Nav() {
     []
   );
 
-  const activeSection = sections.find((s) => s.id === hoveredId) ?? null;
+  const activeId = panelOpen ? displayedSection?.id ?? null : null;
 
   return (
     <>
@@ -218,14 +278,7 @@ export function Nav() {
 
           <nav className={styles.topNav}>
             {sections.map((section) => {
-              const inner = (
-                <>
-                  <span>{section.label}</span>
-                  {section.external && (
-                    <ArrowUpRight size={12} className={styles.topNavExternal} />
-                  )}
-                </>
-              );
+              const inner = <span>{section.label}</span>;
               return (
                 <div
                   key={section.id}
@@ -238,14 +291,14 @@ export function Nav() {
                       href={section.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`${styles.topNavLink} ${hoveredId === section.id ? styles.topNavLinkActive : ''}`}
+                      className={`${styles.topNavLink} ${activeId === section.id ? styles.topNavLinkActive : ''}`}
                     >
                       {inner}
                     </a>
                   ) : (
                     <Link
                       href={section.href}
-                      className={`${styles.topNavLink} ${hoveredId === section.id ? styles.topNavLinkActive : ''}`}
+                      className={`${styles.topNavLink} ${activeId === section.id ? styles.topNavLinkActive : ''}`}
                     >
                       {inner}
                     </Link>
@@ -275,51 +328,58 @@ export function Nav() {
           </div>
         </div>
 
-        {/* Hover mega-panel that animates down */}
+        {/* Hover mega-panel that animates down on open and up on close */}
         <div
-          className={`${styles.megaPanel} ${activeSection ? styles.megaPanelOpen : ''}`}
-          onMouseEnter={() => activeSection && openPanel(activeSection.id)}
+          className={`${styles.megaPanel} ${panelOpen ? styles.megaPanelOpen : ''}`}
+          style={{ height: panelHeight }}
+          onMouseEnter={() => displayedSection && openPanel(displayedSection.id)}
           onMouseLeave={scheduleClose}
+          onTransitionEnd={handlePanelTransitionEnd}
         >
           <div className={styles.megaInner}>
-            {activeSection && (
-              <>
-                <div className={styles.megaLead}>
-                  <span className={styles.megaTitle}>{activeSection.label}</span>
-                  {activeSection.blurb && (
-                    <span className={styles.megaBlurb}>{activeSection.blurb}</span>
-                  )}
-                </div>
-                <div className={styles.megaItems}>
-                  {activeSection.subItems?.map((item) =>
-                    item.external ? (
-                      <a
-                        key={item.id}
-                        href={item.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.megaItem}
-                      >
-                        <span className={styles.megaItemLabel}>
-                          {item.label}
-                          <ArrowUpRight size={12} className={styles.megaItemIcon} />
-                        </span>
-                        {item.description && (
-                          <span className={styles.megaItemDesc}>{item.description}</span>
-                        )}
-                      </a>
-                    ) : (
-                      <Link key={item.id} href={item.href} className={styles.megaItem}>
-                        <span className={styles.megaItemLabel}>{item.label}</span>
-                        {item.description && (
-                          <span className={styles.megaItemDesc}>{item.description}</span>
-                        )}
-                      </Link>
-                    )
-                  )}
-                </div>
-              </>
-            )}
+            <div
+              ref={megaContentRef}
+              className={`${styles.megaContent} ${panelOpen ? styles.megaContentVisible : ''}`}
+            >
+              {displayedSection && (
+                <>
+                  <div className={styles.megaLead}>
+                    <span className={styles.megaTitle}>{displayedSection.label}</span>
+                    {displayedSection.blurb && (
+                      <span className={styles.megaBlurb}>{displayedSection.blurb}</span>
+                    )}
+                  </div>
+                  <div className={styles.megaItems}>
+                    {displayedSection.subItems?.map((item) =>
+                      item.external ? (
+                        <a
+                          key={item.id}
+                          href={item.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={styles.megaItem}
+                        >
+                          <span className={styles.megaItemLabel}>
+                            {item.label}
+                            <ArrowUpRight size={12} className={styles.megaItemIcon} />
+                          </span>
+                          {item.description && (
+                            <span className={styles.megaItemDesc}>{item.description}</span>
+                          )}
+                        </a>
+                      ) : (
+                        <Link key={item.id} href={item.href} className={styles.megaItem}>
+                          <span className={styles.megaItemLabel}>{item.label}</span>
+                          {item.description && (
+                            <span className={styles.megaItemDesc}>{item.description}</span>
+                          )}
+                        </Link>
+                      )
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </header>

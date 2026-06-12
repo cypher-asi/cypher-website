@@ -1,0 +1,24 @@
+.pageTransition {
+  /* `backwards` (not `both`) so the from-state applies before the animation
+     to avoid an enter flash, while the element reverts to `transform: none`
+     at rest. A retained `translateY(0)` would create a containing block and
+     break `position: fixed` page descendants (e.g. the homepage overlay). */
+  animation: pageFadeIn 260ms ease-out backwards;
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pageTransition {
+    animation-duration: 1ms;
+  }
+}

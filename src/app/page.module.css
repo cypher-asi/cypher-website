@@ -14,12 +14,12 @@
   font-weight: 300;
   letter-spacing: -0.02em;
   line-height: 1.2;
-  color: var(--color-text-primary);
+  color: var(--frame-text, var(--color-text-primary));
   text-align: center;
 }
 
 .headlineMuted {
-  color: var(--color-text-secondary);
+  color: var(--frame-text-muted, var(--color-text-secondary));
 }
 
 .fadeIn {
