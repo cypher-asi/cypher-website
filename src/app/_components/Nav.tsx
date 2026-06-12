@@ -200,17 +200,27 @@ export function Nav() {
   }, []);
 
   // Measure and apply the panel height whenever the displayed section or open
-  // state changes. This runs *after* paint (useEffect, not useLayoutEffect) so
-  // that on open the browser first paints height:0, then transitions to the
-  // measured height -- giving the "animate down" effect. On close it transitions
-  // back to 0 ("animate up"). While open, switching sections animates between
-  // the two measured heights.
+  // state changes. On open we hold the current height for two animation frames
+  // (forcing the browser to paint the starting height) and then set the measured
+  // target, which guarantees the `height` CSS transition fires -- the panel
+  // animates down on open, up on close, and smoothly between heights when
+  // switching sections.
   useEffect(() => {
+    let raf1 = 0;
+    let raf2 = 0;
     if (panelOpen && displayedSection) {
-      setPanelHeight(megaContentRef.current?.scrollHeight ?? 0);
+      raf1 = requestAnimationFrame(() => {
+        raf2 = requestAnimationFrame(() => {
+          setPanelHeight(megaContentRef.current?.scrollHeight ?? 0);
+        });
+      });
     } else {
       setPanelHeight(0);
     }
+    return () => {
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
+    };
   }, [displayedSection, panelOpen]);
 
   // Re-measure on viewport changes while open.

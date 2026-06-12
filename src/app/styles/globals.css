@@ -418,16 +418,21 @@ code {
     'calt' on;
 }
 
-/* Page content blur while the desktop mega-panel is open */
+/* Page content blur while the desktop mega-panel is open.
+   The transition lives on the base element so the blur fades both in (class
+   added) and out (class removed). */
+#page-main {
+  transition: filter 300ms ease;
+}
+
 .page-blurred {
   filter: blur(6px);
-  transition: filter 300ms ease;
   pointer-events: none;
   user-select: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .page-blurred {
+  #page-main {
     transition-duration: 1ms;
   }
 }
