@@ -8,21 +8,8 @@
   overflow: hidden;
 }
 
-.headlineWrap {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: max(calc((100vh - clamp(235px, 50vh, 505px)) / 2), 64px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 110;
-  pointer-events: none;
-}
-
 .headline {
-  max-width: 90vw;
+  max-width: 90%;
   font-size: clamp(1.2rem, 3.2vw, 2rem);
   font-weight: 300;
   letter-spacing: -0.02em;
@@ -69,12 +56,32 @@
   left: 28px;
   right: 28px;
   bottom: 28px;
+  display: flex;
+  flex-direction: column;
   background: var(--frame-bg, #ffffff);
   border: 1px solid var(--frame-border, rgba(0, 0, 0, 0.12));
   box-shadow: var(--frame-shadow, 0 30px 80px rgba(0, 0, 0, 0.45));
   overflow: hidden;
   animation: fadeIn 900ms ease-out both;
   animation-delay: 150ms;
+}
+
+/* Band between the top of the frame and the top of the cube. The headline is
+   vertically centered within this band. */
+.headlineBand {
+  flex: 0 0 22%;
+  min-height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
+}
+
+/* Cube fills the remaining region below the headline band. */
+.cubeWrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .corner {
@@ -121,8 +128,8 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: clamp(420px, 70%, 900px);
-  height: clamp(420px, 90%, 760px);
+  width: clamp(420px, 80%, 900px);
+  height: clamp(420px, 110%, 820px);
   max-width: none;
   border-radius: 0;
   background: transparent;
@@ -137,12 +144,13 @@
    ============================================================================ */
 
 @media (max-width: 768px) {
-  .headlineWrap {
-    height: max(calc((100vh - clamp(180px, 40vh, 320px)) / 2), 56px);
-  }
-
   .headline {
     font-size: clamp(1rem, 4.5vw, 1.5rem);
+  }
+
+  .headlineBand {
+    flex-basis: 20%;
+    min-height: 72px;
   }
 
   .frame {
@@ -154,6 +162,6 @@
 
   .asciiPanel {
     width: 96%;
-    height: 80%;
+    height: 100%;
   }
 }
