@@ -1,7 +1,7 @@
 .widget {
   position: fixed;
-  bottom: 24px;
-  left: 24px;
+  bottom: 1px;
+  left: 28px;
   z-index: 99;
   display: flex;
   align-items: center;
