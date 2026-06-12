@@ -45,14 +45,19 @@ const FACE_CONFIGS = [
   { c: [0, -1, 0], u: [1, 0, 0],  v: [0, 0, 1],  rot: [Math.PI / 2, 0, 0] },
 ];
 
-export function AsciiCube({ className }: Options) {
+export function AsciiCube({ className, invert }: Options) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { resolvedTheme } = useTheme();
-  const isDarkRef = useRef(resolvedTheme !== 'light');
+  // When `invert` is set, the cube uses the palette that matches the framed
+  // interior background (which is the inverse of the outer theme): a light cube
+  // on the light/gray interior in dark mode, and a dark cube in light mode.
+  const baseDark = resolvedTheme !== 'light';
+  const effectiveDark = invert ? !baseDark : baseDark;
+  const isDarkRef = useRef(effectiveDark);
 
   useEffect(() => {
-    isDarkRef.current = resolvedTheme !== 'light';
-  }, [resolvedTheme]);
+    isDarkRef.current = effectiveDark;
+  }, [effectiveDark]);
 
   useEffect(() => {
     const container = containerRef.current;

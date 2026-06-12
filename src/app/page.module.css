@@ -78,12 +78,6 @@
 }
 
 /* Cube fills the remaining region below the headline band. */
-.cubeWrap {
-  position: relative;
-  flex: 1 1 auto;
-  min-height: 0;
-}
-
 .corner {
   position: absolute;
   width: 14px;
@@ -129,10 +123,11 @@
   left: 50%;
   transform: translate(-50%, -50%);
   width: clamp(420px, 80%, 900px);
-  height: clamp(420px, 110%, 820px);
+  height: clamp(420px, 90%, 820px);
   max-width: none;
   border-radius: 0;
   background: transparent;
+  z-index: 2;
 }
 
 .bottomSpacer {

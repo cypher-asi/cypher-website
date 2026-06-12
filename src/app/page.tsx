@@ -18,11 +18,9 @@ export default function Home() {
                 Tools for the <span className={styles.headlineMuted}>Machine Age.</span>
               </h1>
             </div>
-            <div className={styles.cubeWrap}>
-              <AsciiCube className={styles.asciiPanel} invert />
-            </div>
           </div>
         </div>
+        <AsciiCube className={styles.asciiPanel} invert />
         <div className={styles.bottomSpacer} />
       </div>
     </>
