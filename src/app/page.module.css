@@ -57,18 +57,18 @@
 
 .stage {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .frame {
-  position: relative;
-  width: clamp(340px, 62vw, 860px);
-  height: clamp(340px, 56vh, 720px);
+  position: absolute;
+  top: 96px;
+  left: 28px;
+  right: 28px;
+  bottom: 28px;
   background: var(--frame-bg, #ffffff);
   border: 1px solid var(--frame-border, rgba(0, 0, 0, 0.12));
   box-shadow: var(--frame-shadow, 0 30px 80px rgba(0, 0, 0, 0.45));
@@ -79,8 +79,8 @@
 
 .corner {
   position: absolute;
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   border-color: var(--frame-corner, rgba(0, 0, 0, 0.55));
   border-style: solid;
   border-width: 0;
@@ -121,8 +121,8 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 150%;
-  height: 150%;
+  width: clamp(420px, 70%, 900px);
+  height: clamp(420px, 90%, 760px);
   max-width: none;
   border-radius: 0;
   background: transparent;
@@ -146,7 +146,14 @@
   }
 
   .frame {
-    width: clamp(240px, 82vw, 420px);
-    height: clamp(240px, 82vw, 420px);
+    top: 76px;
+    left: 14px;
+    right: 14px;
+    bottom: 14px;
+  }
+
+  .asciiPanel {
+    width: 96%;
+    height: 80%;
   }
 }
