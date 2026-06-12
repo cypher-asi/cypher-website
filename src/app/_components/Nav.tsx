@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback, useEffect, useLayoutEffect, useRef } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useTheme } from './ThemeContext';
 import { ArrowUpRight, ChevronRight, Menu, X, Sun, Moon, AudioLines } from 'lucide-react';
@@ -199,8 +199,13 @@ export function Nav() {
     closeTimer.current = setTimeout(() => setPanelOpen(false), 140);
   }, []);
 
-  // Measure the panel height whenever the displayed section or open state changes.
-  useLayoutEffect(() => {
+  // Measure and apply the panel height whenever the displayed section or open
+  // state changes. This runs *after* paint (useEffect, not useLayoutEffect) so
+  // that on open the browser first paints height:0, then transitions to the
+  // measured height -- giving the "animate down" effect. On close it transitions
+  // back to 0 ("animate up"). While open, switching sections animates between
+  // the two measured heights.
+  useEffect(() => {
     if (panelOpen && displayedSection) {
       setPanelHeight(megaContentRef.current?.scrollHeight ?? 0);
     } else {
