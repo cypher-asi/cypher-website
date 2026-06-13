@@ -154,12 +154,13 @@
 
 /* Content cross-fade, independent of height. Holds the padding so the
    measured scrollHeight reflects full content height regardless of opacity.
-   Section heading sits above the product list, both aligned to the same
-   left start position. */
+   Two-column layout: section name/description on the left, item list on the
+   right. */
 .megaContent {
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
+  display: grid;
+  grid-template-columns: minmax(220px, 340px) 1fr;
+  gap: 48px;
+  align-items: start;
   padding: 72px 28px 76px;
   opacity: 0;
   transition: opacity 200ms ease;
