@@ -167,6 +167,7 @@ export function Nav() {
   const [panelHeight, setPanelHeight] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [widgetCollapsed, setWidgetCollapsed] = useState(false);
+  const [brandKey, setBrandKey] = useState(0);
   const { resolvedTheme, setTheme } = useTheme();
   const { isPlaying, toggle: toggleMusic } = useMusic();
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -197,6 +198,14 @@ export function Nav() {
   const scheduleClose = useCallback(() => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
     closeTimer.current = setTimeout(() => setPanelOpen(false), 140);
+  }, []);
+
+  // Clicking the CYPHER wordmark replays the typewriter animation and closes
+  // the mega-panel if it is open.
+  const handleBrandClick = useCallback(() => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    setPanelOpen(false);
+    setBrandKey((k) => k + 1);
   }, []);
 
   // Measure and apply the panel height whenever the displayed section or open
@@ -282,8 +291,9 @@ export function Nav() {
       <header className={styles.siteTopbar} onMouseLeave={scheduleClose}>
         <div className={styles.topbarInner}>
           <div className={styles.topbarLeft}>
-            <Link href="/" className={styles.titleLink}>
+            <Link href="/" className={styles.titleLink} onClick={handleBrandClick}>
               <TypewriterText
+                key={brandKey}
                 segments={expandedSegments}
                 speed={80}
                 className={styles.brand}
