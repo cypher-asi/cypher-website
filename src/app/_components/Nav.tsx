@@ -208,6 +208,13 @@ export function Nav() {
     setBrandKey((k) => k + 1);
   }, []);
 
+  // Clicking a top-nav section closes the mega-panel immediately (which also
+  // removes the page blur via the panelOpen effect below).
+  const closePanelNow = useCallback(() => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    setPanelOpen(false);
+  }, []);
+
   // Measure and apply the panel height whenever the displayed section or open
   // state changes. On open we hold the current height for two animation frames
   // (forcing the browser to paint the starting height) and then set the measured
@@ -317,6 +324,7 @@ export function Nav() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className={`${styles.topNavLink} ${activeId === section.id ? styles.topNavLinkActive : ''}`}
+                      onClick={closePanelNow}
                     >
                       {inner}
                     </a>
@@ -324,6 +332,7 @@ export function Nav() {
                     <Link
                       href={section.href}
                       className={`${styles.topNavLink} ${activeId === section.id ? styles.topNavLinkActive : ''}`}
+                      onClick={closePanelNow}
                     >
                       {inner}
                     </Link>
