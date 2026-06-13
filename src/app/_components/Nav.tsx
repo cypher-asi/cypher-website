@@ -36,7 +36,7 @@ const sections: NavSection[] = [
     external: true,
     blurb: 'Software and agents built for the machine age.',
     subItems: [
-      { id: 'aura', label: 'Aura', description: 'Autonomous engineering agents', href: 'https://aura.ai', external: true },
+      { id: 'aura', label: 'AURA', description: 'Autonomous engineering agents', href: 'https://aura.ai', external: true },
       { id: 'the-grid', label: 'The Grid', description: 'Distributed compute fabric', href: 'https://github.com/cypher-asi/the-grid', external: true },
       { id: 'zero', label: 'Zero', description: 'Private, verifiable workspace', href: 'https://zero.tech', external: true },
     ],
