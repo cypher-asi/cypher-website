@@ -92,24 +92,29 @@
   inset: 0;
   z-index: 1;
   margin: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: max-content;
   height: max-content;
-  max-width: 52%;
-  max-height: 38%;
   opacity: 0.92;
   transition:
     opacity var(--transition-normal),
     transform var(--transition-normal);
 }
 
+/* All logos are normalized to a single height (matching the ZERO mark) and a
+   uniform off-white tone: brightness(0) flattens any source color to a black
+   silhouette while preserving alpha, then invert() lifts it to off-white. */
 .cardLogo {
+  width: auto;
+  height: clamp(2.75rem, 4.5vw, 4rem);
+  max-width: 68%;
   object-fit: contain;
+  filter: brightness(0) invert(0.9);
 }
 
 .cardLogoPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-family: var(--font-sans), system-ui, sans-serif;
   font-style: italic;
   font-size: clamp(1.05rem, 1.6vw, 1.4rem);
@@ -125,10 +130,9 @@
   transform: scale(0.96);
 }
 
-/* Logos are light marks tuned for the dark theme; flip lightness (while
-   preserving hue) so they stay legible on the light-theme surfaces. */
+/* On the light theme, drop the marks to a uniform off-black instead. */
 :global([data-theme='light']) .cardLogo {
-  filter: invert(1) hue-rotate(180deg);
+  filter: brightness(0) invert(0.15);
 }
 
 /* Faint line-grid motif behind the content */

@@ -29,7 +29,7 @@ const products: Product[] = [
     accent: 'cyan',
     span: 'tall',
     image: '/images/aura/aura-bg.png',
-    logo: '/images/aura/aura-logo.svg',
+    logo: '/images/aura/aura-logo.png',
   },
   {
     id: 'zero',
@@ -53,7 +53,7 @@ const products: Product[] = [
     href: 'https://zchain.org',
     external: true,
     accent: 'green',
-    logo: '/images/z-chain/z-chain-logo.png',
+    logo: '/images/z-chain/z-chain-logo.svg',
   },
   {
     id: 'zode',
