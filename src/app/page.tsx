@@ -1,6 +1,20 @@
 import Link from 'next/link';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, Clock, Link2 } from 'lucide-react';
 import styles from './page.module.css';
+
+function XIcon({ size = 12 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden
+    >
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.66l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  );
+}
 
 interface Product {
   id: string;
@@ -17,6 +31,12 @@ interface Product {
   imagePosition?: string;
   /** optional centered company logo shown when the card is idle */
   logo?: string;
+  /** website shown in the hover meta row, e.g. "zero.tech" */
+  url?: string;
+  /** founding year shown in the hover meta row, e.g. "2017" */
+  year?: string;
+  /** X (Twitter) handle shown in the hover meta row, e.g. "@zero_app" */
+  handle?: string;
 }
 
 const products: Product[] = [
@@ -30,6 +50,9 @@ const products: Product[] = [
     span: 'tall',
     image: '/images/aura/aura-bg.png',
     logo: '/images/aura/aura-logo.png',
+    url: 'aura.ai',
+    year: '2024',
+    handle: '@aura_asi',
   },
   {
     id: 'zero',
@@ -38,6 +61,9 @@ const products: Product[] = [
     href: '/zero',
     accent: 'blue',
     logo: '/images/zero/zero-logo.svg',
+    url: 'zero.tech',
+    year: '2017',
+    handle: '@zero_app',
   },
   {
     id: 'zns',
@@ -54,6 +80,9 @@ const products: Product[] = [
     external: true,
     accent: 'green',
     logo: '/images/z-chain/z-chain-logo.svg',
+    url: 'zchain.org',
+    year: '2023',
+    handle: '@zchain_org',
   },
   {
     id: 'zode',
@@ -64,6 +93,9 @@ const products: Product[] = [
     span: 'wide',
     image: '/images/zode/zode-bg.png',
     logo: '/images/zode/zode-logo.png',
+    url: 'thegrid.host',
+    year: '2026',
+    handle: '@zode_org',
   },
   {
     id: 'the-grid',
@@ -85,6 +117,9 @@ const products: Product[] = [
     image: '/images/wilder-world/wilder-world-bg.png',
     imagePosition: 'center',
     logo: '/images/wilder-world/wilder-world-logo.svg',
+    url: 'wilderworld.com',
+    year: '2021',
+    handle: '@wilderworld',
   },
 ];
 
@@ -115,6 +150,28 @@ function CardInner({ product, index }: { product: Product; index: number }) {
       <span className={styles.cardBody}>
         <span className={styles.cardName}>{product.name}</span>
         <span className={styles.cardTagline}>{product.tagline}</span>
+        {(product.url || product.year || product.handle) && (
+          <span className={styles.cardStats}>
+            {product.url && (
+              <span className={styles.cardStat}>
+                <Link2 size={12} />
+                {product.url}
+              </span>
+            )}
+            {product.year && (
+              <span className={styles.cardStat}>
+                <Clock size={12} />
+                {product.year}
+              </span>
+            )}
+            {product.handle && (
+              <span className={styles.cardStat}>
+                <XIcon size={12} />
+                {product.handle}
+              </span>
+            )}
+          </span>
+        )}
       </span>
     </>
   );
