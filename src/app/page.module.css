@@ -1,36 +1,215 @@
+/* ============================================================================
+   Homepage – product bento grid
+   ============================================================================ */
+
 .page {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  z-index: 1;
-  overflow: hidden;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(1.5rem, 4vh, 2.75rem);
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(6rem, 12vh, 8rem) clamp(1rem, 4vw, 2.5rem) clamp(2rem, 6vh, 3.5rem);
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+}
+
+/* ----------------------------------------------------------------------------
+   Intro
+   ---------------------------------------------------------------------------- */
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  animation: fadeIn 700ms ease-out both;
+}
+
+.eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 450;
+  letter-spacing: 0.18em;
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono), 'Fira Code', monospace;
 }
 
 .headline {
-  max-width: 90%;
-  font-size: clamp(1.2rem, 3.2vw, 2rem);
+  font-size: clamp(1.75rem, 4.5vw, 3rem);
   font-weight: 300;
   letter-spacing: -0.02em;
-  line-height: 1.2;
-  color: var(--frame-text, var(--color-text-primary));
-  text-align: center;
+  line-height: 1.1;
+  color: var(--color-text-primary);
 }
 
 .headlineMuted {
-  color: var(--frame-text-muted, var(--color-text-secondary));
+  color: var(--color-text-secondary);
 }
 
-.fadeIn {
-  animation: fadeIn 800ms ease-out both;
-  animation-delay: 200ms;
+/* ----------------------------------------------------------------------------
+   Bento grid
+   ---------------------------------------------------------------------------- */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: minmax(170px, 1fr);
+  gap: clamp(0.625rem, 1.4vw, 1rem);
 }
+
+/* AURA – tall card spanning the first column over two rows */
+.tall {
+  grid-row: span 2;
+}
+
+/* ZODE – wide card spanning two columns */
+.wide {
+  grid-column: span 2;
+}
+
+/* ZNS – full-width banner along the bottom */
+.banner {
+  grid-column: 1 / -1;
+  min-height: 150px;
+}
+
+/* ----------------------------------------------------------------------------
+   Card
+   ---------------------------------------------------------------------------- */
+
+.card {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  padding: clamp(1rem, 1.6vw, 1.5rem);
+  background:
+    radial-gradient(120% 120% at 100% 0%, var(--color-accent-muted) 0%, transparent 55%),
+    linear-gradient(160deg, var(--color-surface) 0%, var(--color-bg) 100%);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  isolation: isolate;
+  transition:
+    border-color var(--transition-normal),
+    transform var(--transition-normal),
+    box-shadow var(--transition-normal);
+  animation: cardIn 700ms ease-out both;
+}
+
+.card:hover {
+  border-color: var(--site-border-action-hover);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.card:focus-visible {
+  border-color: var(--color-accent);
+}
+
+/* Faint line-grid motif behind the content */
+.cardGrid {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(var(--site-illustration-stroke) 1px, transparent 1px),
+    linear-gradient(90deg, var(--site-illustration-stroke) 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 0.12;
+  mask-image: radial-gradient(120% 100% at 0% 100%, #000 10%, transparent 70%);
+  -webkit-mask-image: radial-gradient(120% 100% at 0% 100%, #000 10%, transparent 70%);
+  transition: opacity var(--transition-slow);
+}
+
+.card:hover .cardGrid {
+  opacity: 0.22;
+}
+
+.cardArrow {
+  position: absolute;
+  top: clamp(1rem, 1.6vw, 1.5rem);
+  right: clamp(1rem, 1.6vw, 1.5rem);
+  color: var(--color-text-secondary);
+  transition:
+    color var(--transition-normal),
+    transform var(--transition-normal);
+}
+
+.card:hover .cardArrow {
+  color: var(--color-accent);
+  transform: translate(2px, -2px);
+}
+
+.cardMeta {
+  position: absolute;
+  top: clamp(1rem, 1.6vw, 1.5rem);
+  left: clamp(1rem, 1.6vw, 1.5rem);
+  font-family: var(--font-mono), 'Fira Code', monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  color: var(--color-text-muted);
+}
+
+.cardBody {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.cardName {
+  font-size: clamp(1.05rem, 1.6vw, 1.4rem);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--color-text-primary);
+}
+
+.cardTagline {
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+  max-width: 32ch;
+}
+
+/* ----------------------------------------------------------------------------
+   Responsive
+   ---------------------------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: minmax(150px, 1fr);
+  }
+
+  .wide,
+  .banner {
+    grid-column: 1 / -1;
+  }
+
+  .tall {
+    grid-row: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .wide,
+  .banner,
+  .tall {
+    grid-column: auto;
+    grid-row: auto;
+  }
+}
+
+/* ----------------------------------------------------------------------------
+   Animation
+   ---------------------------------------------------------------------------- */
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -38,125 +217,23 @@
   }
 }
 
-/* ============================================================================
-   Center stage + white frame
-   ============================================================================ */
-
-.stage {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* Opacity-only so the card :hover transform is never overridden by fill state */
+@keyframes cardIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-.frame {
-  position: absolute;
-  top: 96px;
-  left: 28px;
-  right: 28px;
-  bottom: 28px;
-  display: flex;
-  flex-direction: column;
-  background: var(--frame-bg, #ffffff);
-  border: 1px solid var(--frame-border, rgba(0, 0, 0, 0.12));
-  box-shadow: var(--frame-shadow, 0 30px 80px rgba(0, 0, 0, 0.45));
-  overflow: hidden;
-  animation: fadeIn 900ms ease-out both;
-  animation-delay: 150ms;
-}
-
-/* Band between the top of the frame and the top of the cube. The headline is
-   vertically centered within this band. */
-.headlineBand {
-  flex: 0 0 22%;
-  min-height: 96px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 24px;
-}
-
-/* Cube fills the remaining region below the headline band. */
-.corner {
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  border-color: var(--frame-corner, rgba(0, 0, 0, 0.55));
-  border-style: solid;
-  border-width: 0;
-  z-index: 3;
-  pointer-events: none;
-}
-
-.cornerTL {
-  top: 6px;
-  left: 6px;
-  border-top-width: 1px;
-  border-left-width: 1px;
-}
-
-.cornerTR {
-  top: 6px;
-  right: 6px;
-  border-top-width: 1px;
-  border-right-width: 1px;
-}
-
-.cornerBL {
-  bottom: 6px;
-  left: 6px;
-  border-bottom-width: 1px;
-  border-left-width: 1px;
-}
-
-.cornerBR {
-  bottom: 6px;
-  right: 6px;
-  border-bottom-width: 1px;
-  border-right-width: 1px;
-}
-
-.asciiPanel {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: clamp(420px, 80%, 900px);
-  height: clamp(420px, 90%, 820px);
-  max-width: none;
-  border-radius: 0;
-  background: transparent;
-  z-index: 2;
-}
-
-.bottomSpacer {
-  display: none;
-}
-
-/* ============================================================================
-   Responsive
-   ============================================================================ */
-
-@media (max-width: 768px) {
-  .headline {
-    font-size: clamp(1rem, 4.5vw, 1.5rem);
+@media (prefers-reduced-motion: reduce) {
+  .intro,
+  .card {
+    animation: none;
   }
 
-  .headlineBand {
-    flex-basis: 20%;
-    min-height: 72px;
-  }
-
-  .frame {
-    top: 76px;
-    left: 14px;
-    right: 14px;
-    bottom: 14px;
-  }
-
-  .asciiPanel {
-    width: 96%;
-    height: 100%;
+  .card:hover {
+    transform: none;
   }
 }
