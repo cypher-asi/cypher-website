@@ -71,6 +71,7 @@ const products: Product[] = [
     tagline: 'Naming for the network.',
     href: '#',
     accent: 'cyan',
+    logo: '/images/zns/zns-logo.png',
   },
   {
     id: 'z-chain',

@@ -141,6 +141,14 @@
   filter: brightness(0) invert(0.15);
 }
 
+/* ZNS ships as white-on-black artwork (no alpha); skip the silhouette
+   inversion so its black field blends into the black card and only the
+   mark softens to off-white. */
+.cardLogo[data-logo-id='zns'],
+:global([data-theme='light']) .cardLogo[data-logo-id='zns'] {
+  filter: brightness(0.92);
+}
+
 .cardArrow {
   position: absolute;
   top: clamp(1rem, 1.6vw, 1.5rem);
