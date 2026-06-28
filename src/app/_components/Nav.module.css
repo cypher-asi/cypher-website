@@ -48,6 +48,7 @@
   --color-text-primary: #1a1814;
   --color-text-secondary: #44403a;
   --color-link-hover: #1a1814;
+  --link-hover-glow: none;
 }
 
 .siteTopbarLight .brandLetters {
@@ -199,12 +200,13 @@
   color: var(--color-text-primary);
   text-decoration: none;
   cursor: pointer;
-  transition: opacity 200ms ease, color 250ms ease;
+  transition: opacity 200ms ease, color 250ms ease, text-shadow 250ms ease;
 }
 
 .topNavLink:hover,
 .topNavLinkActive {
   color: var(--color-link-hover, #fff);
+  text-shadow: var(--link-hover-glow, none);
 }
 
 /* ============================================================================
@@ -301,6 +303,7 @@
 
 .megaItem:hover .megaItemLabel {
   color: var(--color-link-hover, #fff);
+  text-shadow: var(--link-hover-glow, none);
 }
 
 .megaItemLabel {
@@ -393,11 +396,12 @@
   color: var(--color-text-primary);
   text-decoration: none;
   border-radius: 3px;
-  transition: color 300ms ease;
+  transition: color 300ms ease, text-shadow 300ms ease;
 }
 
 .subItemLink:hover {
   color: var(--color-link-hover, #fff);
+  text-shadow: var(--link-hover-glow, none);
 }
 
 .externalIcon {

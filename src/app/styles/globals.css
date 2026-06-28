@@ -111,6 +111,10 @@
   --color-neon-cyan: #01f4cb;
   --color-neon-green: #01f4cb;
   --color-neon-purple: #cb01f4;
+
+  /* Warm tan link-hover color + soft glow, shared by nav and footer links. */
+  --color-link-hover: #f2e4c4;
+  --link-hover-glow: 0 0 10px rgba(242, 228, 196, 0.5);
 }
 
 /* ============================================================================
