@@ -16,17 +16,17 @@ export const papers: Paper[] = [
     available: false,
   },
   {
+    slug: 'zns',
+    title: 'ZNS',
+    year: '2025',
+    blurb: 'The Zero Name Service — a tokenized hierarchical identity protocol with names as ERC-721 assets.',
+    available: true,
+  },
+  {
     slug: 'aura-harness',
     title: 'AURA Harness',
     year: '2025',
     blurb: 'A benchmark and evaluation harness for autonomous engineering agents.',
-    available: false,
-  },
-  {
-    slug: 'zns',
-    title: 'ZNS',
-    year: '2022',
-    blurb: 'The Zero Name Service — a trust and naming layer for autonomous systems.',
     available: false,
   },
   {
