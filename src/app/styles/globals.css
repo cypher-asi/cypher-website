@@ -366,7 +366,10 @@ body {
   font-size: var(--text-base);
   line-height: var(--leading-normal);
   min-height: 100dvh;
-  overflow-x: hidden;
+  /* `clip` (not `hidden`) prevents horizontal overflow without turning <body>
+     into a scroll container, which would break `position: sticky` descendants
+     such as the whitepaper table of contents. */
+  overflow-x: clip;
 }
 
 /* Hide the native window scrollbar (root scroller) — replaced by the

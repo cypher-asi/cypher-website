@@ -6,7 +6,7 @@
 }
 
 /* ============================================================================
-   Hero
+   Hero (sits in the right column, above the content)
    ============================================================================ */
 
 .hero {
@@ -68,7 +68,13 @@
   display: grid;
   grid-template-columns: 232px minmax(0, 1fr);
   gap: 3.5rem;
-  align-items: start;
+  /* Let the sidebar cell stretch to the full content height so the sticky
+     table of contents has room to stay pinned for the whole scroll. */
+  align-items: stretch;
+}
+
+.main {
+  min-width: 0;
 }
 
 .sidebar {
@@ -77,8 +83,8 @@
 
 .tocSticky {
   position: sticky;
-  top: 7rem;
-  max-height: calc(100vh - 9rem);
+  top: 9rem;
+  max-height: calc(100vh - 11rem);
   overflow-y: auto;
   padding-right: 0.5rem;
 }
@@ -90,41 +96,6 @@
   text-transform: uppercase;
   color: var(--color-text-secondary);
   margin-bottom: 0.9rem;
-}
-
-.tocList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-}
-
-.tocLink {
-  display: block;
-  padding: 0.4rem 0 0.4rem 0.85rem;
-  font-size: 0.8125rem;
-  line-height: 1.4;
-  color: var(--color-text-secondary);
-  text-decoration: none;
-  border-left: 1px solid var(--color-overlay-medium);
-  transition: color 0.18s ease, border-color 0.18s ease;
-}
-
-.tocLink:hover {
-  color: var(--color-text-primary);
-  border-left-color: var(--color-text-secondary);
-}
-
-.tocChild {
-  padding-left: 1.75rem;
-  font-size: 0.78125rem;
-}
-
-.tocLinkActive {
-  color: var(--color-success);
-  border-left-color: var(--color-success);
 }
 
 /* ============================================================================
@@ -152,18 +123,9 @@
 
 .mobileTocPanel {
   margin-top: 0.75rem;
-  padding: 0.5rem 0;
+  padding: 0.75rem 1rem;
   border: 1px solid var(--color-overlay-medium);
   background: var(--color-surface);
-}
-
-.mobileTocPanel .tocLink {
-  border-left: none;
-  padding: 0.6rem 1rem;
-}
-
-.mobileTocPanel .tocChild {
-  padding-left: 2rem;
 }
 
 /* ============================================================================

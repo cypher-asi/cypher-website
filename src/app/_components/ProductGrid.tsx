@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, type CSSProperties } from 'react';
 import { ArrowUpRight, Clock, Link2 } from 'lucide-react';
 import { ProductModal } from './ProductModal';
 import styles from '../page.module.css';
@@ -28,8 +28,12 @@ export interface Product {
   span?: string;
   /** optional background image src, revealed on hover */
   image?: string;
+  /** optional image that cross-fades in on hover, replacing `image` */
+  hoverImage?: string;
   /** optional CSS background-position for the image (defaults to center) */
   imagePosition?: string;
+  /** optional CSS background-position used only on mobile (defaults to imagePosition) */
+  imagePositionMobile?: string;
   /** optional centered company logo shown when the card is idle */
   logo?: string;
   /** website shown in the hover meta row, e.g. "zero.tech" */
@@ -52,6 +56,7 @@ const products: Product[] = [
     accent: 'cyan',
     span: 'tall',
     image: '/images/aura/aura-bg.png',
+    imagePositionMobile: 'center 22%',
     logo: '/images/aura/aura-logo.png',
     url: 'aura.ai',
     year: '2024',
@@ -65,6 +70,8 @@ const products: Product[] = [
     name: 'ZERO',
     tagline: 'A secure OS for an agentic world.',
     accent: 'blue',
+    image: '/images/zero/zero-bg.png',
+    imagePositionMobile: 'center 35%',
     logo: '/images/zero/zero-logo.svg',
     url: 'zero.tech',
     year: '2017',
@@ -78,6 +85,7 @@ const products: Product[] = [
     name: 'ZNS',
     tagline: 'Naming for the network.',
     accent: 'cyan',
+    image: '/images/zns/zns-bg.png',
     logo: '/images/zns/zns-logo.png',
     focus: 'Decentralized naming',
     description:
@@ -88,6 +96,7 @@ const products: Product[] = [
     name: 'Z Chain',
     tagline: 'Trust layer for autonomous systems.',
     accent: 'green',
+    image: '/images/z-chain/z-chain-bg.png',
     logo: '/images/z-chain/z-chain-logo.svg',
     url: 'zchain.org',
     year: '2023',
@@ -117,6 +126,8 @@ const products: Product[] = [
     tagline: 'Distributed compute fabric.',
     accent: 'rose',
     span: 'tall',
+    image: '/images/the-grid/the-grid-bg.png',
+    imagePositionMobile: 'center center',
     logo: '/images/the-grid/the-grid-logo.png',
     focus: 'Distributed compute fabric',
     description:
@@ -130,6 +141,7 @@ const products: Product[] = [
     span: 'wide3',
     image: '/images/wilder-world/wilder-world-bg.png',
     imagePosition: 'center',
+    imagePositionMobile: 'center center',
     logo: '/images/wilder-world/wilder-world-logo.svg',
     url: 'wilderworld.com',
     year: '2021',
@@ -140,16 +152,30 @@ const products: Product[] = [
   },
 ];
 
+function imageStyle(product: Product, src: string): CSSProperties {
+  const desktop = product.imagePosition ?? 'center';
+  const mobile = product.imagePositionMobile ?? desktop;
+  return {
+    backgroundImage: `url(${src})`,
+    '--img-pos': desktop,
+    '--img-pos-mobile': mobile,
+  } as CSSProperties;
+}
+
 function CardInner({ product, index }: { product: Product; index: number }) {
   return (
     <>
       {product.image && (
         <span
           className={styles.cardImage}
-          style={{
-            backgroundImage: `url(${product.image})`,
-            ...(product.imagePosition ? { backgroundPosition: product.imagePosition } : {}),
-          }}
+          style={imageStyle(product, product.image)}
+          aria-hidden
+        />
+      )}
+      {product.hoverImage && (
+        <span
+          className={styles.cardImageHover}
+          style={imageStyle(product, product.hoverImage)}
           aria-hidden
         />
       )}
@@ -157,23 +183,23 @@ function CardInner({ product, index }: { product: Product; index: number }) {
         <ArrowUpRight size={16} />
       </span>
       <span className={styles.cardMeta}>0{index + 1}</span>
-      <span className={styles.cardLogoSection}>
-        {product.logo ? (
-          <img
-            className={styles.cardLogo}
-            src={product.logo}
-            alt={product.name}
-            data-logo-id={product.id}
-            aria-hidden
-          />
-        ) : (
-          <span className={styles.cardLogoPlaceholder} aria-hidden>
-            {product.name}
-          </span>
-        )}
-      </span>
       <span className={styles.cardFooter}>
         <span className={styles.cardBody}>
+          <span className={styles.cardLogoSection}>
+            {product.logo ? (
+              <img
+                className={styles.cardLogo}
+                src={product.logo}
+                alt={product.name}
+                data-logo-id={product.id}
+                aria-hidden
+              />
+            ) : (
+              <span className={styles.cardLogoPlaceholder} aria-hidden>
+                {product.name}
+              </span>
+            )}
+          </span>
           <span className={styles.cardName}>{product.name}</span>
           <span className={styles.cardTagline}>{product.tagline}</span>
           {(product.url || product.year || product.handle) && (

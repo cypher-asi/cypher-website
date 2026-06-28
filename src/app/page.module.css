@@ -97,23 +97,51 @@
 
 .card:hover::after,
 .card:focus-visible::after {
-  opacity: 1;
+  opacity: 0.4;
 }
 
-/* Background image: visible by default. */
+/* Background image: visible by default. Dimmed at rest with a subtle dark
+   overlay so the foreground text stays legible; brightens on hover/focus. */
 .cardImage {
   position: absolute;
   inset: 0;
   z-index: -2;
-  background-position: center;
+  background-position: var(--img-pos, center);
   background-size: cover;
   background-repeat: no-repeat;
   opacity: 1;
   pointer-events: none;
+  filter: brightness(0.82);
+  transition: filter var(--transition-slow);
 }
 
-/* Company logo (see .cardLogoSection) replaces the product name at the top-left
-   of the text block on hover/focus. */
+.card:hover .cardImage,
+.card:focus-visible .cardImage {
+  filter: brightness(1.12);
+}
+
+/* Optional second image that cross-fades in on hover, sitting just above the
+   idle image but below the scrim + content. */
+.cardImageHover {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-position: var(--img-pos, center);
+  background-size: cover;
+  background-repeat: no-repeat;
+  opacity: 0;
+  pointer-events: none;
+  filter: brightness(0.92);
+  transition: opacity var(--transition-slow);
+}
+
+.card:hover .cardImageHover,
+.card:focus-visible .cardImageHover {
+  opacity: 1;
+}
+
+/* Company logo (see .cardLogoSection) replaces the product name, sitting just
+   above the description on hover/focus. */
 .cardLogo,
 .cardLogoPlaceholder {
   opacity: 0;
@@ -130,6 +158,9 @@
 .card:hover .cardLogoPlaceholder,
 .card:focus-visible .cardLogoPlaceholder {
   opacity: 0.92;
+  /* Fade in only after the section has finished opening, so the growing box
+     never clips the logo mid-reveal. */
+  transition-delay: var(--transition-normal);
 }
 
 /* All logos are normalized to a single height (matching the ZERO mark) and a
@@ -154,6 +185,11 @@
 /* ZODE reads slightly large even at 0.8; bring it down another 10%. */
 .cardLogo[data-logo-id='zode'] {
   --logo-scale: 0.72;
+}
+
+/* AURA reads large; trim it a further 25% (0.8 -> 0.6). */
+.cardLogo[data-logo-id='aura'] {
+  --logo-scale: 0.6;
 }
 
 .cardLogoPlaceholder {
@@ -206,12 +242,6 @@
   transition: opacity var(--transition-normal);
 }
 
-/* The index number cedes the top-left corner to the logo on hover. */
-.card:hover .cardMeta,
-.card:focus-visible .cardMeta {
-  opacity: 0;
-}
-
 /* Footer block pinned to the bottom of the card. */
 .cardFooter {
   position: relative;
@@ -225,32 +255,49 @@
   flex-direction: column;
 }
 
-/* Logo sits at the very top-left of the card (the open image area) and is
-   revealed on hover, well clear of the bottom text block. The index number
-   fades out on hover so the mark can occupy this corner cleanly. */
+/* Logo sits in the footer flow, directly above the description. Collapsed at
+   rest (only the name shows); on hover it expands in just above the tagline. */
 .cardLogoSection {
-  position: absolute;
-  top: clamp(0.5rem, 1vw, 0.75rem);
-  left: clamp(1rem, 1.6vw, 1.5rem);
-  z-index: 1;
   display: flex;
   align-items: flex-start;
   justify-content: flex-start;
+  max-height: 0;
+  margin-bottom: 0;
+  overflow: hidden;
   pointer-events: none;
+  /* On close, the collapse is delayed so the logo fully fades out first. */
+  transition:
+    max-height var(--transition-normal) var(--transition-normal),
+    margin-bottom var(--transition-normal) var(--transition-normal);
 }
 
-/* Product name shows at rest and fades out on hover so the logo can take its
-   place. */
+.card:hover .cardLogoSection,
+.card:focus-visible .cardLogoSection {
+  max-height: calc(clamp(1.5rem, 2.4vw, 2.25rem) + 0.25rem);
+  margin-bottom: 0.3rem;
+  /* On open, the box expands immediately, ahead of the delayed logo fade-in. */
+  transition:
+    max-height var(--transition-normal),
+    margin-bottom var(--transition-normal);
+}
+
+/* Product name shows at rest and collapses on hover so the logo can take its
+   place just above the description. */
 .cardName {
   font-size: clamp(1.05rem, 1.6vw, 1.4rem);
   font-weight: 400;
   letter-spacing: -0.01em;
   color: var(--color-text-primary);
-  transition: opacity var(--transition-normal);
+  max-height: 3rem;
+  overflow: hidden;
+  transition:
+    opacity var(--transition-normal),
+    max-height var(--transition-normal);
 }
 
 .card:hover .cardName,
 .card:focus-visible .cardName {
+  max-height: 0;
   opacity: 0;
 }
 
@@ -342,6 +389,13 @@
   .gridSection {
     height: auto;
     min-height: 100dvh;
+  }
+
+  /* Shorter, wider cards on mobile crop the portrait art to its vertical
+     center; use the per-card mobile position so faces/eyes stay in frame. */
+  .cardImage,
+  .cardImageHover {
+    background-position: var(--img-pos-mobile, var(--img-pos, center));
   }
 
   .grid {

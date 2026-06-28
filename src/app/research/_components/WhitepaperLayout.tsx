@@ -1,15 +1,13 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { List, X } from 'lucide-react';
+import { TableOfContents } from './TableOfContents';
+import { flattenToc, type TocNode } from './toc';
 import styles from './WhitepaperLayout.module.css';
 
-export interface TocItem {
-  id: string;
-  label: string;
-  child?: boolean;
-}
+export type { TocNode } from './toc';
 
 interface WhitepaperLayoutProps {
   eyebrow: string;
@@ -17,7 +15,7 @@ interface WhitepaperLayoutProps {
   year?: string;
   status?: string;
   lead?: ReactNode;
-  sections: TocItem[];
+  sections: TocNode[];
   children: ReactNode;
 }
 
@@ -39,13 +37,14 @@ export function WhitepaperLayout({
   sections,
   children,
 }: WhitepaperLayoutProps) {
-  const [activeId, setActiveId] = useState<string | null>(sections[0]?.id ?? null);
+  const flat = useMemo(() => flattenToc(sections), [sections]);
+  const [activeId, setActiveId] = useState<string | null>(flat[0]?.id ?? null);
   const [mobileTocOpen, setMobileTocOpen] = useState(false);
 
   // Scroll-spy: highlight the section currently nearest the top of the viewport.
   useEffect(() => {
-    if (sections.length === 0) return;
-    const ids = sections.map((s) => s.id);
+    if (flat.length === 0) return;
+    const ids = flat.map((s) => s.id);
     const els = ids
       .map((id) => document.getElementById(id))
       .filter((el): el is HTMLElement => el !== null);
@@ -79,70 +78,57 @@ export function WhitepaperLayout({
 
     els.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, [sections]);
+  }, [flat]);
 
-  const handleClick = useCallback((e: React.MouseEvent, id: string) => {
-    e.preventDefault();
+  const handleSelect = useCallback((id: string) => {
     setActiveId(id);
     setMobileTocOpen(false);
     scrollToHeading(id);
   }, []);
 
-  const tocList = (
-    <ul className={styles.tocList}>
-      {sections.map((s) => (
-        <li key={s.id}>
-          <a
-            href={`#${s.id}`}
-            className={`${styles.tocLink} ${s.child ? styles.tocChild : ''} ${
-              activeId === s.id ? styles.tocLinkActive : ''
-            }`}
-            onClick={(e) => handleClick(e, s.id)}
-          >
-            {s.label}
-          </a>
-        </li>
-      ))}
-    </ul>
-  );
-
   return (
     <div className={styles.page}>
-      <header className={styles.hero}>
-        <p className={styles.eyebrow}>{eyebrow}</p>
-        <h1 className={styles.heading}>{title}</h1>
-        {(year || status) && (
-          <div className={styles.meta}>
-            {status && <span className={styles.metaItem}>{status}</span>}
-            {year && <span className={styles.metaItem}>{year}</span>}
-          </div>
-        )}
-        {lead && <div className={styles.lead}>{lead}</div>}
-      </header>
-
       <div className={styles.body}>
         <aside className={styles.sidebar} aria-label="Table of contents">
-          <nav className={styles.tocSticky}>
+          <nav className={styles.tocSticky} data-toc-scroll>
             <p className={styles.tocTitle}>Contents</p>
-            {tocList}
+            <TableOfContents items={sections} activeId={activeId} onSelect={handleSelect} />
           </nav>
         </aside>
 
-        {/* Mobile contents disclosure */}
-        <div className={styles.mobileToc}>
-          <button
-            type="button"
-            className={styles.mobileTocToggle}
-            aria-expanded={mobileTocOpen}
-            onClick={() => setMobileTocOpen((v) => !v)}
-          >
-            {mobileTocOpen ? <X size={15} /> : <List size={15} />}
-            <span>Contents</span>
-          </button>
-          {mobileTocOpen && <nav className={styles.mobileTocPanel}>{tocList}</nav>}
-        </div>
+        <div className={styles.main}>
+          <header className={styles.hero}>
+            <p className={styles.eyebrow}>{eyebrow}</p>
+            <h1 className={styles.heading}>{title}</h1>
+            {(year || status) && (
+              <div className={styles.meta}>
+                {status && <span className={styles.metaItem}>{status}</span>}
+                {year && <span className={styles.metaItem}>{year}</span>}
+              </div>
+            )}
+            {lead && <div className={styles.lead}>{lead}</div>}
+          </header>
 
-        <article className={styles.content}>{children}</article>
+          {/* Mobile contents disclosure (hidden on desktop) */}
+          <div className={styles.mobileToc}>
+            <button
+              type="button"
+              className={styles.mobileTocToggle}
+              aria-expanded={mobileTocOpen}
+              onClick={() => setMobileTocOpen((v) => !v)}
+            >
+              {mobileTocOpen ? <X size={15} /> : <List size={15} />}
+              <span>Contents</span>
+            </button>
+            {mobileTocOpen && (
+              <nav className={styles.mobileTocPanel}>
+                <TableOfContents items={sections} activeId={activeId} onSelect={handleSelect} />
+              </nav>
+            )}
+          </div>
+
+          <article className={styles.content}>{children}</article>
+        </div>
       </div>
     </div>
   );

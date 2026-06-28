@@ -127,8 +127,6 @@
    Launch Agents button (left)
    ============================================================================ */
 .launchButton {
-  --corner-len: 10px;
-  --corner-color: var(--color-text-secondary);
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -136,32 +134,26 @@
   font-size: 12.5px;
   font-weight: 500;
   letter-spacing: 0.04em;
+  font-family: inherit;
   color: var(--color-text-primary);
   border: none;
   border-radius: 0;
+  background: none;
   text-decoration: none;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 200ms ease;
-  background:
-    linear-gradient(var(--corner-color), var(--corner-color)) no-repeat top left / var(--corner-len) 1px,
-    linear-gradient(var(--corner-color), var(--corner-color)) no-repeat top left / 1px var(--corner-len),
-    linear-gradient(var(--corner-color), var(--corner-color)) no-repeat top right / var(--corner-len) 1px,
-    linear-gradient(var(--corner-color), var(--corner-color)) no-repeat top right / 1px var(--corner-len),
-    linear-gradient(var(--corner-color), var(--corner-color)) no-repeat bottom left / var(--corner-len) 1px,
-    linear-gradient(var(--corner-color), var(--corner-color)) no-repeat bottom left / 1px var(--corner-len),
-    linear-gradient(var(--corner-color), var(--corner-color)) no-repeat bottom right / var(--corner-len) 1px,
-    linear-gradient(var(--corner-color), var(--corner-color)) no-repeat bottom right / 1px var(--corner-len);
+  transition: color 200ms ease;
 }
 
 .launchButton:hover {
-  --corner-color: var(--color-inverse-muted);
+  color: var(--color-text-secondary);
 }
 
 .topbarGithub {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  margin-left: -5px;
   color: var(--color-text-secondary);
   text-decoration: none;
   transition: color 200ms ease;
@@ -541,9 +533,12 @@
     font-size: 14px;
     font-weight: 500;
     letter-spacing: 0.04em;
+    font-family: inherit;
     color: var(--color-text-primary);
-    border: 1px solid var(--color-overlay-medium);
+    border: none;
+    background: none;
     text-decoration: none;
+    cursor: pointer;
   }
 
   .drawerNav {

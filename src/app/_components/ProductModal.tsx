@@ -95,7 +95,10 @@ export function ProductModal({ product, gridRect, onClose }: ProductModalProps) 
         </div>
 
         <div className={styles.body}>
-          <h2 className={styles.name}>{product.name}</h2>
+          <div className={styles.bodyMain}>
+            <h2 className={styles.name}>{product.name}</h2>
+            <p className={styles.description}>{product.description}</p>
+          </div>
 
           <dl className={styles.meta}>
             {product.focus && (
@@ -146,8 +149,6 @@ export function ProductModal({ product, gridRect, onClose }: ProductModalProps) 
               </div>
             )}
           </dl>
-
-          <p className={styles.description}>{product.description}</p>
         </div>
       </div>
     </div>,

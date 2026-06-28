@@ -1,9 +1,30 @@
+import type { ReactNode } from 'react';
 import Image from 'next/image';
 import type { Block } from '../zero-os/content';
 import styles from './WhitepaperBody.module.css';
 
 function isTopLevel(num: string) {
   return /^\d+\.0$/.test(num) || num.startsWith('Appendix');
+}
+
+// Many list items follow a "Term: definition" shape. Emphasize the term so
+// the lists read like a glossary rather than a wall of text.
+function renderItem(item: string): ReactNode {
+  const idx = item.indexOf(':');
+  if (idx > 0 && idx <= 48) {
+    const term = item.slice(0, idx);
+    const rest = item.slice(idx + 1);
+    // Only treat as a label when the term is short and has no sentence break.
+    if (!/[.!?]/.test(term)) {
+      return (
+        <>
+          <strong className={styles.term}>{term}</strong>
+          {rest}
+        </>
+      );
+    }
+  }
+  return item;
 }
 
 export function WhitepaperBody({ blocks }: { blocks: Block[] }) {
@@ -35,15 +56,15 @@ export function WhitepaperBody({ blocks }: { blocks: Block[] }) {
             return (
               <ul key={i} className={styles.list}>
                 {block.items.map((it, j) => (
-                  <li key={j}>{it}</li>
+                  <li key={j}>{renderItem(it)}</li>
                 ))}
               </ul>
             );
           case 'ol':
             return (
-              <ol key={i} className={styles.list}>
+              <ol key={i} className={`${styles.list} ${styles.ordered}`}>
                 {block.items.map((it, j) => (
-                  <li key={j}>{it}</li>
+                  <li key={j}>{renderItem(it)}</li>
                 ))}
               </ol>
             );

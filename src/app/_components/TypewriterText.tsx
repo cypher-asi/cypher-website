@@ -18,6 +18,8 @@ interface TypewriterTextProps {
   as?: keyof JSX.IntrinsicElements;
   className?: string;
   style?: CSSProperties;
+  /** Fired once the full text has finished typing */
+  onComplete?: () => void;
   children?: never;
 }
 
@@ -28,11 +30,20 @@ export function TypewriterText({
   as: Tag = 'span',
   className,
   style,
+  onComplete,
 }: TypewriterTextProps) {
   const totalLength = segments.reduce((sum, s) => sum + s.text.length, 0);
   const [visibleCount, setVisibleCount] = useState(0);
   const rafRef = useRef<number | null>(null);
   const startTimeRef = useRef<number | null>(null);
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
+
+  useEffect(() => {
+    if (totalLength > 0 && visibleCount >= totalLength) {
+      onCompleteRef.current?.();
+    }
+  }, [visibleCount, totalLength]);
 
   useEffect(() => {
     let cancelled = false;

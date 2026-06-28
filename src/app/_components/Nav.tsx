@@ -37,8 +37,10 @@ const sections: NavSection[] = [
     blurb: 'Software and agents built for the machine age.',
     subItems: [
       { id: 'aura', label: 'AURA', description: 'Autonomous engineering agents', href: 'https://aura.ai', external: true },
-      { id: 'the-grid', label: 'The Grid', description: 'Distributed compute fabric', href: 'https://github.com/cypher-asi/the-grid', external: true },
-      { id: 'zero', label: 'Zero', description: 'Private, verifiable workspace', href: 'https://zero.tech', external: true },
+      { id: 'zode', label: 'ZODE', description: 'Agentic coding, end to end', href: 'https://zode.org', external: true },
+      { id: 'wilder-world', label: 'Wilder World', description: 'An immersive on-chain metaverse', href: 'https://wilderworld.com', external: true },
+      { id: 'z-chain', label: 'Z Chain', description: 'Trust layer for autonomous systems', href: 'https://zchain.org', external: true },
+      { id: 'zero', label: 'ZERO', description: 'A secure OS for an agentic world', href: 'https://zero.tech', external: true },
     ],
   },
   {
@@ -47,7 +49,7 @@ const sections: NavSection[] = [
     href: '/research',
     blurb: 'Open work on intelligence, systems, and protocols.',
     subItems: [
-      { id: 'the-grid', label: 'The Grid', description: 'Distributed compute fabric', href: '/research/the-grid' },
+      { id: 'the-grid', label: 'THE GRID', description: 'Distributed compute fabric', href: '/research/the-grid' },
       { id: 'aura-harness', label: 'AURA Harness', description: 'Evaluating autonomous agents', href: '/research/aura-harness' },
       { id: 'zns', label: 'ZNS', description: 'Naming and trust layer', href: '/research/zns' },
       { id: 'zero-os', label: 'ZERO OS', description: 'A social operating system', href: '/research/zero-os' },
@@ -469,7 +471,7 @@ export function Nav() {
                     {displayedSection.external || displayedSection.noPanel ? (
                       <span className={styles.megaTitle}>{displayedSection.label}</span>
                     ) : (
-                      <Link href={displayedSection.href} className={styles.megaTitle}>
+                      <Link href={displayedSection.href} className={styles.megaTitle} onClick={closePanelNow}>
                         {displayedSection.label}
                       </Link>
                     )}
@@ -496,7 +498,7 @@ export function Nav() {
                           )}
                         </a>
                       ) : (
-                        <Link key={item.id} href={item.href} className={styles.megaItem}>
+                        <Link key={item.id} href={item.href} className={styles.megaItem} onClick={closePanelNow}>
                           <span className={styles.megaItemLabel}>{item.label}</span>
                           {item.description && (
                             <span className={styles.megaItemDesc}>{item.description}</span>

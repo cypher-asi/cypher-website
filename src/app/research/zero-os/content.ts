@@ -103,7 +103,20 @@ export const blocks: Block[] = [
   },
   {
     "kind": "p",
-    "text": "Zero is designed with four core principles—Freedom, Privacy, Choice, and Stewardship: 1. Freedom: It is not possible to censor or manipulate chain entries within Zero's base-level protocols. Members maintain full ownership over their identities, personal data and private keys. 2. Privacy: All private chain entries are secured using AES256 encryption. Private keys are stored on local devices, not on central servers. Communication and collaboration can live within public (join-only) or private (invite-only) namespaces called Zero Networks. 3. Choice: Members and Networks have the ability to customize Zero's interface, develop custom extensions and applications at various levels of the Zero Stack. Members and Networks can select, build and configure social algorithms, reputation systems, tokenomics, and governance protocols. Zero is designed to work on the web, Mac, Windows, and Linux desktop environments, as well as iOS and Android. 4. Stewardship: No corporate entity sits between Members and their right to participate in Zero's platform stewardship. Zero is governed by InnerSource, a novel crypto-economic open-source license outlined in Appendix D, a founding constitution, and a collection of three community-operated DAOs referred to as Trinity."
+    "text": "Zero is designed with four core principles—Freedom, Privacy, Choice, and Stewardship:"
+  },
+  {
+    "kind": "ol",
+    "items": [
+      "Freedom: It is not possible to censor or manipulate chain entries within Zero's base-level protocols. Members maintain full ownership over their identities, personal data and private keys.",
+      "Privacy: All private chain entries are secured using AES256 encryption. Private keys are stored on local devices, not on central servers. Communication and collaboration can live within public (join-only) or private (invite-only) namespaces called Zero Networks.",
+      "Choice: Members and Networks have the ability to customize Zero's interface, develop custom extensions and applications at various levels of the Zero Stack. Members and Networks can select, build and configure social algorithms, reputation systems, tokenomics, and governance protocols. Zero is designed to work on the web, Mac, Windows, and Linux desktop environments, as well as iOS and Android.",
+      "Stewardship: No corporate entity sits between Members and their right to participate in Zero's platform stewardship."
+    ]
+  },
+  {
+    "kind": "p",
+    "text": "Zero is governed by InnerSource, a novel crypto-economic open-source license outlined in Appendix D, a founding constitution, and a collection of three community-operated DAOs referred to as Trinity."
   },
   {
     "kind": "h",
@@ -113,12 +126,20 @@ export const blocks: Block[] = [
   },
   {
     "kind": "p",
-    "text": "Zero is designed to be simultaneously agent-centric, meta-consistent, self-healing, and trust-full. These are the four primary considerations that make Zero unique when compared to purely cloud-based or blockchain maximalist architectures: ● First, Zero is 'agent-centric', which enables the preservation of data integrity across an unlimited number of peers (also referred to as Zero Nodes), without the need for global consensus. Given that no central server or shared ledger exists, Zero Nodes exchange information directly by connecting to peers through a gossip protocol. Zero Nodes store data in their own private and local append-only chain called a zChain. In aggregate, all zChains and Nodes in the network make up the Zero Grid. Within agent-centric architectures, each peer has its own unique (subjective) view of reality, compared to data-centric architectures such as blockchains, where peers require global consensus to maintain a shared (objective) view of reality. Zero's agent-centric (distributed) architecture enables each peer to operate its own individual zChain, which is then replicated across n nodes using eventual consistency Collectively, this architecture gives rise to the collective parallel processing capacity of the Zero Grid. Git, IPFS, SSB and Holochain are notable examples of agent-centric architectures in practice."
+    "text": "Zero is designed to be simultaneously agent-centric, meta-consistent, self-healing, and trust-full. These are the four primary considerations that make Zero unique when compared to purely cloud-based or blockchain maximalist architectures:"
   },
   {
     "kind": "ul",
     "items": [
-      "Second, Zero is 'meta-consistent'. zChain enables Zero to act as a central repository for credentials and data stored in existing web3 systems and protocols. Zero does not aim to compete with traditional blockchains, and is designed to integrate both agent-centric and data-centric approaches into a single application stack called the Zero Open System (or zOS for short). For instance, while financial transactions are well suited for a shared global ledger like Ethereum, global consensus is computationally inefficient for use-cases such as sending private messages between a limited number of peers. Zero's 'meta-consistent' approach enables developers to use both 'agent-centric' and 'data-centric' approaches depending on the use-case, in a way that still prioritizes speed, security and decentralization. Zero can be thought of as the ultimate abstraction layer for the web3 ecosystem, not dissimilar to how desktop operating systems once provided a novel interface for command prompts, or how the browser provided a visual way to explore the world wide web. ● Third, Zero is 'self-healing' (and apocalypse-ready), meaning that a large portion of the system can function offline, on a local area network, or sneakernet. Zero's network transport layer is agnostic, meaning that various protocols can be used to transmit data between Nodes on different types of networks. In the event of partial internet failure, short-term disconnection, or complete loss of access, Zero intelligently propogrates new data entries across peers as they come online in what mimics a self-healing network. ● Fourth, Zero is 'trust-full', rather than purely 'trustless', and utilizes a Members social graph to determine trusted peers to replicate information from within the Zero Grid. One of the primary inventions provided by blockchain is the enablement of transactions to occur in an entirely 'trustless' fashion. This is a good catch-all where data-centric approaches are required, however highly inefficient where 'trust' is already established and can be used as a proxy to find more efficient paths for data propagation (providing of course, that decentralization is not compromised). Trust in distributed systems is a powerful concept that can be used to significantly enhance Member experience not only at the level of data exchange, but also at the level of Member experience across a wide array of applications. Imagine if any app on your mobile device automatically knew which people and devices you already trusted, without having to add new contacts, friends, or followers each and every time a new application was downloaded. Providing Member consent, Zero applications can access a Member's 'trust-graph'. Architecturally it makes sense to have trust data at the protocol level, rather than being siloed within individual applications. This opens a range of trust-related features and capabilities for applications built on top of zOS."
+      "First, Zero is 'agent-centric', which enables the preservation of data integrity across an unlimited number of peers (also referred to as Zero Nodes), without the need for global consensus. Given that no central server or shared ledger exists, Zero Nodes exchange information directly by connecting to peers through a gossip protocol. Zero Nodes store data in their own private and local append-only chain called a zChain. In aggregate, all zChains and Nodes in the network make up the Zero Grid. Within agent-centric architectures, each peer has its own unique (subjective) view of reality, compared to data-centric architectures such as blockchains, where peers require global consensus to maintain a shared (objective) view of reality. Zero's agent-centric (distributed) architecture enables each peer to operate its own individual zChain, which is then replicated across n nodes using eventual consistency Collectively, this architecture gives rise to the collective parallel processing capacity of the Zero Grid. Git, IPFS, SSB and Holochain are notable examples of agent-centric architectures in practice."
+    ]
+  },
+  {
+    "kind": "ul",
+    "items": [
+      "Second, Zero is 'meta-consistent'. zChain enables Zero to act as a central repository for credentials and data stored in existing web3 systems and protocols. Zero does not aim to compete with traditional blockchains, and is designed to integrate both agent-centric and data-centric approaches into a single application stack called the Zero Open System (or zOS for short). For instance, while financial transactions are well suited for a shared global ledger like Ethereum, global consensus is computationally inefficient for use-cases such as sending private messages between a limited number of peers. Zero's 'meta-consistent' approach enables developers to use both 'agent-centric' and 'data-centric' approaches depending on the use-case, in a way that still prioritizes speed, security and decentralization. Zero can be thought of as the ultimate abstraction layer for the web3 ecosystem, not dissimilar to how desktop operating systems once provided a novel interface for command prompts, or how the browser provided a visual way to explore the world wide web.",
+      "Third, Zero is 'self-healing' (and apocalypse-ready), meaning that a large portion of the system can function offline, on a local area network, or sneakernet. Zero's network transport layer is agnostic, meaning that various protocols can be used to transmit data between Nodes on different types of networks. In the event of partial internet failure, short-term disconnection, or complete loss of access, Zero intelligently propogrates new data entries across peers as they come online in what mimics a self-healing network.",
+      "Fourth, Zero is 'trust-full', rather than purely 'trustless', and utilizes a Members social graph to determine trusted peers to replicate information from within the Zero Grid. One of the primary inventions provided by blockchain is the enablement of transactions to occur in an entirely 'trustless' fashion. This is a good catch-all where data-centric approaches are required, however highly inefficient where 'trust' is already established and can be used as a proxy to find more efficient paths for data propagation (providing of course, that decentralization is not compromised). Trust in distributed systems is a powerful concept that can be used to significantly enhance Member experience not only at the level of data exchange, but also at the level of Member experience across a wide array of applications. Imagine if any app on your mobile device automatically knew which people and devices you already trusted, without having to add new contacts, friends, or followers each and every time a new application was downloaded. Providing Member consent, Zero applications can access a Member's 'trust-graph'. Architecturally it makes sense to have trust data at the protocol level, rather than being siloed within individual applications. This opens a range of trust-related features and capabilities for applications built on top of zOS."
     ]
   },
   {
@@ -129,7 +150,15 @@ export const blocks: Block[] = [
   },
   {
     "kind": "p",
-    "text": "The Zero Open System (zOS) is a fast, secure and scalable peer-to-peer application protocol, development stack and interface layer capable of handling millions of transactions per second. This scale is achieved by enabling parallel processing across Nodes and different web3 systems. Individual Nodes that make up the Zero Grid run zOS when launching the Zero desktop, mobile or web application. zOS makes extensive use of existing peer-to-peer and cryptographic protocols. Most notably, zOS leverages libp2p, Hypercore, SSB, Ethereum, IPFS and Filecoin as foundational protocols. Many of the concepts and ideas herein are both an inspiration and synthesis of existing concepts within these protocols and other successful distributed systems like BitTorrent, Git, and Bitcoin. Additionally, zOS integrates with a growing number of third-party web3 protocols and libraries, including Wallet Connect, Gnosis, DAOStack, Bancor, Synthetix, MetaMask and others. The core modules that make up zOS are defined and described in the logical sequence below, with each module serving as a foundational building-block for each subsequent module. The zOS core system is made up of three interconnected layers; Data, Currency and Trust: 1. Data Layer: Responsible for storing, securing, and distributing Messages between Nodes in the Zero Grid. 2. Currency Layer: Responsible for the calculation, allocation, and exchange of Credits and Infinity Tokens, as well as the creation of Exchange Tokens for Zero Networks. 3. Trust Layer: Responsible for global namespaces and the management of DAO's within the Zero eco-system, including InnerSource and Trinity."
+    "text": "The Zero Open System (zOS) is a fast, secure and scalable peer-to-peer application protocol, development stack and interface layer capable of handling millions of transactions per second. This scale is achieved by enabling parallel processing across Nodes and different web3 systems. Individual Nodes that make up the Zero Grid run zOS when launching the Zero desktop, mobile or web application. zOS makes extensive use of existing peer-to-peer and cryptographic protocols. Most notably, zOS leverages libp2p, Hypercore, SSB, Ethereum, IPFS and Filecoin as foundational protocols. Many of the concepts and ideas herein are both an inspiration and synthesis of existing concepts within these protocols and other successful distributed systems like BitTorrent, Git, and Bitcoin. Additionally, zOS integrates with a growing number of third-party web3 protocols and libraries, including Wallet Connect, Gnosis, DAOStack, Bancor, Synthetix, MetaMask and others. The core modules that make up zOS are defined and described in the logical sequence below, with each module serving as a foundational building-block for each subsequent module. The zOS core system is made up of three interconnected layers; Data, Currency and Trust:"
+  },
+  {
+    "kind": "ol",
+    "items": [
+      "Data Layer: Responsible for storing, securing, and distributing Messages between Nodes in the Zero Grid.",
+      "Currency Layer: Responsible for the calculation, allocation, and exchange of Credits and Infinity Tokens, as well as the creation of Exchange Tokens for Zero Networks.",
+      "Trust Layer: Responsible for global namespaces and the management of DAO's within the Zero eco-system, including InnerSource and Trinity."
+    ]
   },
   {
     "kind": "figure",
@@ -140,13 +169,67 @@ export const blocks: Block[] = [
   },
   {
     "kind": "p",
-    "text": "The Data Layer is comprised of eleven core modules: 1. Identity: A unique peer identification, generally assigned to a single Member or device. 2. Node: A peer in the network that establishes Transports, stream multiplexing and content routing. 3. Message: A canonical format and signature structure for storing system state and constructing a zChain. 4. zChain: A chain of signed Messages that is secured by a Merkle tree. 5. Account & Avatar: A representation of account information, with the enabling capacity to combine Identities and multiple devices under a parent zChain. 6. Network: A public or private namespace that is shared by Accounts or Identities. 7. Clusters: A Cluster that represents two or more linked Networks. 8. Peer Routing and Discovery: A shared format to ensure consistent addressing and data routing between Nodes within the Zero Grid."
+    "text": "The Data Layer is comprised of eleven core modules:"
   },
   {
     "kind": "ol",
     "items": [
-      "Gossip: A peer-to-peer protocol used to share messages between Nodes within the Zero Grid. 10. zApp: A collection of one or more custom Message format and associated validation logic that enables the development and interoperability of custom Zero applications. 11. Dyno: A peer-to-peer service (e.g. DAEMON) that peers can run and provide to the Zero Grid. The Currency Layer is comprised of seven core modules: 1. Token: An Ethereum or blockchain-based cryptographic token capable of transacting within the Infinite Economy. 2. Exchange Token: A Token that is priced through a bonding curve and backed by an underlying Reserve asset. 3. Dynamic Token: An Exchange Token with a Dynamic Reserve Ratio. 4. Infinity & The Infinite Economy: A Dynamic Token that powers Zero and the Infinite Economy, which represents all Tokens and associated transactions within Zero. 5. Credit: The atomic unit (AU) of hosting power allocated to Members and service providers within the Zero Grid. 6. Creditor: A mechanism that allocates hosting credits and debits in exchange for the operation of Nodes and Dynos. 7. Dyno Matcher: A mechanism to reliably match Members with Dynos for particular use-cases in the Zero Grid. The Trust Layer is comprised of eleven core modules: 1. ZNS: The Zero Name Service is the set of smart contracts that enable ownership and traversal of global routes across the Zero Stack. 2. zDAO: A Distributed Autonomous Organization management protocol and set of smart contracts. 3. zDAO Token: An exchangeable economic Token controlled by a DAO. 4. Omega Token: A non-exchangeable Token issued to indicate voting power within a DAO. 5. DAO Mind: The primary contract for managing permissions and actions within a DAO. 6. Choice: A Choice that directs a DAO to execute an action, such as the issuance of a DAOs Token or Omega. 7. Neuron: A used-defined module of autonomous code that can be added and managed by a DAO. 8. Voting Engine: A mechanism to determine how votes are counted and Choices are passed. 9. Task: A unit of work voted on and compensated by the DAO. 10. Reputation: A mechanism to determine an Individual’s global Reputation in Zero relative to skills, characteristics and behaviors across domains and DAOs. 11. Trinity: The constitutional framework and set of three DAOs responsible for governing Zero, as outlined in Appendix C and B. 12. InnerSource: The crypto-economic open-source license that governs the Zero source-code. In addition to the above mentioned layers, Zero’s own visual language is utilized throughout this document to make concepts easier to grasp, and to more easily show the inter-relatedness of different ideas, systems, and sub-systems. Given that Zero uses both agent-centric and data-centric approaches, it is important to draw as distinct comparisons as possible between different approaches. Zero’s visual language is organized into three categories: 1) Peer-to-Peer, 2) Tokens, and 3) Blockchain Symbols."
+      "Identity: A unique peer identification, generally assigned to a single Member or device.",
+      "Node: A peer in the network that establishes Transports, stream multiplexing and content routing.",
+      "Message: A canonical format and signature structure for storing system state and constructing a zChain.",
+      "zChain: A chain of signed Messages that is secured by a Merkle tree.",
+      "Account & Avatar: A representation of account information, with the enabling capacity to combine Identities and multiple devices under a parent zChain.",
+      "Network: A public or private namespace that is shared by Accounts or Identities.",
+      "Clusters: A Cluster that represents two or more linked Networks.",
+      "Peer Routing and Discovery: A shared format to ensure consistent addressing and data routing between Nodes within the Zero Grid."
     ]
+  },
+  {
+    "kind": "ol",
+    "items": [
+      "Gossip: A peer-to-peer protocol used to share messages between Nodes within the Zero Grid. 10. zApp: A collection of one or more custom Message format and associated validation logic that enables the development and interoperability of custom Zero applications. 11."
+    ]
+  },
+  {
+    "kind": "p",
+    "text": "Dyno: A peer-to-peer service (e.g. DAEMON) that peers can run and provide to the Zero Grid. The Currency Layer is comprised of seven core modules:"
+  },
+  {
+    "kind": "ol",
+    "items": [
+      "Token: An Ethereum or blockchain-based cryptographic token capable of transacting within the Infinite Economy.",
+      "Exchange Token: A Token that is priced through a bonding curve and backed by an underlying Reserve asset.",
+      "Dynamic Token: An Exchange Token with a Dynamic Reserve Ratio.",
+      "Infinity & The Infinite Economy: A Dynamic Token that powers Zero and the Infinite Economy, which represents all Tokens and associated transactions within Zero.",
+      "Credit: The atomic unit (AU) of hosting power allocated to Members and service providers within the Zero Grid.",
+      "Creditor: A mechanism that allocates hosting credits and debits in exchange for the operation of Nodes and Dynos.",
+      "Dyno Matcher: A mechanism to reliably match Members with Dynos for particular use-cases in the Zero Grid."
+    ]
+  },
+  {
+    "kind": "p",
+    "text": "The Trust Layer is comprised of eleven core modules:"
+  },
+  {
+    "kind": "ol",
+    "items": [
+      "ZNS: The Zero Name Service is the set of smart contracts that enable ownership and traversal of global routes across the Zero Stack.",
+      "zDAO: A Distributed Autonomous Organization management protocol and set of smart contracts.",
+      "zDAO Token: An exchangeable economic Token controlled by a DAO.",
+      "Omega Token: A non-exchangeable Token issued to indicate voting power within a DAO.",
+      "DAO Mind: The primary contract for managing permissions and actions within a DAO.",
+      "Choice: A Choice that directs a DAO to execute an action, such as the issuance of a DAOs Token or Omega.",
+      "Neuron: A used-defined module of autonomous code that can be added and managed by a DAO.",
+      "Voting Engine: A mechanism to determine how votes are counted and Choices are passed.",
+      "Task: A unit of work voted on and compensated by the DAO.",
+      "Reputation: A mechanism to determine an Individual’s global Reputation in Zero relative to skills, characteristics and behaviors across domains and DAOs.",
+      "Trinity: The constitutional framework and set of three DAOs responsible for governing Zero, as outlined in Appendix C and B.",
+      "InnerSource: The crypto-economic open-source license that governs the Zero source-code."
+    ]
+  },
+  {
+    "kind": "p",
+    "text": "In addition to the above mentioned layers, Zero’s own visual language is utilized throughout this document to make concepts easier to grasp, and to more easily show the inter-relatedness of different ideas, systems, and sub-systems. Given that Zero uses both agent-centric and data-centric approaches, it is important to draw as distinct comparisons as possible between different approaches. Zero’s visual language is organized into three categories: 1) Peer-to-Peer, 2) Tokens, and 3) Blockchain Symbols."
   },
   {
     "kind": "h",
@@ -223,8 +306,18 @@ export const blocks: Block[] = [
   {
     "kind": "ul",
     "items": [
-      "hash: a hash of a prior Message contents, including the Message signature. ● creator: a valid zId base58-encoding ● chain: a valid reference to a zChainId (as defined in the following section) or supported third party chain, such as Bitcoin, Ethereum, or Filecoin, utilizing zChain's multihash format. ● seq: the Message sequence in linear time; e.g. 0, 1, 2... etc. ● timestamp: the time of Message creation, represented by the number of milliseconds since 1 January 1970 00:00 UTC. ● content: for unencrypted data, a public JSON data field with a required type field. ● signature: a digital signature created from a public and private key. New messages are signed by an Identities private key. This obfuscates Message contents and meta-data prior to being propagated to Nodes within the Zero Grid. The obscured Message disguises the content and data to ensure privacy is protected."
+      "hash: a hash of a prior Message contents, including the Message signature.",
+      "creator: a valid zId base58-encoding",
+      "chain: a valid reference to a zChainId (as defined in the following section) or supported third party chain, such as Bitcoin, Ethereum, or Filecoin, utilizing zChain's multihash format.",
+      "seq: the Message sequence in linear time; e.g. 0, 1, 2... etc.",
+      "timestamp: the time of Message creation, represented by the number of milliseconds since 1 January 1970 00:00 UTC.",
+      "content: for unencrypted data, a public JSON data field with a required type field.",
+      "signature: a digital signature created from a public and private key."
     ]
+  },
+  {
+    "kind": "p",
+    "text": "New messages are signed by an Identities private key. This obfuscates Message contents and meta-data prior to being propagated to Nodes within the Zero Grid. The obscured Message disguises the content and data to ensure privacy is protected."
   },
   {
     "kind": "h",
@@ -294,8 +387,16 @@ export const blocks: Block[] = [
   {
     "kind": "ul",
     "items": [
-      "aId: a unique Avatar Id ● zIdHash: An encrypted hash of the Avatar's associated zId. This can only be verified by the holder of the private key itself, and is checked when creating a new Message for a specific Avatar. This can include a zId that belongs to either a parent, child or standalone zChain. ● photo: a profile image ● banner: A background image ● publicHandle: a unique handle issued by ZNS, the Zero Name Service. Globally unique Member handles for Avatars can be purchased using ZNS, as outlined in Section 4.3.1. Zero Name Service (ZNS) Protocol."
+      "aId: a unique Avatar Id",
+      "zIdHash: An encrypted hash of the Avatar's associated zId. This can only be verified by the holder of the private key itself, and is checked when creating a new Message for a specific Avatar. This can include a zId that belongs to either a parent, child or standalone zChain.",
+      "photo: a profile image",
+      "banner: A background image",
+      "publicHandle: a unique handle issued by ZNS, the Zero Name Service."
     ]
+  },
+  {
+    "kind": "p",
+    "text": "Globally unique Member handles for Avatars can be purchased using ZNS, as outlined in Section 4.3.1. Zero Name Service (ZNS) Protocol."
   },
   {
     "kind": "h",
@@ -336,7 +437,15 @@ export const blocks: Block[] = [
   },
   {
     "kind": "p",
-    "text": "In the common event where a Node knows another Node's zId but not it's Address, it can begin the process of Node Discovery. Node Discovery enables a Node to leverage Address information known by the other Nodes in which they are already connected to. As more Nodes are contacted, more is learned about the Addresses of other Nodes, eventually resulting in a match. This builds a more comprehensive view of the Zero Grid, both enabling Message traversal to happen faster for subsequent connections, and to store/provide valuable routing data to other Nodes in what mimics a mesh-network. Peer routing currently uses a Kademlia implementation of a distributed hash table (DHT). This processed lookups where each search step results in a closer Node to the Node in question, until it is found. Prior to building knowledge of any Nodes within the network, the zId and Address of one or more Nodes is needed to bootstrap the process of Network Discovery. This can be achieved by three methods: ● Bootstrap: A bulk list of pre-defined Node addresses that can be used to initiate data propagation. ● Invite: A single invitation to connect to a specific address. ● Local Network: A search for valid addresses and ports on a local area IP range."
+    "text": "In the common event where a Node knows another Node's zId but not it's Address, it can begin the process of Node Discovery. Node Discovery enables a Node to leverage Address information known by the other Nodes in which they are already connected to. As more Nodes are contacted, more is learned about the Addresses of other Nodes, eventually resulting in a match. This builds a more comprehensive view of the Zero Grid, both enabling Message traversal to happen faster for subsequent connections, and to store/provide valuable routing data to other Nodes in what mimics a mesh-network. Peer routing currently uses a Kademlia implementation of a distributed hash table (DHT). This processed lookups where each search step results in a closer Node to the Node in question, until it is found. Prior to building knowledge of any Nodes within the network, the zId and Address of one or more Nodes is needed to bootstrap the process of Network Discovery. This can be achieved by three methods:"
+  },
+  {
+    "kind": "ul",
+    "items": [
+      "Bootstrap: A bulk list of pre-defined Node addresses that can be used to initiate data propagation.",
+      "Invite: A single invitation to connect to a specific address.",
+      "Local Network: A search for valid addresses and ports on a local area IP range."
+    ]
   },
   {
     "kind": "h",
@@ -362,7 +471,20 @@ export const blocks: Block[] = [
   },
   {
     "kind": "p",
-    "text": "Zero Applications (zApps) enable developers to build and deploy custom applications that can be run by Nodes within the Zero Grid. zApps in zOS can be thought of as miniature programs that store and manage custom-defined information. zApps are defined with the specialized Message type 'zApp:[zAppId]:[ObjectType]:[PermissionHash]', with the associated application state residing in the 'content' parameter of the Message. '[ ]' indicates a Member-generated look-up value for a respective zApp and functionality set. The definitions of these parameters are as follows: ● zApp: This specifies that the Message is a custom defined zApp ● [zAppId]: Similar to a zId, a zAppId is a unique and randomly generated hash to represent a specific zApp and version number. ● [ObjectType]: This specifies a custom defined Object Type that is used to break up application state into small chunks of data. Example ObjectTypes could be 'Posts', 'Tasks', or 'MarketItems'. ● [PermissionHash]: This specifies a PermissionHash that is generated using a SHA256 hash of a 'permission object' by the Message signatory. Permission objects require the following format: { read: {zId_1, zId_2...}, write: {...}, delete: {...} } Simplifying a zApp's application state into small chunks ensures that Messages remain reasonably sized and are efficiently propagated through the Zero Grid. Given that zApps are defined purely at the level of state, clients are responsible for how to interpret this state, as well as ensuring that zAppIds are consistent between clients and relevant Messages. Adding a new zApp is as simple as signing a new Message to a zChain, which other zChains can then choose to interpret or not, depending on the application logic they have chosen to run. Given that zApps are just custom Messages, they can be added to any type of zChain, including an Identity, Account, or Network. 4.1.10.2 zApp Store zApps require a corresponding interface to interpret and display state inside of a client. Zero intends to make a front-end component kit available to make it easy for developers to build visually consistent interfaces inside of the Zero Application. Zero plans to add an zApp Store (similar to the iOS store or Google Play) that enables the installation of zApps that exist in the Zero ecosystem. To prevent malware and malicious software, application Verification will be introduced and managed using a fully decentralized process by zDAO/. Pertinent details will be released in advance of the launch of the zApp Store."
+    "text": "Zero Applications (zApps) enable developers to build and deploy custom applications that can be run by Nodes within the Zero Grid. zApps in zOS can be thought of as miniature programs that store and manage custom-defined information. zApps are defined with the specialized Message type 'zApp:[zAppId]:[ObjectType]:[PermissionHash]', with the associated application state residing in the 'content' parameter of the Message. '[ ]' indicates a Member-generated look-up value for a respective zApp and functionality set. The definitions of these parameters are as follows:"
+  },
+  {
+    "kind": "ul",
+    "items": [
+      "zApp: This specifies that the Message is a custom defined zApp",
+      "[zAppId]: Similar to a zId, a zAppId is a unique and randomly generated hash to represent a specific zApp and version number.",
+      "[ObjectType]: This specifies a custom defined Object Type that is used to break up application state into small chunks of data. Example ObjectTypes could be 'Posts', 'Tasks', or 'MarketItems'.",
+      "[PermissionHash]: This specifies a PermissionHash that is generated using a SHA256 hash of a 'permission object' by the Message signatory."
+    ]
+  },
+  {
+    "kind": "p",
+    "text": "Permission objects require the following format: { read: {zId_1, zId_2...}, write: {...}, delete: {...} } Simplifying a zApp's application state into small chunks ensures that Messages remain reasonably sized and are efficiently propagated through the Zero Grid. Given that zApps are defined purely at the level of state, clients are responsible for how to interpret this state, as well as ensuring that zAppIds are consistent between clients and relevant Messages. Adding a new zApp is as simple as signing a new Message to a zChain, which other zChains can then choose to interpret or not, depending on the application logic they have chosen to run. Given that zApps are just custom Messages, they can be added to any type of zChain, including an Identity, Account, or Network. 4.1.10.2 zApp Store zApps require a corresponding interface to interpret and display state inside of a client. Zero intends to make a front-end component kit available to make it easy for developers to build visually consistent interfaces inside of the Zero Application. Zero plans to add an zApp Store (similar to the iOS store or Google Play) that enables the installation of zApps that exist in the Zero ecosystem. To prevent malware and malicious software, application Verification will be introduced and managed using a fully decentralized process by zDAO/. Pertinent details will be released in advance of the launch of the zApp Store."
   },
   {
     "kind": "h",
@@ -372,13 +494,29 @@ export const blocks: Block[] = [
   },
   {
     "kind": "p",
-    "text": "Nodes in Zero can choose to operate Dynos. Dynos are containerized virtual environments that make specific applications or services available to Nodes in the Zero Grid. Unlike peer-to-peer only systems like IPFS, BitTorrent or Ethereum, Dynos enable Nodes to run and deliver virtually any type of distributed environment to the Zero Grid, including cloud infrastructure. Dynos are intended to be easily instantiated, configured, replicated, and non-persistent, meaning that they can be easily spawned or destroyed without consequence. Dynos exist to serve a particular service rather than act as long-term data stores. In this way, Dynos are analogous to dynamic application servers in traditional cloud architectures, that can scale up or down depending on network load. The main difference here being that any Node in the Zero Grid could choose to provide these services, rather than a centralized company. This enables the Zero Grid to use the speed, availability and scale of existing cloud providers for certain use-cases, without sacrificing decentralization. For instance, a Member could choose to run a set of Video Conferencing Dynos on AWS under their own name and credit card, and recieve Credits based on the Dynos usage. A Dynos binary code is open-source and verified with a cryptographic proof, so other Members would be able to ensure that no personal data is collected at the server-level, and the service is operating according to what it is advertising. In order for a Dyno to receive Credits its binary must be approved by the Member. Credits can then be issued in exchange for the operation and utilization of the Dyno, depending on Dyno performance, along with market supply and demand. This is outlined in more detail in Section 4.2.6. The Creditor. Dynos can be thought of as similar to AWS (Amazon Web Services) services, such as EC2 instances or s3 buckets, but at a higher level of abstraction. Dynos provide a new incentivization, security and decentralization model on top of existing cloud-architectures that is agnostic.This provides flexibility for pricing, the possibility for many service types, as well as enables the network to dynamically adjust the availability of different Dynos, based on the real-time needs of the Zero Grid. Example use-cases for Dynos include: ● Messages Pub: A Node that increases the speed Message propagation for other Nodes on the Network."
+    "text": "Nodes in Zero can choose to operate Dynos. Dynos are containerized virtual environments that make specific applications or services available to Nodes in the Zero Grid. Unlike peer-to-peer only systems like IPFS, BitTorrent or Ethereum, Dynos enable Nodes to run and deliver virtually any type of distributed environment to the Zero Grid, including cloud infrastructure. Dynos are intended to be easily instantiated, configured, replicated, and non-persistent, meaning that they can be easily spawned or destroyed without consequence. Dynos exist to serve a particular service rather than act as long-term data stores. In this way, Dynos are analogous to dynamic application servers in traditional cloud architectures, that can scale up or down depending on network load. The main difference here being that any Node in the Zero Grid could choose to provide these services, rather than a centralized company. This enables the Zero Grid to use the speed, availability and scale of existing cloud providers for certain use-cases, without sacrificing decentralization. For instance, a Member could choose to run a set of Video Conferencing Dynos on AWS under their own name and credit card, and recieve Credits based on the Dynos usage. A Dynos binary code is open-source and verified with a cryptographic proof, so other Members would be able to ensure that no personal data is collected at the server-level, and the service is operating according to what it is advertising. In order for a Dyno to receive Credits its binary must be approved by the Member. Credits can then be issued in exchange for the operation and utilization of the Dyno, depending on Dyno performance, along with market supply and demand. This is outlined in more detail in Section 4.2.6. The Creditor. Dynos can be thought of as similar to AWS (Amazon Web Services) services, such as EC2 instances or s3 buckets, but at a higher level of abstraction. Dynos provide a new incentivization, security and decentralization model on top of existing cloud-architectures that is agnostic.This provides flexibility for pricing, the possibility for many service types, as well as enables the network to dynamically adjust the availability of different Dynos, based on the real-time needs of the Zero Grid. Example use-cases for Dynos include:"
   },
   {
     "kind": "ul",
     "items": [
-      "Video Conferencing: A Node that routes encrypted peer-to-peer video traffic to reduce latency for multi-party video conferencing. ● Live Streaming: A Node that manages connection speed and bandwidth capacity for individual live streams. ● Virtual Worlds: A Node that enables low-latency and persistent virtual worlds. Dynos are authorized and installed on a Node by signing a new Message to a Member's local zChain with type 'Dyno:[DynoId]:[binaryHash]:[filecoinAddress]': ● [dynoId]: A unique Id that represents the Dyno and container version on the Network. ● dynoType: A valid dynoType as defined by the Dyno Matcher (e.g. videoConference, virtualWorld, etc.). ● [binaryHash]: A sha256 hash of the Dyno's container binary that is used to ensure version consistency and that the file has not been tampered with. ● [filecoinAddress]: A static location to download the file from the Filecoin Network. This process begins the remote installation process of the Dyno binary from the provided Filecoin address, and then performs a checksum on the file to ensure the binaryHash is valid. Once the Dyno has been verified, it is added to the zOS run-time environment and the Node begins to propagate Messages within the Grid, signaling that the Dyno is available to connect to. Compared to simply propagating Messages like a normal Node, Dynos are designed to provide services that require more dedicated, consistent, and low-latency connections on a single server. Given this fact, once a Node discovers a particular Dyno, its connection generally needs to stay persistent for the duration of the process provided by the Dyno. For instance, a two-hour video conference between ten network participants requires a fast, stable, and persistent connection. This is a significantly higher bar than routing a single small sized Message between chains. The Dyno Matcher, outlined in Section 4.2.7 Dyno Matcher, describes the process of matching Nodes with Dynos and the stack-ranking that occurs to ensure that Nodes connect to the highest grade Dynos within the Grid."
+      "Messages Pub: A Node that increases the speed Message propagation for other Nodes on the Network."
     ]
+  },
+  {
+    "kind": "ul",
+    "items": [
+      "Video Conferencing: A Node that routes encrypted peer-to-peer video traffic to reduce latency for multi-party video conferencing.",
+      "Live Streaming: A Node that manages connection speed and bandwidth capacity for individual live streams.",
+      "Virtual Worlds: A Node that enables low-latency and persistent virtual worlds. Dynos are authorized and installed on a Node by signing a new Message to a Member's local zChain with type 'Dyno:[DynoId]:[binaryHash]:[filecoinAddress]':",
+      "[dynoId]: A unique Id that represents the Dyno and container version on the Network.",
+      "dynoType: A valid dynoType as defined by the Dyno Matcher (e.g. videoConference, virtualWorld, etc.).",
+      "[binaryHash]: A sha256 hash of the Dyno's container binary that is used to ensure version consistency and that the file has not been tampered with.",
+      "[filecoinAddress]: A static location to download the file from the Filecoin Network."
+    ]
+  },
+  {
+    "kind": "p",
+    "text": "This process begins the remote installation process of the Dyno binary from the provided Filecoin address, and then performs a checksum on the file to ensure the binaryHash is valid. Once the Dyno has been verified, it is added to the zOS run-time environment and the Node begins to propagate Messages within the Grid, signaling that the Dyno is available to connect to. Compared to simply propagating Messages like a normal Node, Dynos are designed to provide services that require more dedicated, consistent, and low-latency connections on a single server. Given this fact, once a Node discovers a particular Dyno, its connection generally needs to stay persistent for the duration of the process provided by the Dyno. For instance, a two-hour video conference between ten network participants requires a fast, stable, and persistent connection. This is a significantly higher bar than routing a single small sized Message between chains. The Dyno Matcher, outlined in Section 4.2.7 Dyno Matcher, describes the process of matching Nodes with Dynos and the stack-ranking that occurs to ensure that Nodes connect to the highest grade Dynos within the Grid."
   },
   {
     "kind": "h",
@@ -408,13 +546,33 @@ export const blocks: Block[] = [
   },
   {
     "kind": "p",
-    "text": "Exchange Tokens in Zero are used to facilitate the direct exchange of two Tokens, without the need for an intermediary exchange or counterparty. Zero Networks are required to launch their own Exchange Token and associated DAO that is responsible for the economic design and governance of the Network. Exchange Tokens utilize a modified version of the Bancor Protocol. Generating a new Exchange Token in Zero requires the initialization of five parameters: ● Token Name: A name, such as 'Infinity'. ● Token Symbol: A ticker, such as 'IOI. ● Initial Supply: The Token's initial number of tokens in circulation, such as 1,000. ● Token Reserve Currency: A reference to the Token's Reserve contract address on the Ethereum blockchain. ● Reserve Ratio: The initial ratio between the Exchange Token's Reserve balance and price, denominated in the Reserve Currency. Exchange Tokens function as automated on-chain market makers, which create immediate liquidity and price discovery for buyers and sellers, without the need for market depth or a traditional order book. Zero refers to this mechanism as 'Autonomous Liquidity'. This feature enables tokenization for a long-tail of digital communities. Similar to the prohibitive cost of creating and distributing video content prior to the advent of YouTube, Exchange Tokens lower the barrier of entry for the creation of functional digital currencies for communities of any size. Autonomous Liquidity is particularly useful for open-source projects, remote or digital organizations, and DAOs, where a shared token can be used to capture and coordinate value between participants, without the need for an intermediary corporation, physical office, or jurisdiction. Autonomous liquidity is achieved through the use of both an internal bonding curve (also referred to as a continuous token) and Token Reserve, which enables an Exchange Token's price to dynamically adjust based on supply and demand. The following definitions are useful to comprehend the Zero Token System: ● Price: The price at which a single Exchange Token can be purchased or sold. This price dynamically adjusts with each purchase and sale."
+    "text": "Exchange Tokens in Zero are used to facilitate the direct exchange of two Tokens, without the need for an intermediary exchange or counterparty. Zero Networks are required to launch their own Exchange Token and associated DAO that is responsible for the economic design and governance of the Network. Exchange Tokens utilize a modified version of the Bancor Protocol. Generating a new Exchange Token in Zero requires the initialization of five parameters:"
   },
   {
     "kind": "ul",
     "items": [
-      "Supply: The current total number of Exchange Tokens that have been issued and are in circulation. ● Reserve: The total amount of Reserve Tokens used to 'back' the value of the Exchange Token. This is achieved by holding a balance one or more Tokens inside an Exchange Token's smart contract. ● Reserve Token: A specific cryptographic asset that is stored within a Reserve. Common reserve assets include ETH, DAI, wBTC. ● Reserve Value: The total value of the assets that make up a Token's Reserve. ● Market Cap.: The total market capitalization (total market value) of an Exchange Token. ● Liquidity Pool: A type of Reserve with a built-in fee structure to incentivize the buying and holding of Tokens in order to provide liquidity for a token. Liquidity Pools must hold two or more tokens in its reserve. Exchange Tokens can be purchased by sending any amount of Reserve Tokens to the Exchange Token contract, where newly minted Exchange Tokens are then automatically issued into circulation and transferred to the sender. Conversely, when Exchange Tokens are sold, Reserve Tokens are automatically sent from the Reserve to settle the exchange. This mechanism enables Token Price and Token Supply to be dynamically recalculated based on supply and demand, with no need for an intermediary to facilitate the transaction."
+      "Token Name: A name, such as 'Infinity'.",
+      "Token Symbol: A ticker, such as 'IOI.",
+      "Initial Supply: The Token's initial number of tokens in circulation, such as 1,000.",
+      "Token Reserve Currency: A reference to the Token's Reserve contract address on the Ethereum blockchain.",
+      "Reserve Ratio: The initial ratio between the Exchange Token's Reserve balance and price, denominated in the Reserve Currency. Exchange Tokens function as automated on-chain market makers, which create immediate liquidity and price discovery for buyers and sellers, without the need for market depth or a traditional order book. Zero refers to this mechanism as 'Autonomous Liquidity'. This feature enables tokenization for a long-tail of digital communities. Similar to the prohibitive cost of creating and distributing video content prior to the advent of YouTube, Exchange Tokens lower the barrier of entry for the creation of functional digital currencies for communities of any size. Autonomous Liquidity is particularly useful for open-source projects, remote or digital organizations, and DAOs, where a shared token can be used to capture and coordinate value between participants, without the need for an intermediary corporation, physical office, or jurisdiction. Autonomous liquidity is achieved through the use of both an internal bonding curve (also referred to as a continuous token) and Token Reserve, which enables an Exchange Token's price to dynamically adjust based on supply and demand. The following definitions are useful to comprehend the Zero Token System:",
+      "Price: The price at which a single Exchange Token can be purchased or sold. This price dynamically adjusts with each purchase and sale."
     ]
+  },
+  {
+    "kind": "ul",
+    "items": [
+      "Supply: The current total number of Exchange Tokens that have been issued and are in circulation.",
+      "Reserve: The total amount of Reserve Tokens used to 'back' the value of the Exchange Token. This is achieved by holding a balance one or more Tokens inside an Exchange Token's smart contract.",
+      "Reserve Token: A specific cryptographic asset that is stored within a Reserve. Common reserve assets include ETH, DAI, wBTC.",
+      "Reserve Value: The total value of the assets that make up a Token's Reserve.",
+      "Market Cap.: The total market capitalization (total market value) of an Exchange Token.",
+      "Liquidity Pool: A type of Reserve with a built-in fee structure to incentivize the buying and holding of Tokens in order to provide liquidity for a token."
+    ]
+  },
+  {
+    "kind": "p",
+    "text": "Liquidity Pools must hold two or more tokens in its reserve. Exchange Tokens can be purchased by sending any amount of Reserve Tokens to the Exchange Token contract, where newly minted Exchange Tokens are then automatically issued into circulation and transferred to the sender. Conversely, when Exchange Tokens are sold, Reserve Tokens are automatically sent from the Reserve to settle the exchange. This mechanism enables Token Price and Token Supply to be dynamically recalculated based on supply and demand, with no need for an intermediary to facilitate the transaction."
   },
   {
     "kind": "figure",
@@ -441,8 +599,11 @@ export const blocks: Block[] = [
   {
     "kind": "ul",
     "items": [
-      "Calculating a Reserve Ratio: ○ Reserve Ratio = Reserve Balance / Market Capitalization ● Calculating Market Capitalization:",
-      "Market Capitalization = Price x Supply ● Calculating Price:",
+      "Calculating a Reserve Ratio:",
+      "Reserve Ratio = Reserve Balance / Market Capitalization",
+      "Calculating Market Capitalization:",
+      "Market Capitalization = Price x Supply",
+      "Calculating Price:",
       "Price = Reserve Balance / (Supply x Reserve Ratio)"
     ]
   },
@@ -454,13 +615,25 @@ export const blocks: Block[] = [
   },
   {
     "kind": "p",
-    "text": "A Dynamic Token is an Exchange Token that uses a Dynamic Reserve Ratio (DRR). The DRR creates the desired effect of token stability and liquidity, while creating an alternative funding model to Initial Coin Offerings (ICOs). Dynamic Tokens replace static Reserve Ratios with an immutable function that adjusts a Token's Reserve Ratio overtime, based on specific inputs connected to the demand of the Token. To understand the potential significance for Dynamic Tokens, it is useful to quickly review the evolution of Token Models overtime. Initially, fixed-supply tokens, often associated with ICO-funded projects during the 2017-2018 ‘ICO boom’, set their tokens supply at the time of token sale. These tokens often set an arbitrary ‘cap’ on the amount to be raised – effectively setting, or at least targeting, a large, predetermined market capitalization for the token and the project. In this model there is no reserve (backing of the token) with real world value, making the token price vulnerable to major volatility. Price swings are especially volatile if a project utilized clever fundraising mechanics, like daily token auctions or double dutch auctions, in order to create a sense of artificial scarcity to quickly reach their ICO fundraising cap. Most importantly however, the challenge with this model is that after the completion of the initial sale, 100% of proceeds were provided to developers, irrespective of any actual usage traction or demonstrated viability. More recently, token architectures with a bonding curve and a static reserve ratio have shown the possibility of greater liquidity and price stability by partially backing tokens with underlying reserve assets that hold real world value. Unlike with a fixed supply token, in this model there is no single funding event. The project is funded continuously over time in accordance with the growth of its token economy. While this approach supports token holder confidence, it can make it challenging for projects to receive the optimal amount of funding overtime and can negatively impact price. In this model the only way to create operating capital is to set aside an initial supply of token that must be eventually sold back into the economy, creating downward pressure on token price and potentially signaling a loss of confidence from the project's developers. Today, we are witnessing the maturation of a vast number of DeFi (Decentralized Finance) protocols, of which ‘stablecoins’ and 'synthetic asset protocols' are a major component. These token models use over-capitalized reserve ratios – 150% in the case of MakerDAO, and 750% in the case of Synthetix – to combat the price volatility of crypto-assets relative to underlying currencies (such as USD or Gold). These protocols incentivize individuals to hold and maintain a certain ratio of assets in decentralized liquidity pools, which is used to back (and peg) the value of their token. While these protocols are useful for decentralized stablecoins, derivatives and loans, they are not especially useful for funding projects, due to the fact that they have no upward price mobility relative to the value of their underlying assets. Dynamic Tokens simultaneously solve the token funding and volatility issue by combining a number of mechanics from the previously mentioned token models. Dynamic Tokens use a bonding curve that partially backs the token with one or more underlying reserve assets, which dynamically changes its reserve ratio over time based on supply and demand. This is achieved by automatically transferring 'excess reserves' to a specified smart contract, such as a multisig contract or DAO, based on the function specified in the DRR. Excess reserves in this context are referred to as the available Reserve Tokens no longer required 'to back' the Exchange Token given that a certain demand threshold has been hit based on the parameters of the DRR. Perhaps most importantly, this is all done without impacting the token's market price. Dynamic Tokens can adjust their reserve by the contract owner calling the reduceWeight method on the Dynamic Token contract. A Dynamic Token is initialized with four parameters in addition to a regular Exchange Token: ● Minimum Reserve Ratio: The smallest possible ratio that the reserve ratio can be reduced to. ● Step Weight: The total amount (percentage) that a reserve ratio can decrease when calling reduceWeight(). ● Market Cap. Threshold (optional): The market capitalization in which funds can no longer be transferred from the Reserve."
+    "text": "A Dynamic Token is an Exchange Token that uses a Dynamic Reserve Ratio (DRR). The DRR creates the desired effect of token stability and liquidity, while creating an alternative funding model to Initial Coin Offerings (ICOs). Dynamic Tokens replace static Reserve Ratios with an immutable function that adjusts a Token's Reserve Ratio overtime, based on specific inputs connected to the demand of the Token. To understand the potential significance for Dynamic Tokens, it is useful to quickly review the evolution of Token Models overtime. Initially, fixed-supply tokens, often associated with ICO-funded projects during the 2017-2018 ‘ICO boom’, set their tokens supply at the time of token sale. These tokens often set an arbitrary ‘cap’ on the amount to be raised – effectively setting, or at least targeting, a large, predetermined market capitalization for the token and the project. In this model there is no reserve (backing of the token) with real world value, making the token price vulnerable to major volatility. Price swings are especially volatile if a project utilized clever fundraising mechanics, like daily token auctions or double dutch auctions, in order to create a sense of artificial scarcity to quickly reach their ICO fundraising cap. Most importantly however, the challenge with this model is that after the completion of the initial sale, 100% of proceeds were provided to developers, irrespective of any actual usage traction or demonstrated viability. More recently, token architectures with a bonding curve and a static reserve ratio have shown the possibility of greater liquidity and price stability by partially backing tokens with underlying reserve assets that hold real world value. Unlike with a fixed supply token, in this model there is no single funding event. The project is funded continuously over time in accordance with the growth of its token economy. While this approach supports token holder confidence, it can make it challenging for projects to receive the optimal amount of funding overtime and can negatively impact price. In this model the only way to create operating capital is to set aside an initial supply of token that must be eventually sold back into the economy, creating downward pressure on token price and potentially signaling a loss of confidence from the project's developers. Today, we are witnessing the maturation of a vast number of DeFi (Decentralized Finance) protocols, of which ‘stablecoins’ and 'synthetic asset protocols' are a major component. These token models use over-capitalized reserve ratios – 150% in the case of MakerDAO, and 750% in the case of Synthetix – to combat the price volatility of crypto-assets relative to underlying currencies (such as USD or Gold). These protocols incentivize individuals to hold and maintain a certain ratio of assets in decentralized liquidity pools, which is used to back (and peg) the value of their token. While these protocols are useful for decentralized stablecoins, derivatives and loans, they are not especially useful for funding projects, due to the fact that they have no upward price mobility relative to the value of their underlying assets. Dynamic Tokens simultaneously solve the token funding and volatility issue by combining a number of mechanics from the previously mentioned token models. Dynamic Tokens use a bonding curve that partially backs the token with one or more underlying reserve assets, which dynamically changes its reserve ratio over time based on supply and demand. This is achieved by automatically transferring 'excess reserves' to a specified smart contract, such as a multisig contract or DAO, based on the function specified in the DRR. Excess reserves in this context are referred to as the available Reserve Tokens no longer required 'to back' the Exchange Token given that a certain demand threshold has been hit based on the parameters of the DRR. Perhaps most importantly, this is all done without impacting the token's market price. Dynamic Tokens can adjust their reserve by the contract owner calling the reduceWeight method on the Dynamic Token contract. A Dynamic Token is initialized with four parameters in addition to a regular Exchange Token:"
   },
   {
     "kind": "ul",
     "items": [
-      "Maximum Reinflation (optional): The total amount a Reserve Ratio can be reinflated (increased) to once its reserve ratio has passed that threshold. When successfully executing the reduceWeight method, tokens held by the reserve equal to the Step Weight are automatically transferred to the owner (via msg.sender) in the transaction. Conversely, once a Reserve has been reduced past its Maximum Reinflation parameter, all future token purchases will be directly deposited into the token’s reserve to restabilize the token, thereby bypassing the standard formula for token price and issuance. Once the token’s reserve reaches or exceeds its point of Maximum Reinflation, token purchases will resume as normal and continue to autonomously expand the token’s supply as per its standard formula."
+      "Minimum Reserve Ratio: The smallest possible ratio that the reserve ratio can be reduced to.",
+      "Step Weight: The total amount (percentage) that a reserve ratio can decrease when calling reduceWeight().",
+      "Market Cap. Threshold (optional): The market capitalization in which funds can no longer be transferred from the Reserve."
     ]
+  },
+  {
+    "kind": "ul",
+    "items": [
+      "Maximum Reinflation (optional): The total amount a Reserve Ratio can be reinflated (increased) to once its reserve ratio has passed that threshold."
+    ]
+  },
+  {
+    "kind": "p",
+    "text": "When successfully executing the reduceWeight method, tokens held by the reserve equal to the Step Weight are automatically transferred to the owner (via msg.sender) in the transaction. Conversely, once a Reserve has been reduced past its Maximum Reinflation parameter, all future token purchases will be directly deposited into the token’s reserve to restabilize the token, thereby bypassing the standard formula for token price and issuance. Once the token’s reserve reaches or exceeds its point of Maximum Reinflation, token purchases will resume as normal and continue to autonomously expand the token’s supply as per its standard formula."
   },
   {
     "kind": "figure",
@@ -486,8 +659,12 @@ export const blocks: Block[] = [
   {
     "kind": "ol",
     "items": [
-      "Network Token Exchange: Infinity's primary utility model facilitates the exchange of Network Tokens in Zero. Each Network is required to utilize an Exchange Token, that is fractionally backed with Infinity as a Reserve. This enables automatic price discovery and the seamless exchange between any Token within the Zero Network, simultaneously removing the need for both centralized exchanges and decentralized liquidity pools (as are required with Uniswap). 2. ZNS Registries: Infinity's secondary utility model enables the purchase and sale of public namespaces, such as Member handles and domains via the Zero Name Service. Members can stake Infinity to purchase Zero Registries and Registry Entries. Registries represent 'root' namespaces within ZNS, such as '0://rootdomain', and enable Registry owners to sell associated domains, such as 0://rootdomain::domain. ZNS is further outlined in Section 4.3.1 Zero Name Service (ZNS) Protocol. 3. Infinity Mining: Infinity's tertiary token model is to incentivize Members to power the Zero Grid. In exchange for providing network compute, bandwidth, and web services (Dynos), Members receive hosting Credits (as outlined in Section 4.2.6 The Creditor) that are redeemable for Infinity. Redeemed Infinity can then be sold on the open market for traditional currencies, such as ETH, BTC or USD, creating a globally distributed and decentralized computing network. Example Dynos include additional storage, high availability video conferencing, and virtual world servers. The process of receiving Infinity in exchange for powering the grid is referred to as 'Infinity Mining'. Infinity can be thought of as the ‘fractional reserve’ that backs the Infinity Economy. This structure creates three powerful mutual incentives for all Members of the Infinite Economy. First, holding Infinity as the primary Reserve asset in an Exchange or Dynamic Token facilitates the seamless exchange and automatic pricing for tokens in the Infinite Economy. Technically, a common Reserve token is necessary in order to facilitate entirely on-chain exchange between two Exchange Tokens. This increases liquidity between all Exchange Tokens in the overall economy, something that is generally a primary issue with new tokens, communities, and projects. In this way, Infinity makes a ‘long-tail’ of tokens possible for new upstarts. Second, a shared Reserve Token aligns incentives between all Zero Networks and the Zero system itself. As the Infinite economy grows and experiences network effects, individual (and especially early) Networks benefit proportional to the percentage they've chosen to back their token by the Infinity Token. This leads to the increase in value of a Network irrespective (and in addition to) the growth of their individual Networks economy. Third, Infinity eventually plans to be pegged to a basket of underlying Tokens that have been selected for long-term growth potential (such as Gold, Bitcoin, and Ethereum). This enables Networks and their associated tokens to benefit from the overall macro-transition away from fiat-based currencies that are occurring and hedge volatility risk. Irrespective of an individual Network's success, or even the Zero platform's success, Infinity stands to benefit if precious metals and crypto assets perform generally well over the long-term."
+      "Network Token Exchange: Infinity's primary utility model facilitates the exchange of Network Tokens in Zero."
     ]
+  },
+  {
+    "kind": "p",
+    "text": "Each Network is required to utilize an Exchange Token, that is fractionally backed with Infinity as a Reserve. This enables automatic price discovery and the seamless exchange between any Token within the Zero Network, simultaneously removing the need for both centralized exchanges and decentralized liquidity pools (as are required with Uniswap). 2. ZNS Registries: Infinity's secondary utility model enables the purchase and sale of public namespaces, such as Member handles and domains via the Zero Name Service. Members can stake Infinity to purchase Zero Registries and Registry Entries. Registries represent 'root' namespaces within ZNS, such as '0://rootdomain', and enable Registry owners to sell associated domains, such as 0://rootdomain::domain. ZNS is further outlined in Section 4.3.1 Zero Name Service (ZNS) Protocol. 3. Infinity Mining: Infinity's tertiary token model is to incentivize Members to power the Zero Grid. In exchange for providing network compute, bandwidth, and web services (Dynos), Members receive hosting Credits (as outlined in Section 4.2.6 The Creditor) that are redeemable for Infinity. Redeemed Infinity can then be sold on the open market for traditional currencies, such as ETH, BTC or USD, creating a globally distributed and decentralized computing network. Example Dynos include additional storage, high availability video conferencing, and virtual world servers. The process of receiving Infinity in exchange for powering the grid is referred to as 'Infinity Mining'. Infinity can be thought of as the ‘fractional reserve’ that backs the Infinity Economy. This structure creates three powerful mutual incentives for all Members of the Infinite Economy. First, holding Infinity as the primary Reserve asset in an Exchange or Dynamic Token facilitates the seamless exchange and automatic pricing for tokens in the Infinite Economy. Technically, a common Reserve token is necessary in order to facilitate entirely on-chain exchange between two Exchange Tokens. This increases liquidity between all Exchange Tokens in the overall economy, something that is generally a primary issue with new tokens, communities, and projects. In this way, Infinity makes a ‘long-tail’ of tokens possible for new upstarts. Second, a shared Reserve Token aligns incentives between all Zero Networks and the Zero system itself. As the Infinite economy grows and experiences network effects, individual (and especially early) Networks benefit proportional to the percentage they've chosen to back their token by the Infinity Token. This leads to the increase in value of a Network irrespective (and in addition to) the growth of their individual Networks economy. Third, Infinity eventually plans to be pegged to a basket of underlying Tokens that have been selected for long-term growth potential (such as Gold, Bitcoin, and Ethereum). This enables Networks and their associated tokens to benefit from the overall macro-transition away from fiat-based currencies that are occurring and hedge volatility risk. Irrespective of an individual Network's success, or even the Zero platform's success, Infinity stands to benefit if precious metals and crypto assets perform generally well over the long-term."
   },
   {
     "kind": "p",
@@ -530,7 +707,20 @@ export const blocks: Block[] = [
   },
   {
     "kind": "p",
-    "text": "Each AU is issued based on Zero's 'Credit Entitlement Algorithm', or CEA. The CEA utilizes an internal set of calculations that produce four primary scores that get associated to each Node and active Dyno: ● Uptime: A 0-100 scalar value representing historical system availability over time. ● Utilization: A 0-100 scalar value representing historical Node Dyno utilization over time. ● Latency: A weighted-average of time in milliseconds for processing incoming and outgoing network requests for an individual Dyno over time. ● Credibility: The reputation of the Node (or operator) as determined by other peers in the Zero Grid at the time of calculation. Here is the generalized formula used to calculate a Node and/or Dyno’s performance using CEA:"
+    "text": "Each AU is issued based on Zero's 'Credit Entitlement Algorithm', or CEA. The CEA utilizes an internal set of calculations that produce four primary scores that get associated to each Node and active Dyno:"
+  },
+  {
+    "kind": "ul",
+    "items": [
+      "Uptime: A 0-100 scalar value representing historical system availability over time.",
+      "Utilization: A 0-100 scalar value representing historical Node Dyno utilization over time.",
+      "Latency: A weighted-average of time in milliseconds for processing incoming and outgoing network requests for an individual Dyno over time.",
+      "Credibility: The reputation of the Node (or operator) as determined by other peers in the Zero Grid at the time of calculation."
+    ]
+  },
+  {
+    "kind": "p",
+    "text": "Here is the generalized formula used to calculate a Node and/or Dyno’s performance using CEA:"
   },
   {
     "kind": "p",
@@ -551,6 +741,20 @@ export const blocks: Block[] = [
     "text": "Zero's Dyno Matcher aims to ensure that Nodes requesting services are matched with the highest quality Nodes and Dynos available within the Zero Grid. Nodes and Dynos are hereinafter referred to as Node Dyno pairs, given that all matching requires a Node to be matched via a Dyno. One way to think of the Dyno Matcher is an agent-centric approach to index and connect additional services that are useful beyond zChain. Ths process enables peers to establish connections directly with Node Dynos that can exist at any endpoint, including centralized servers or peers in any type of distributed network."
   },
   {
+    "kind": "p",
+    "text": "As outlined in the previous Section 4.2.6 The Creditor, after CEA(t) calculations are performed, this data is propagated to other peers in the Zero Grid using a gossip protocol. As CEA(t) data is received, the Dyno Matcher stack ranks Node Dyno pairs with associated scores. Once this occurs an additional process is run that continually pings the top resulting Nodes within the stack rank that also adds network latency data to the stack rank. If latency falls below a certain threshold, the Node is temporarily removed from the stack rank until it makes it back into the ranking. Providing a Node Dyno-pair’s latency is within an acceptable range, the Node then establishes a connection from the local machine to Node running the Dyno (otherwise known as the Dyno host). Once the service is instantiated, address information and credentials are sent to other relevant peers. To illustrate this, let's explore the process of a Node establishing a video conference with multiple parties:"
+  },
+  {
+    "kind": "ol",
+    "items": [
+      "The Member submits a Message to the Dyno Matcher to start a new video conference from their local machine.",
+      "The Dyno Matcher pings the top ranking video conferencing Dynos according to the most recent data recorded in the Member's local CET stack ranking. This data has been previously gossiped by other Nodes on the Network.",
+      "Once the Node has found a viable Dyno, it sends a direct request to spawn a new connection instance for the relevant Dyno on the host’s machine.",
+      "If the Video Conferencing Dyno instance is successfully deployed, a connection is established, and the requisite process is established on the remote machine.",
+      "A unique url and set of access credentials are created to access the host machine.The remote IP / domain, route and necessary credentials are provided, such as: ‘https://video.zer0.io/TCP/23.29.18.18/video/videoConfName’. Members are provided that link along with a password that must be entered upon arriving at the url. As more Members place system load on the top ranking Nodes, scores are dynamically adjusted and propagated to other Nodes in the Grid using the gossip protocol. Nodes with more capacity and better performance move up in rank, creating a natural balancing effect between Node Dyno pairs within the Grid. Given that matching happens using an agent-centric approach, different clusters of Nodes maintain unique stack ranks, further aiding with network distribution, and supporting to alleviate potential congestion."
+    ]
+  },
+  {
     "kind": "figure",
     "src": "/images/research/zero-os/img-14-p33-1090x222.jpeg",
     "w": 1090,
@@ -561,14 +765,6 @@ export const blocks: Block[] = [
     "src": "/images/research/zero-os/img-15-p33-1194x250.jpeg",
     "w": 1194,
     "h": 250
-  },
-  {
-    "kind": "p",
-    "text": "As outlined in the previous Section 4.2.6 The Creditor, after CEA(t) calculations are performed, this data is propagated to other peers in the Zero Grid using a gossip protocol. As CEA(t) data is received, the Dyno Matcher stack ranks Node Dyno pairs with associated scores. Once this occurs an additional process is run that continually pings the top resulting Nodes within the stack rank that also adds network latency data to the stack rank. If latency falls below a certain threshold, the Node is temporarily removed from the stack rank until it makes it back into the ranking. Providing a Node Dyno-pair’s latency is within an acceptable range, the Node then establishes a connection from the local machine to Node running the Dyno (otherwise known as the Dyno host). Once the service is instantiated, address information and credentials are sent to other relevant peers. To illustrate this, let's explore the process of a Node establishing a video conference with multiple parties: 1. The Member submits a Message to the Dyno Matcher to start a new video conference from their local machine. 2. The Dyno Matcher pings the top ranking video conferencing Dynos according to the most recent data recorded in the Member's local CET stack ranking. This data has been previously gossiped by other Nodes on the Network. 3. Once the Node has found a viable Dyno, it sends a direct request to spawn a new connection instance for the relevant Dyno on the host’s machine. 4. If the Video Conferencing Dyno instance is successfully deployed, a connection is established, and the requisite process is established on the remote machine. 5. A unique url and set of access credentials are created to access the host machine.The remote IP / domain, route and necessary credentials are provided, such as:"
-  },
-  {
-    "kind": "p",
-    "text": "along with a password that must be entered upon arriving at the url. As more Members place system load on the top ranking Nodes, scores are dynamically adjusted and propagated to other Nodes in the Grid using the gossip protocol. Nodes with more capacity and better performance move up in rank, creating a natural balancing effect between Node Dyno pairs within the Grid. Given that matching happens using an agent-centric approach, different clusters of Nodes maintain unique stack ranks, further aiding with network distribution, and supporting to alleviate potential congestion."
   },
   {
     "kind": "h",
@@ -614,7 +810,10 @@ export const blocks: Block[] = [
   {
     "kind": "ul",
     "items": [
-      "0:: -> is used to signify the beginning of a Zero Address path. ● 0:rootaddr -> The first value in the address is a root domain that references a unique Registry Contract and Member-defined reference value. ● 0:rootaddr:domain -> The second value in the address is a domain that references an Entry within the Registry, along with a Member-defined reference value. ● 0:rootaddr:domain:content -> The third value in the address represents a path defined within the Registry Entry."
+      "0:: -> is used to signify the beginning of a Zero Address path.",
+      "0:rootaddr -> The first value in the address is a root domain that references a unique Registry Contract and Member-defined reference value.",
+      "0:rootaddr:domain -> The second value in the address is a domain that references an Entry within the Registry, along with a Member-defined reference value.",
+      "0:rootaddr:domain:content -> The third value in the address represents a path defined within the Registry Entry."
     ]
   },
   {
@@ -654,7 +853,7 @@ export const blocks: Block[] = [
   },
   {
     "kind": "p",
-    "text": "A Global Handle is a human readable name (such as @n3o) and associated ZNS path and url, or Registry Entry. Global Handles can be utilized to reference either an individual Account, Avatar, Network, Cluster, or any arbitrary content source. Global Handles can exist at the ZNS root (0://), or can exist within a Registry Entry (such as 0://mynetwork/n3o)."
+    "text": "A Global Handle is a human readable name (such as @n3o) and associated ZNS path and url, such as 0:://n3o and https://zer0.io/n3o, respectively, that links to the ZNS reference of a Registry or Registry Entry. Global Handles can be utilized to reference either an individual Account, Avatar, Network, Cluster, or any arbitrary content source. Global Handles can exist at the ZNS root (0://), or can exist within a Registry Entry (such as 0://mynetwork/n3o)."
   },
   {
     "kind": "h",
@@ -693,7 +892,19 @@ export const blocks: Block[] = [
   },
   {
     "kind": "p",
-    "text": "Human Verification in Zero is used to determine whether or not a Handle is operated by a real human identity. The ZNS Human Verification process, outlined herein, is an alternative to both centralized verification processes and automated verification processes, such as Twitter’s infamous blue check or a CAPTCHA system, respectively. Verification in Zero is loosely modeled off of the simple approach introduced by HumanityDAO in 2019. Unlike blue check systems utilized in services like Instagram and Twitter, verification in Zero is not intended to serve as a symbol for popularity, notoriety, or status, it is merely to determine if an individual is human or not. Initially, there will be three tiers of identity verification in ZNS, which will result in a different level of Omega tokens being issued to a Member within the ZNS DAO (outlined in Section 4.3.1.2). Verification is managed by creating a Choice in the ZNS DAO to request and issue one or more ZNS DAO Omega tokens to a Member’s account. Prior to starting this process, a Member must already have a registered Handle, which is associated to their zId and Ethereum account, by having purchased a new ZNS Registry or Registry Entry and staking Infinity. The Member may submit a Choice of type ‘identity’ to a DAO. By default, one Omega token is requested in the amount parameter for the Choice. The Member may choose to increase this number if they feel they deserve more Omega tokens in zDAO. Active and early contributors to the Zero ecosystem are likely to request and receive more Omega due their being less participants. A Member's total Omega within the ZNS DAO relative to the total amount of issued reputation in zDAO determines a Member's voting weight (choice making authority) within the ZNS DAO. This number can also be used as a proxy by developers to determine the probability an individual account is human. When a verification Choice is submitted, existing Omega holders in the ZNS DAO can vote as to whether or not they believe the account is a human. Verification Choices require the Member to submit third party proof of identity. Initially, the ZNS DAO will allocate different amounts of Omega tokens for three tiers of Identity verification: ● Tier 1: Online Accounts: Access to a unique, pre-existing account for a major online service, that has not already been linked to a Handle in zDAO. Valid examples include Twitter, Facebook, GitHub, and Behance, and require the Member to post their public zId within a public post on at least one of these services. ● Tier 2: Government Issued ID: An encrypted and password-protected photo of a government issued ID, such as an identity card, birth certificate, or passport. ● Tier 3: Formal KYC: Formal KYC using a globally regulated third party service, such as everest.org. Verification is entirely optional and not required to utilize the Zero system, but may be used by developers to create applications that require varying levels of identity verification."
+    "text": "Human Verification in Zero is used to determine whether or not a Handle is operated by a real human identity. The ZNS Human Verification process, outlined herein, is an alternative to both centralized verification processes and automated verification processes, such as Twitter’s infamous blue check or a CAPTCHA system, respectively. Verification in Zero is loosely modeled off of the simple approach introduced by HumanityDAO in 2019. Unlike blue check systems utilized in services like Instagram and Twitter, verification in Zero is not intended to serve as a symbol for popularity, notoriety, or status, it is merely to determine if an individual is human or not. Initially, there will be three tiers of identity verification in ZNS, which will result in a different level of Omega tokens being issued to a Member within the ZNS DAO (outlined in Section 4.3.1.2). Verification is managed by creating a Choice in the ZNS DAO to request and issue one or more ZNS DAO Omega tokens to a Member’s account. Prior to starting this process, a Member must already have a registered Handle, which is associated to their zId and Ethereum account, by having purchased a new ZNS Registry or Registry Entry and staking Infinity. The Member may submit a Choice of type ‘identity’ to a DAO. By default, one Omega token is requested in the amount parameter for the Choice. The Member may choose to increase this number if they feel they deserve more Omega tokens in zDAO. Active and early contributors to the Zero ecosystem are likely to request and receive more Omega due their being less participants. A Member's total Omega within the ZNS DAO relative to the total amount of issued reputation in zDAO determines a Member's voting weight (choice making authority) within the ZNS DAO. This number can also be used as a proxy by developers to determine the probability an individual account is human. When a verification Choice is submitted, existing Omega holders in the ZNS DAO can vote as to whether or not they believe the account is a human. Verification Choices require the Member to submit third party proof of identity. Initially, the ZNS DAO will allocate different amounts of Omega tokens for three tiers of Identity verification:"
+  },
+  {
+    "kind": "ul",
+    "items": [
+      "Tier 1: Online Accounts: Access to a unique, pre-existing account for a major online service, that has not already been linked to a Handle in zDAO. Valid examples include Twitter, Facebook, GitHub, and Behance, and require the Member to post their public zId within a public post on at least one of these services.",
+      "Tier 2: Government Issued ID: An encrypted and password-protected photo of a government issued ID, such as an identity card, birth certificate, or passport.",
+      "Tier 3: Formal KYC: Formal KYC using a globally regulated third party service, such as everest.org."
+    ]
+  },
+  {
+    "kind": "p",
+    "text": "Verification is entirely optional and not required to utilize the Zero system, but may be used by developers to create applications that require varying levels of identity verification."
   },
   {
     "kind": "h",
@@ -718,13 +929,25 @@ export const blocks: Block[] = [
   },
   {
     "kind": "p",
-    "text": "Registrar.sol is the root contract for creating and storing Registries. New Registries are created by calling the createRegistry() method by providing a valid: ● domain: a globally unique and Member-defined root domain ● ref: a reference to an arbitrary content source such as a url like"
+    "text": "Registrar.sol is the root contract for creating and storing Registries. New Registries are created by calling the createRegistry() method by providing a valid:"
   },
   {
     "kind": "ul",
     "items": [
-      "registryType: a valid registry type to aid with indexing registries. Valid registry types are defined by the ZNS DAO (See Governance & Staking section below).",
-      "stakePrice: the price of registering an entry (a domain) with the Registry such as zero:guild ● registryTokenAddress: the address of the registry's RegistryToken. RegistryToken:"
+      "domain: a globally unique and Member-defined root domain",
+      "ref: a reference to an arbitrary content source such as a url like https://zer0.io/network/zero",
+      "registryType: a valid registry type to aid with indexing registries."
+    ]
+  },
+  {
+    "kind": "p",
+    "text": "Valid registry types are defined by the ZNS DAO (See Governance & Staking section below)."
+  },
+  {
+    "kind": "ul",
+    "items": [
+      "stakePrice: the price of registering an entry (a domain) with the Registry such as zero:guild",
+      "registryTokenAddress: the address of the registry's RegistryToken. RegistryToken:"
     ]
   },
   {
@@ -737,7 +960,17 @@ export const blocks: Block[] = [
   },
   {
     "kind": "p",
-    "text": "A new RegistryToken is created on construction by providing a valid: ● owner: the owner's Ethereum address ● tokenName: the token's name such as 'Infinity' ● tokenSymbol: the token's ticker such as 'INI' ● tokenSupply: the token's initial total number of tokens in circulation ● stakePrice: the price for registering a new registry entry (a domain)"
+    "text": "A new RegistryToken is created on construction by providing a valid:"
+  },
+  {
+    "kind": "ul",
+    "items": [
+      "owner: the owner's Ethereum address",
+      "tokenName: the token's name such as 'Infinity'",
+      "tokenSymbol: the token's ticker such as 'INI'",
+      "tokenSupply: the token's initial total number of tokens in circulation",
+      "stakePrice: the price for registering a new registry entry (a domain)"
+    ]
   },
   {
     "kind": "p",
@@ -782,7 +1015,20 @@ export const blocks: Block[] = [
   },
   {
     "kind": "p",
-    "text": "A DAO requires a valid name, Token and Omega Token to be instantiated at genesis. Generating a new DAO in Zero requires three parameters: ● DAOName: a string for the DAO's name ● DAOToken: a Token that represents economic value within the DAO ● omegaToken: a Token that represents voting weight within the DAO ● AttentionContract (optional): an AttentionContract that determines the visibility and rank of Choices within the DAO Unlike Exchange and Dynamic Tokens, DAO Tokens have a fixed supply. DAOs can be linked to individual Networks and Tokens in one-to-one, one-to-many, and many-to-many relationships. Linking occurs when a Network's associated ZNS Registry, Registry Entry, and/or Exchange Token is linked to an individual DAO's Ethereum Address."
+    "text": "A DAO requires a valid name, Token and Omega Token to be instantiated at genesis. Generating a new DAO in Zero requires three parameters:"
+  },
+  {
+    "kind": "ul",
+    "items": [
+      "DAOName: a string for the DAO's name",
+      "DAOToken: a Token that represents economic value within the DAO",
+      "omegaToken: a Token that represents voting weight within the DAO",
+      "AttentionContract (optional): an AttentionContract that determines the visibility and rank of Choices within the DAO Unlike Exchange and Dynamic Tokens, DAO Tokens have a fixed supply."
+    ]
+  },
+  {
+    "kind": "p",
+    "text": "DAOs can be linked to individual Networks and Tokens in one-to-one, one-to-many, and many-to-many relationships. Linking occurs when a Network's associated ZNS Registry, Registry Entry, and/or Exchange Token is linked to an individual DAO's Ethereum Address."
   },
   {
     "kind": "p",
@@ -801,8 +1047,16 @@ export const blocks: Block[] = [
   {
     "kind": "ul",
     "items": [
-      "name: a string of the token’s name (e.g. InfinityDAO) ● symbol: a string representing the token’s abbreviation (e.g. INI) ● decimals: a uint8 representing the total decimals permitted (e.g. 18) ● cap: a uint256 representing the maximum number of tokens allowed ● transactions: a uint256 store of historical transactions DAO Tokens are controlled by the DAO Mind. A DAO Token's parameters can be updated by approved Neurons (as outlined in Section 4.3.8 Neuron). Neurons are autonomous code that can be assigned to manage DAO choice making and code execution."
+      "name: a string of the token’s name (e.g. InfinityDAO)",
+      "symbol: a string representing the token’s abbreviation (e.g. INI)",
+      "decimals: a uint8 representing the total decimals permitted (e.g. 18)",
+      "cap: a uint256 representing the maximum number of tokens allowed",
+      "transactions: a uint256 store of historical transactions DAO Tokens are controlled by the DAO Mind."
     ]
+  },
+  {
+    "kind": "p",
+    "text": "A DAO Token's parameters can be updated by approved Neurons (as outlined in Section 4.3.8 Neuron). Neurons are autonomous code that can be assigned to manage DAO choice making and code execution."
   },
   {
     "kind": "h",
@@ -822,7 +1076,26 @@ export const blocks: Block[] = [
   },
   {
     "kind": "p",
-    "text": "The DAOMind is the primary contract responsible for modulating decisions within the zDAO protocol. The DAOMind is managed by approved Neurons (outlined in Section 4.3.7, Neurons), which maintain specific 'permissions' over a DAO's actions. A DAOMind is instantiated with a single parameter: ● DAO: the address of the corresponding DAO DAOTokens can be: ● minted ● burned ● transferred ● received Neurons can be: ● activated ● deactivated The DAOMind has seven primary permission modifiers: ● PermissionToActivateNeuron ● PermissionToDeactivateNeuron ● PermissionToMintToken ● PermissionToBurnToken ● PermissionToTransferToken ● PermissionToTransferTokenFrom ● PermissionToApproveToken Upon activation of a Neuron, one or more PermissionTypes that determine the Neuron’s choice-making capacity are set inside DAOMind."
+    "text": "The DAOMind is the primary contract responsible for modulating decisions within the zDAO protocol. The DAOMind is managed by approved Neurons (outlined in Section 4.3.7, Neurons), which maintain specific 'permissions' over a DAO's actions. A DAOMind is instantiated with a single parameter:"
+  },
+  {
+    "kind": "ul",
+    "items": [
+      "DAO: the address of the corresponding DAO DAOTokens can be:",
+      "minted",
+      "burned",
+      "transferred",
+      "received Neurons can be:",
+      "activated",
+      "deactivated The DAOMind has seven primary permission modifiers:",
+      "PermissionToActivateNeuron",
+      "PermissionToDeactivateNeuron",
+      "PermissionToMintToken",
+      "PermissionToBurnToken",
+      "PermissionToTransferToken",
+      "PermissionToTransferTokenFrom",
+      "PermissionToApproveToken Upon activation of a Neuron, one or more PermissionTypes that determine the Neuron’s choice-making capacity are set inside DAOMind."
+    ]
   },
   {
     "kind": "h",
@@ -832,7 +1105,21 @@ export const blocks: Block[] = [
   },
   {
     "kind": "p",
-    "text": "A Choice in Zero is the primary mechanism for initiating a vote to perform a specific action within a DAO. A Choice can be for virtually any type of suggestion or initiative. A Choice must be initiated by a Member who is referred to as the proposer. A Choice is a proposed voting event within a DAO, managed by the DAOMind. A Choice is initialized with five parameters: ● DAO: the corresponding DAO ● DAOToken: a DAOToken that will be utilized by the result of the Choice ● choiceType: the type of transaction being proposed, i.e., to mint, burn, transfer, or increase the supply of a DAOToken. Please note that approving a new Member is a subset of transferring DAOToken, since holding DAOToken is the criteria for being a Member of a DAO. ● status: one of three valid statuses: proposed, approved, or rejected ● Neuron: the associated Neuron and resulting code sequence that executed in the event of an accepted status. A Choice has its own internal data structure to store ChoiceData, such as the proposer, an associated url for additional information, the status, vote count, and voter history. Choices are passed based on a binary yes/no voting system and utilize weighted-Omega as a primary mechanism to determine if a Choice is approved or denied. If a Choice is accepted it will perform the Choice’s corresponding action automatically, as determined by the connected Neuron within the Choice. Choices by default must be executed within a timeframe that is determined universally as part of a Neuron’s interface definition. In the event of a large DAO, such as a social network, it is easy to imagine millions of Choices being created by Members. This creates an existential problem for collective choice making: how should attention or rank be determined for new Choices? Zero enables DAO’s to choose or build their own ‘attention algorithm’, called an AttentionContract, which defines the order and method by which Choices are displayed within a particular DAO. The AttentionContract is an optional parameter that is defined during or after DAO instantiation."
+    "text": "A Choice in Zero is the primary mechanism for initiating a vote to perform a specific action within a DAO. A Choice can be for virtually any type of suggestion or initiative. A Choice must be initiated by a Member who is referred to as the proposer. A Choice is a proposed voting event within a DAO, managed by the DAOMind. A Choice is initialized with five parameters:"
+  },
+  {
+    "kind": "ul",
+    "items": [
+      "DAO: the corresponding DAO",
+      "DAOToken: a DAOToken that will be utilized by the result of the Choice",
+      "choiceType: the type of transaction being proposed, i.e., to mint, burn, transfer, or increase the supply of a DAOToken. Please note that approving a new Member is a subset of transferring DAOToken, since holding DAOToken is the criteria for being a Member of a DAO.",
+      "status: one of three valid statuses: proposed, approved, or rejected",
+      "Neuron: the associated Neuron and resulting code sequence that executed in the event of an accepted status."
+    ]
+  },
+  {
+    "kind": "p",
+    "text": "A Choice has its own internal data structure to store ChoiceData, such as the proposer, an associated url for additional information, the status, vote count, and voter history. Choices are passed based on a binary yes/no voting system and utilize weighted-Omega as a primary mechanism to determine if a Choice is approved or denied. If a Choice is accepted it will perform the Choice’s corresponding action automatically, as determined by the connected Neuron within the Choice. Choices by default must be executed within a timeframe that is determined universally as part of a Neuron’s interface definition. In the event of a large DAO, such as a social network, it is easy to imagine millions of Choices being created by Members. This creates an existential problem for collective choice making: how should attention or rank be determined for new Choices? Zero enables DAO’s to choose or build their own ‘attention algorithm’, called an AttentionContract, which defines the order and method by which Choices are displayed within a particular DAO. The AttentionContract is an optional parameter that is defined during or after DAO instantiation."
   },
   {
     "kind": "h",
@@ -842,7 +1129,20 @@ export const blocks: Block[] = [
   },
   {
     "kind": "p",
-    "text": "A Neuron is an autonomous and immutable smart contract that can be assigned to control various aspects of a DAO, according to parameters set and stored in the Neuron’s struct once it is assigned by a DAOMind. Neurons make calls to the DAOMind based on their own internal logic, and must be registered (approved) by the DAO Mind to execute certain methods (actions) on behalf of the DAO. Neurons may themselves add and remove other Neurons, enabling a DAO to effectively upgrade its own governance system recursively, without the need for a third party or intermediary. Thus, a DAO can not only manage itself according to a defined set of rules, but may evolve itself over time in an autopoietic manner. A Neuron is instantiated with the following parameters: ● neuronName: a string of the Neuron's name ● neuronToken: a DAOToken associated with the Neuron ● votingEngine: a votingEngine to manage Choices ● permissions: an array representing the permissions defined in DAOMind A Neuron can be programmed to run with or without spawning a Choice that DAO Members are required to vote on. Developers can easily build custom Neuron constraints as long as the Neuron’s smart contract address is approved and registered in the DAOMind. In the event that a major technical upgrade is needed, the Mind is capable of upgrading itself by transferring the ownership of all its associated smart contracts to a new address. This transaction is non-reversible and non-transferable. Calling this method can be determined by a vote at the discretion of DAO members."
+    "text": "A Neuron is an autonomous and immutable smart contract that can be assigned to control various aspects of a DAO, according to parameters set and stored in the Neuron’s struct once it is assigned by a DAOMind. Neurons make calls to the DAOMind based on their own internal logic, and must be registered (approved) by the DAO Mind to execute certain methods (actions) on behalf of the DAO. Neurons may themselves add and remove other Neurons, enabling a DAO to effectively upgrade its own governance system recursively, without the need for a third party or intermediary. Thus, a DAO can not only manage itself according to a defined set of rules, but may evolve itself over time in an autopoietic manner. A Neuron is instantiated with the following parameters:"
+  },
+  {
+    "kind": "ul",
+    "items": [
+      "neuronName: a string of the Neuron's name",
+      "neuronToken: a DAOToken associated with the Neuron",
+      "votingEngine: a votingEngine to manage Choices",
+      "permissions: an array representing the permissions defined in DAOMind A Neuron can be programmed to run with or without spawning a Choice that DAO Members are required to vote on."
+    ]
+  },
+  {
+    "kind": "p",
+    "text": "Developers can easily build custom Neuron constraints as long as the Neuron’s smart contract address is approved and registered in the DAOMind. In the event that a major technical upgrade is needed, the Mind is capable of upgrading itself by transferring the ownership of all its associated smart contracts to a new address. This transaction is non-reversible and non-transferable. Calling this method can be determined by a vote at the discretion of DAO members."
   },
   {
     "kind": "h",
@@ -852,7 +1152,20 @@ export const blocks: Block[] = [
   },
   {
     "kind": "p",
-    "text": "A Voting Engine defines the criteria for whether an individual Choice passes or fails. Creating a new Voting Engine requires the following two parameters: ● name: a string of the Voting Engine’s name (e.g. Absolute Majority) ● acceptanceThreshold: a uint256 representing the percentage threshold the Omega votes for a Choice must achieve in order to be accepted. Example Voting Engines include: ● Absolute Majority Engine: Votes are counted based on the total amount of Omega that has voted in favor of a Choice, divided by the total supply of Omega token that is connected to the Neuron. ● Relative Majority Engine: Votes are counted based on the relative amount of Omega that has voted in favor of a Choice, divided by the total amount of Omega that has voted within the allotted time frame. Neurons (outlined in Section 4.3.8 Neurons) require a singular Voting Engine that is used to determine the acceptance criteria of Choices."
+    "text": "A Voting Engine defines the criteria for whether an individual Choice passes or fails. Creating a new Voting Engine requires the following two parameters:"
+  },
+  {
+    "kind": "ul",
+    "items": [
+      "name: a string of the Voting Engine’s name (e.g. Absolute Majority)",
+      "acceptanceThreshold: a uint256 representing the percentage threshold the Omega votes for a Choice must achieve in order to be accepted. Example Voting Engines include:",
+      "Absolute Majority Engine: Votes are counted based on the total amount of Omega that has voted in favor of a Choice, divided by the total supply of Omega token that is connected to the Neuron.",
+      "Relative Majority Engine: Votes are counted based on the relative amount of Omega that has voted in favor of a Choice, divided by the total amount of Omega that has voted within the allotted time frame."
+    ]
+  },
+  {
+    "kind": "p",
+    "text": "Neurons (outlined in Section 4.3.8 Neurons) require a singular Voting Engine that is used to determine the acceptance criteria of Choices."
   },
   {
     "kind": "h",
@@ -866,7 +1179,37 @@ export const blocks: Block[] = [
   },
   {
     "kind": "p",
-    "text": "A When a new Task is initiated, tokens are sent to the Task contract, which serves as a form of escrow between the proposer (task creator) and assignee (individual doing the work). A Task is instantiated with the following parameters: ● taskName: a string of the Task’s name. ● owner: the ethereum address of the Task creator. ● amount: the Task contract amount denominated in Infinity, ETH, or DAI. ● assigned: the ethereum address for the who the task is assigned. ● status: a string of a valid task status. ● url: a link to Zero Task url, which may include additional Task details and fields. Tasks can be assigned one of six valid statuses: 1. New: No one has been assigned to the Task yet. 2. Accepted: The task has been accepted by a Member but not started. 3. In Progress: The Task has been started and is in progress. 4. Ready for Review: The Task is ready to be reviewed, such as with a design, feature or code review. 5. Paid: The Task has been paid to the assigned user. 6. Dispute: The Task ended in a dispute. Tasks are a base contract and accompanying interface that can be used to create different types of Tasks with more complicated parameters and decision flows."
+    "text": "A When a new Task is initiated, tokens are sent to the Task contract, which serves as a form of escrow between the proposer (task creator) and assignee (individual doing the work). A Task is instantiated with the following parameters:"
+  },
+  {
+    "kind": "ul",
+    "items": [
+      "taskName: a string of the Task’s name.",
+      "owner: the ethereum address of the Task creator.",
+      "amount: the Task contract amount denominated in Infinity, ETH, or DAI.",
+      "assigned: the ethereum address for the who the task is assigned.",
+      "status: a string of a valid task status.",
+      "url: a link to Zero Task url, which may include additional Task details and fields."
+    ]
+  },
+  {
+    "kind": "p",
+    "text": "Tasks can be assigned one of six valid statuses:"
+  },
+  {
+    "kind": "ol",
+    "items": [
+      "New: No one has been assigned to the Task yet.",
+      "Accepted: The task has been accepted by a Member but not started.",
+      "In Progress: The Task has been started and is in progress.",
+      "Ready for Review: The Task is ready to be reviewed, such as with a design, feature or code review.",
+      "Paid: The Task has been paid to the assigned user.",
+      "Dispute: The Task ended in a dispute."
+    ]
+  },
+  {
+    "kind": "p",
+    "text": "Tasks are a base contract and accompanying interface that can be used to create different types of Tasks with more complicated parameters and decision flows."
   },
   {
     "kind": "h",
@@ -917,7 +1260,23 @@ export const blocks: Block[] = [
   },
   {
     "kind": "p",
-    "text": "Similar to the various functioning aspects of a government, the aforementioned currencies each represent an independent aspect of governance for the Infinite Economy. For comparison, Infinity (IOI) itself could be viewed as analogous to the United States dollar, Infinity’s Reserve to the Federal Reserve and central bank, the DAO to the Congress and Senate, the GUILD to the Executive Branch, ZNS to federal and state registries, and CRED to the banking system responsible for the issuance of credit. This is an imperfect comparison, however still useful in understanding the various components Zero provides to support in the operation of a functional society. Each of these DAO’s are fully sovereign and entirely responsible for managing their respective resources and responsibilities according to their own internal governance structure, and with the principles established in the Zero Constitution and InnerSource License. 5.1. Infinity Configuration/ Infinity (IOI, ∞) is a Dynamic Token that utilizes ETH as its singular Reserve Token. Once deployed, Zero Members zDAO, Zero’s primary governing DAO, may vote to change Infinity’s underlying reserve currency or create a more stable basket of currencies using a multi-asset liquidity pool. Infinity is a Dynamic Token (as outlined in Section 4.2.3 Dynamic Token) that will begin with an initial Reserve Ratio of 99%, and decrease at a rate of 3% (the Step Weight), to a minimum Reserve Ratio of 3%. The reduction of the Infinity Reserve requires a successful vote by zDAO, until the Infinite Economy reaches or exceeds a market capitalization of $9 billion (the Market Cap. Threshold). With each purchase of Infinity from its smart contract, the value of its reserve increases, stabilizing the economy and generating available capital that can be allocated by the community to fund the ecosystem. The initial configuration of Infinity is as follows: ● Reserve Token: Ethereum (ETH) ● Reserve Ratio: 90% initially ● Step Weight: 3% ● Initial Supply: 99,999 ● Initial Reserve: 0.001 ETH ● Initial Market Cap: 0.003 ETH ● Initial Price (for 1 ETH): 0.00000003 ETH As illustrated by the initial configuration, the starting market capitalization and purchase price of Infinity is effectively nil (hence, Zero), enabling the fair price of Infinity to be discovered by the market using genuine price discovery. The hope here is to operate in stark contrast to ICOs, where early token holders were taken advantage of using adversarial pricing mechanics. Infinity’s dynamic reserve model plays a key role in Zero’s model for incentivizing project and platform contributors, which include the various developers and stewards of Zero Networks, the Zero Stack, Zero Applications, Smart Objects, and other projects governed by the InnerSource license. Given that Zero will be able to draw on Infinity’s dynamic reserve to fund its operations as tokens are sold, the project does not need to rely on liquidating an initial supply of token for cash to pay contributors (or on paying contributors with liquid token, which amounts to the same thing economically)."
+    "text": "Similar to the various functioning aspects of a government, the aforementioned currencies each represent an independent aspect of governance for the Infinite Economy. For comparison, Infinity (IOI) itself could be viewed as analogous to the United States dollar, Infinity’s Reserve to the Federal Reserve and central bank, the DAO to the Congress and Senate, the GUILD to the Executive Branch, ZNS to federal and state registries, and CRED to the banking system responsible for the issuance of credit. This is an imperfect comparison, however still useful in understanding the various components Zero provides to support in the operation of a functional society. Each of these DAO’s are fully sovereign and entirely responsible for managing their respective resources and responsibilities according to their own internal governance structure, and with the principles established in the Zero Constitution and InnerSource License. 5.1. Infinity Configuration/ Infinity (IOI, ∞) is a Dynamic Token that utilizes ETH as its singular Reserve Token. Once deployed, Zero Members zDAO, Zero’s primary governing DAO, may vote to change Infinity’s underlying reserve currency or create a more stable basket of currencies using a multi-asset liquidity pool. Infinity is a Dynamic Token (as outlined in Section 4.2.3 Dynamic Token) that will begin with an initial Reserve Ratio of 99%, and decrease at a rate of 3% (the Step Weight), to a minimum Reserve Ratio of 3%. The reduction of the Infinity Reserve requires a successful vote by zDAO, until the Infinite Economy reaches or exceeds a market capitalization of $9 billion (the Market Cap. Threshold). With each purchase of Infinity from its smart contract, the value of its reserve increases, stabilizing the economy and generating available capital that can be allocated by the community to fund the ecosystem. The initial configuration of Infinity is as follows:"
+  },
+  {
+    "kind": "ul",
+    "items": [
+      "Reserve Token: Ethereum (ETH)",
+      "Reserve Ratio: 90% initially",
+      "Step Weight: 3%",
+      "Initial Supply: 99,999",
+      "Initial Reserve: 0.001 ETH",
+      "Initial Market Cap: 0.003 ETH",
+      "Initial Price (for 1 ETH): 0.00000003 ETH As illustrated by the initial configuration, the starting market capitalization and purchase price of Infinity is effectively nil (hence, Zero), enabling the fair price of Infinity to be discovered by the market using genuine price discovery."
+    ]
+  },
+  {
+    "kind": "p",
+    "text": "The hope here is to operate in stark contrast to ICOs, where early token holders were taken advantage of using adversarial pricing mechanics. Infinity’s dynamic reserve model plays a key role in Zero’s model for incentivizing project and platform contributors, which include the various developers and stewards of Zero Networks, the Zero Stack, Zero Applications, Smart Objects, and other projects governed by the InnerSource license. Given that Zero will be able to draw on Infinity’s dynamic reserve to fund its operations as tokens are sold, the project does not need to rely on liquidating an initial supply of token for cash to pay contributors (or on paying contributors with liquid token, which amounts to the same thing economically)."
   },
   {
     "kind": "p",
@@ -956,23 +1315,43 @@ export const blocks: Block[] = [
   },
   {
     "kind": "p",
-    "text": "Zero will be deployed in four core releases, Serenity, Symmetry, Asymmetry, and Time, followed by a bonus release, Space. These releases will be rolled out in succession between the end of 2020 and beginning of 2024. Figure: Zero Core Releases Releases one through four will focus on deploying the core components of the Zero Stack and moving successively towards increased community-based governance, until the entire Zero Stack and associated Networks reach full-decentralization. Zero’s first public release, Serenity, will be deployed on November third, 2020 and include the deployment of the following core components of the Zero Stack: 1. The Zero Web application. 2. The Zero Token System and Infinity Token, as outlined in Section 4.2.1 and 4.2.4, respectively. 3. Trinity, as outlined in Section 4.3.12 and 5.0. 4. The Zero Name Service, as outlined in Section 4.3.1. 5. The initial peer-to-peer version of ‘the ZeroSphere’, Zero’s public social network. 6. Zero Desktop for Mac, Windows, and Linux. 7. Zero Mobile for iPhone. 8."
+    "text": "Zero will be deployed in four core releases, Serenity, Symmetry, Asymmetry, and Time, followed by a bonus release, Space. These releases will be rolled out in succession between the end of 2020 and beginning of 2024. Figure: Zero Core Releases Releases one through four will focus on deploying the core components of the Zero Stack and moving successively towards increased community-based governance, until the entire Zero Stack and associated Networks reach full-decentralization. Zero’s first public release, Serenity, will be deployed on November third, 2020 and include the deployment of the following core components of the Zero Stack:"
+  },
+  {
+    "kind": "ol",
+    "items": [
+      "The Zero Web application.",
+      "The Zero Token System and Infinity Token, as outlined in Section 4.2.1 and 4.2.4, respectively.",
+      "Trinity, as outlined in Section 4.3.12 and 5.0.",
+      "The Zero Name Service, as outlined in Section 4.3.1.",
+      "The initial peer-to-peer version of ‘the ZeroSphere’, Zero’s public social network.",
+      "Zero Desktop for Mac, Windows, and Linux.",
+      "Zero Mobile for iPhone.",
+      "The launch of the zer0.io public website, which will include the ability to purchase Infinity, see network stats, register ZNS names, and launch Zero Networks and Tokens."
+    ]
   },
   {
     "kind": "p",
-    "text": "network stats, register ZNS names, and launch Zero Networks and Tokens. All source-code as part of this release will be open-sourced under the InnerSource license and be publicly available on GitHub. Zero’s second public release, Symmetry, will include: 1. zDAO, Zero’s DAO-based governance system, and Tasks, as outlined in Section 4.3.2, and Section 4.3.10. 2. Trinity, Zero’s constitutional governance framework and set of DAOs, as outlined in Section 4.3.12 and Appendix C."
+    "text": "All source-code as part of this release will be open-sourced under the InnerSource license and be publicly available on GitHub. Zero’s second public release, Symmetry, will include:"
   },
   {
-    "kind": "figure",
-    "src": "/images/research/zero-os/img-24-p55-1600x457.jpeg",
-    "w": 1600,
-    "h": 457
+    "kind": "ol",
+    "items": [
+      "zDAO, Zero’s DAO-based governance system, and Tasks, as outlined in Section 4.3.2, and Section 4.3.10.",
+      "Trinity, Zero’s constitutional governance framework and set of DAOs, as outlined in Section 4.3.12 and Appendix C."
+    ]
   },
   {
     "kind": "ol",
     "items": [
       "Zero Mobile for Android. Zero’s third release, Asymmetry, will include: 1. The production deployment of zChain (as outlined in Section 4.1.4), for both the ZeroSphere and Zero Networks. 2. The Creditor, Credits/CRED Token and Credit DAO, as outlined in Section 4.2.6, 4.2.6, 4.3.3, respectively. 3. The Reputation System, as outlined in Section 4.3.11. Zero’s fourth release, Time, will include: 1. Zero Developer SDK and App Store, as outlined in Section 4.1.9. 2. Dyno System, as outlined in Section 4.1.10. Zero’s final release, Space (or ‘zSpace’), will be the release of a persistent, photorealistic and distributed virtual world. zSpace has been in prototype development in Unreal Engine and will operate entirely through the use of virtual world dynos that are operated by the community within the Zero Grid. zSpace represents the underlying concepts of Zero, such as networks, worlds and universes, in immersive virtual space, that serves a higher fidelity extension of the Zero Member interface."
     ]
+  },
+  {
+    "kind": "figure",
+    "src": "/images/research/zero-os/img-24-p55-1600x457.jpeg",
+    "w": 1600,
+    "h": 457
   },
   {
     "kind": "h",
@@ -982,7 +1361,15 @@ export const blocks: Block[] = [
   },
   {
     "kind": "p",
-    "text": "A.1 Collective Intelligence & Coherence/ Dating far back as Aristotle's Politics, concepts such as Vladimir Vernadsky's 'noosphere' and H.G. Wells' 'world brain' have long considered the presence of a collective form of intelligence. From this lens, everything from the invention of language and writing, to the printing press, is the product of collective intelligence. While the meaning of 'intelligence' itself is highly contested among scholars, establishing a definition is a useful first step in endeavoring to explore the design of more intelligent systems. For the purpose of Zero we will define Intelligence as: \"The totality of possible states within a particular system, coupled with its adaptive capacity to make choices—given a particular set of goals, possible outcomes and enabling constraints.\" In other words, Intelligence can be thought of as what humans (and presumably other beings) use to make sense of the world and guide decision making. The nature of Intelligence is in itself abstract—and yet meaningful progress has been made to better understand it empirically. A well-known example is the Intellectual Quotient Test (IQ Test). Ignited by the French Ministry of Education, the first IQ Test was developed by Alfred Binet and Theodore Simon in 1904, in order to better understand the differences between unmotivated and intellectually challenged children. Standardized intelligence testing is a primary pillar of the western academic system, and yet despite its wide-spread utilization, it wasn't until nearly a century later that a group of MIT scientists began to consider a similar question aimed at groups: 'Can we measure collective intelligence?' (Woolley, Chabris, Pentland, Hashmi, & Malone(2010) 'Evidence for a Collective Intelligence Factor in the Performance of Human Groups'). Malone and his team define Collective Intelligence simply as: \"Groups of individuals acting in ways that seem intelligent.\" Across the study of 192 groups, their research found a single statistical factor and set of consistent characteristics for the groups that possessed the highest degree of Collective Intelligence: 1. Social perceptiveness—the collective capacity to discern the emotional state of other group members. This spanned interactions using both synchronous and asynchronous communication mediums. 2. Equality of participation—the degree to which speaking time was equally shared between group members. 3. The proportion of women in the groups—potentially explained by a greater degree of social perceptiveness and emotional intelligence when compared to men. Collective Intelligence was found to only be moderately correlated to the IQ of individual group members and actually decreased when a group included too many highly intelligent individuals. Collective Intelligence shows up as a well-coordinated, intellectually balanced, and sensory perceptive group."
+    "text": "A.1 Collective Intelligence & Coherence/ Dating far back as Aristotle's Politics, concepts such as Vladimir Vernadsky's 'noosphere' and H.G. Wells' 'world brain' have long considered the presence of a collective form of intelligence. From this lens, everything from the invention of language and writing, to the printing press, is the product of collective intelligence. While the meaning of 'intelligence' itself is highly contested among scholars, establishing a definition is a useful first step in endeavoring to explore the design of more intelligent systems. For the purpose of Zero we will define Intelligence as: \"The totality of possible states within a particular system, coupled with its adaptive capacity to make choices—given a particular set of goals, possible outcomes and enabling constraints.\" In other words, Intelligence can be thought of as what humans (and presumably other beings) use to make sense of the world and guide decision making. The nature of Intelligence is in itself abstract—and yet meaningful progress has been made to better understand it empirically. A well-known example is the Intellectual Quotient Test (IQ Test). Ignited by the French Ministry of Education, the first IQ Test was developed by Alfred Binet and Theodore Simon in 1904, in order to better understand the differences between unmotivated and intellectually challenged children. Standardized intelligence testing is a primary pillar of the western academic system, and yet despite its wide-spread utilization, it wasn't until nearly a century later that a group of MIT scientists began to consider a similar question aimed at groups: 'Can we measure collective intelligence?' (Woolley, Chabris, Pentland, Hashmi, & Malone(2010) 'Evidence for a Collective Intelligence Factor in the Performance of Human Groups'). Malone and his team define Collective Intelligence simply as: \"Groups of individuals acting in ways that seem intelligent.\" Across the study of 192 groups, their research found a single statistical factor and set of consistent characteristics for the groups that possessed the highest degree of Collective Intelligence:"
+  },
+  {
+    "kind": "ol",
+    "items": [
+      "Social perceptiveness—the collective capacity to discern the emotional state of other group members. This spanned interactions using both synchronous and asynchronous communication mediums.",
+      "Equality of participation—the degree to which speaking time was equally shared between group members.",
+      "The proportion of women in the groups—potentially explained by a greater degree of social perceptiveness and emotional intelligence when compared to men. Collective Intelligence was found to only be moderately correlated to the IQ of individual group members and actually decreased when a group included too many highly intelligent individuals. Collective Intelligence shows up as a well-coordinated, intellectually balanced, and sensory perceptive group."
+    ]
   },
   {
     "kind": "p",
@@ -991,8 +1378,14 @@ export const blocks: Block[] = [
   {
     "kind": "ul",
     "items": [
-      "Specialized AI: Specialized AI (SAI) represents 'narrow forms of machine intelligence' that succeed within well-defined boundary conditions. Notable examples of SAI based systems include Google's AlphaGo and IBM's Watson. 'Using deep learning techniques with a combination of supervised learning from human expert games, as well as reinforcement learning from self-play, AlphaGo achieved a 99.8% winning rate against existing Go programs and defeated the human European Go champion by 5 games to 0. '(Multiple authors (2016) 'Mastering the game of Go with deep neural networks and tree search)'. Despite the significance of this achievement within the field of AI, modern SAI systems pale in comparison to the most basic aspects of human Intelligence—including abstract reasoning, understanding, and intuition. ● AGI: AGI is the threshold at which AI systems begin to outperform humans across a wide spectrum of tasks in adaptive, complex and unpredictable environments. While many prominent AI researchers believe in the technical feasibility and inevitability of AGI, there exists an ongoing debate as to its practical timeline. ● Superintelligence (SI): Nick Bostrom defines Superintelligence as 'an intellect that is much smarter than the best human brains in practically every field, including scientific creativity, general wisdom, and social skills. This definition leaves open how the superintelligence is implemented: it could be a digital computer, an ensemble of networked computers, cultured cortical tissue or what have you. It also leaves open whether the superintelligence is conscious and has subjective experiences' (Nick Bostrom (1998). \"How Long Before Superintelligence?\" International Journal of Futures Studies, 2). As we explore the design of increasingly intelligent systems, the distinction between complex and complicated systems is important. Complicated systems are linear and deterministic. A car is a complicated system; traffic patterns generated by cars and drivers are complex. A thermostat is a complicated system; temperature and weather patterns are complex. From the view of complex systems science, SAI, and AGI/SI provide an elegant mapping to complicated and complex systems, respectively. While there is no simple way to assert this formally, it is difficult to imagine Intelligence as not having some degree of intrinsic complexity. Therefore, current SAI based systems, while useful in specific applications, are unlikely to succeed in getting us to AGI. In order for meaningful progress to occur, we must first ask ourselves how we can improve our understanding of complex systems—including everything from the climate and global economy to modern social networks and the human brain. A.3. Cybernetic Networks/ One possible approach to better understanding Intelligent systems is by developing methods to rapid prototype, scale, and analyze cybernetic systems. From here, we may be able to better empirically understand the effects of complex systems under different sets of selective pressures. Norbert Wiener coined the term cybernetics in 1948 as 'the scientific study of control and communication in the animal and the machine.' 'Cybernetics is a trans-disciplinary approach for the exploration of regulatory systems—their structures, constraints, and possibilities.' Its focus is how anything (digital, mechanical or biological) processes information, reacts to information, and how changes occur to better accomplish processing and reacting to information. While these ideas have long been discussed in the realm of computer science, biology, and social systems, cybernetic theory may hold a unique key to the doorway of AGI. “The literal definition of cybernetics is of Greek origins (kybernētikḗ), meaning 'governance'; loosely translated 'to steer, navigate or govern'.” Cybernetics can be thought of as the specific mechanisms to 'govern local and collective aspects of group decision making'. Below is an illustration of a simple cybernetic system, where sensory input, control functions, and actions can be executed by either human or machine agents."
+      "Specialized AI: Specialized AI (SAI) represents 'narrow forms of machine intelligence' that succeed within well-defined boundary conditions. Notable examples of SAI based systems include Google's AlphaGo and IBM's Watson. 'Using deep learning techniques with a combination of supervised learning from human expert games, as well as reinforcement learning from self-play, AlphaGo achieved a 99.8% winning rate against existing Go programs and defeated the human European Go champion by 5 games to 0. '(Multiple authors (2016) 'Mastering the game of Go with deep neural networks and tree search)'. Despite the significance of this achievement within the field of AI, modern SAI systems pale in comparison to the most basic aspects of human Intelligence—including abstract reasoning, understanding, and intuition.",
+      "AGI: AGI is the threshold at which AI systems begin to outperform humans across a wide spectrum of tasks in adaptive, complex and unpredictable environments. While many prominent AI researchers believe in the technical feasibility and inevitability of AGI, there exists an ongoing debate as to its practical timeline.",
+      "Superintelligence (SI): Nick Bostrom defines Superintelligence as 'an intellect that is much smarter than the best human brains in practically every field, including scientific creativity, general wisdom, and social skills."
     ]
+  },
+  {
+    "kind": "p",
+    "text": "This definition leaves open how the superintelligence is implemented: it could be a digital computer, an ensemble of networked computers, cultured cortical tissue or what have you. It also leaves open whether the superintelligence is conscious and has subjective experiences' (Nick Bostrom (1998). \"How Long Before Superintelligence?\" International Journal of Futures Studies, 2). As we explore the design of increasingly intelligent systems, the distinction between complex and complicated systems is important. Complicated systems are linear and deterministic. A car is a complicated system; traffic patterns generated by cars and drivers are complex. A thermostat is a complicated system; temperature and weather patterns are complex. From the view of complex systems science, SAI, and AGI/SI provide an elegant mapping to complicated and complex systems, respectively. While there is no simple way to assert this formally, it is difficult to imagine Intelligence as not having some degree of intrinsic complexity. Therefore, current SAI based systems, while useful in specific applications, are unlikely to succeed in getting us to AGI. In order for meaningful progress to occur, we must first ask ourselves how we can improve our understanding of complex systems—including everything from the climate and global economy to modern social networks and the human brain. A.3. Cybernetic Networks/ One possible approach to better understanding Intelligent systems is by developing methods to rapid prototype, scale, and analyze cybernetic systems. From here, we may be able to better empirically understand the effects of complex systems under different sets of selective pressures. Norbert Wiener coined the term cybernetics in 1948 as 'the scientific study of control and communication in the animal and the machine.' 'Cybernetics is a trans-disciplinary approach for the exploration of regulatory systems—their structures, constraints, and possibilities.' Its focus is how anything (digital, mechanical or biological) processes information, reacts to information, and how changes occur to better accomplish processing and reacting to information. While these ideas have long been discussed in the realm of computer science, biology, and social systems, cybernetic theory may hold a unique key to the doorway of AGI. “The literal definition of cybernetics is of Greek origins (kybernētikḗ), meaning 'governance'; loosely translated 'to steer, navigate or govern'.” Cybernetics can be thought of as the specific mechanisms to 'govern local and collective aspects of group decision making'. Below is an illustration of a simple cybernetic system, where sensory input, control functions, and actions can be executed by either human or machine agents."
   },
   {
     "kind": "figure",
@@ -1008,8 +1401,12 @@ export const blocks: Block[] = [
   {
     "kind": "ol",
     "items": [
-      "Complexity: Systems where global effects are not reducible by an understanding of constituent parts. 2. Adaptability: Systems capable of acting Intelligent within an ever-adapting landscape. 3. Self-Evolution: Systems capable of autopoiesis--the ability to self-govern and continually improve. The term 'Adaptive Evolving Intelligence', or AEI, is both more specific and more general than that of AGI, and likely provides us with a more useful waypoint in which to measure progress towards more intelligent systems. A.4 Effective Choice/ Modern technology has gifted us with a near-omniscient capability—and yet we continue to utilize this power from the shallow confines of our animal instincts. Only recently has a public discourse started regarding the potential negative effects of runaway exponential technology. Epidemics such as the rise of anorexia in young girls (Richard M. Perloff (2014) 'Social Media Effects on Young Women's Body Image Concerns: Theoretical Perspectives and an Agenda for Research'), the proliferation of fake news (Multiple authors (2018) 'The Science of Fake News'), and scandals like Cambridge Analytica—the company responsible for the data breach of 50 million Facebook profiles—are indicators of the broken incentives that underpin the design of modern technology systems. Our attention is our most precious resource—and any system capable of capturing it will also succeed in seizing its downstream effects—including the belief systems through which we perceive the world, the resulting choices we make, and ultimately who it is we become. Systems that aim to de-dimensionalize reality into oversimplified metrics (such as likes, followers and time-on-site) will invariably lead to unintended externalities. The future is a byproduct of how we choose to allocate our collective present attention. As tools to change minds and alter reality become available to more and more people, we must begin to shift our attention from that of purely 'if' questions to 'should' questions. Just because we may be able to create Intelligence that exceeds human Intelligence, should we? Just because we can develop and distribute gene-editing technology, should we? Just because we can create new monetary systems and governance structures, should we? Current technology systems do not include processes for such questions at the level of architecture. In evolutionary biology, it is a well-observed phenomenon that species generally evolve to meet the fitness payoffs of a given landscape, rather than act on empirical truth (Donald Hoffman et al (2017) 'Fitness Beats Truth in the Evolution of Perception'). \"Evolution has shaped us with perceptions that allow us to survive. But part of that involves hiding from us the stuff we don’t need to know. And that’s pretty much all of reality, whatever reality might be.\" —Dr. Donald Hoffman On an evolutionary timescale, the emergence of new forms of Intelligence may be a result of discarding or compressing information within preceding layers of the evolutionary stack, in turn giving rise to more efficient capabilities for achieving particular tasks. Applied to the average computer Member—it is far easier to employ the use of a modern graphical Member interface (GUI) rather than to write machine code or solder electrical circuits for everyday work. It may be that the further we move up the evolutionary stack, the further we move from the way reality actually is. Emerging digital platforms and AEI-based systems may be the next layer of evolutionary abstraction that will fundamentally alter human perception. This fundamental change to how we make sense of reality poses an existential threat to collective choice-making if not designed and deployed in harmony with nature. Never in recorded history have we possessed the capacity to alter reality in fundamental ways by an increasing number of people. Up until now, nature has provided the circumstances to guide evolutionary choice-making. As exponential technology enables smaller and smaller groups of people to make choices that impact everyone, including other humans, beings and ecosystems, we must learn to deeply consider what is, in fact, an 'Effective Choice' when designing systems capable of such far-reaching consequences (Forrest Landry (2001) 'The Effective Choice'). What may be called for is a ‘meta-psycho technology’—a tool to determine how it is we build tools—to ensure our tools do not lead to unintended consequences. Similar to how institutional religious values underpinned the sub-structure of modern law and society, a new set of ethics and corresponding technological architecture is required to design, govern and improve systems capable of deeper responsibility. \"We need to create a meta-psycho technology for evaluating how we are designing our psycho technologies.\" —Jordan Hall A psycho-technology can be thought of as a type of 'meta-heuristic'. 'In computer science, a meta-heuristic is a higher-level procedure or heuristic designed to find, generate, or select a heuristic (such as a partial search algorithm) that may provide a sufficiently good solution to an optimization problem, especially with incomplete or imperfect information or limited computation capacity.' Psycho-technologies on the scale of modern exponential systems, including social networks, blockchains, virtual reality, AGI, and crisper, put us on an entirely new type of evolutionary fitness landscape with a novel set of characteristic dynamics. Part of the process of designing new types of Intelligent systems not only need to include a new set of ethics and methods for Effective Choices but also needs to be capable of responding to the rapidly changing reality we are finding ourselves in. New axioms must be created that enable us to step outside of current design paradigms, social systems, and beliefs to bring about non-rivalrous forms of collaboration and coherence within hierarchies, democracies, markets, communities, and ecosystems."
+      "Complexity: Systems where global effects are not reducible by an understanding of constituent parts. 2."
     ]
+  },
+  {
+    "kind": "p",
+    "text": "Adaptability: Systems capable of acting Intelligent within an ever-adapting landscape. 3. Self-Evolution: Systems capable of autopoiesis--the ability to self-govern and continually improve. The term 'Adaptive Evolving Intelligence', or AEI, is both more specific and more general than that of AGI, and likely provides us with a more useful waypoint in which to measure progress towards more intelligent systems. A.4 Effective Choice/ Modern technology has gifted us with a near-omniscient capability—and yet we continue to utilize this power from the shallow confines of our animal instincts. Only recently has a public discourse started regarding the potential negative effects of runaway exponential technology. Epidemics such as the rise of anorexia in young girls (Richard M. Perloff (2014) 'Social Media Effects on Young Women's Body Image Concerns: Theoretical Perspectives and an Agenda for Research'), the proliferation of fake news (Multiple authors (2018) 'The Science of Fake News'), and scandals like Cambridge Analytica—the company responsible for the data breach of 50 million Facebook profiles—are indicators of the broken incentives that underpin the design of modern technology systems. Our attention is our most precious resource—and any system capable of capturing it will also succeed in seizing its downstream effects—including the belief systems through which we perceive the world, the resulting choices we make, and ultimately who it is we become. Systems that aim to de-dimensionalize reality into oversimplified metrics (such as likes, followers and time-on-site) will invariably lead to unintended externalities. The future is a byproduct of how we choose to allocate our collective present attention. As tools to change minds and alter reality become available to more and more people, we must begin to shift our attention from that of purely 'if' questions to 'should' questions. Just because we may be able to create Intelligence that exceeds human Intelligence, should we? Just because we can develop and distribute gene-editing technology, should we? Just because we can create new monetary systems and governance structures, should we? Current technology systems do not include processes for such questions at the level of architecture. In evolutionary biology, it is a well-observed phenomenon that species generally evolve to meet the fitness payoffs of a given landscape, rather than act on empirical truth (Donald Hoffman et al (2017) 'Fitness Beats Truth in the Evolution of Perception'). \"Evolution has shaped us with perceptions that allow us to survive. But part of that involves hiding from us the stuff we don’t need to know. And that’s pretty much all of reality, whatever reality might be.\" —Dr. Donald Hoffman On an evolutionary timescale, the emergence of new forms of Intelligence may be a result of discarding or compressing information within preceding layers of the evolutionary stack, in turn giving rise to more efficient capabilities for achieving particular tasks. Applied to the average computer Member—it is far easier to employ the use of a modern graphical Member interface (GUI) rather than to write machine code or solder electrical circuits for everyday work. It may be that the further we move up the evolutionary stack, the further we move from the way reality actually is. Emerging digital platforms and AEI-based systems may be the next layer of evolutionary abstraction that will fundamentally alter human perception. This fundamental change to how we make sense of reality poses an existential threat to collective choice-making if not designed and deployed in harmony with nature. Never in recorded history have we possessed the capacity to alter reality in fundamental ways by an increasing number of people. Up until now, nature has provided the circumstances to guide evolutionary choice-making. As exponential technology enables smaller and smaller groups of people to make choices that impact everyone, including other humans, beings and ecosystems, we must learn to deeply consider what is, in fact, an 'Effective Choice' when designing systems capable of such far-reaching consequences (Forrest Landry (2001) 'The Effective Choice'). What may be called for is a ‘meta-psycho technology’—a tool to determine how it is we build tools—to ensure our tools do not lead to unintended consequences. Similar to how institutional religious values underpinned the sub-structure of modern law and society, a new set of ethics and corresponding technological architecture is required to design, govern and improve systems capable of deeper responsibility. \"We need to create a meta-psycho technology for evaluating how we are designing our psycho technologies.\" —Jordan Hall A psycho-technology can be thought of as a type of 'meta-heuristic'. 'In computer science, a meta-heuristic is a higher-level procedure or heuristic designed to find, generate, or select a heuristic (such as a partial search algorithm) that may provide a sufficiently good solution to an optimization problem, especially with incomplete or imperfect information or limited computation capacity.' Psycho-technologies on the scale of modern exponential systems, including social networks, blockchains, virtual reality, AGI, and crisper, put us on an entirely new type of evolutionary fitness landscape with a novel set of characteristic dynamics. Part of the process of designing new types of Intelligent systems not only need to include a new set of ethics and methods for Effective Choices but also needs to be capable of responding to the rapidly changing reality we are finding ourselves in. New axioms must be created that enable us to step outside of current design paradigms, social systems, and beliefs to bring about non-rivalrous forms of collaboration and coherence within hierarchies, democracies, markets, communities, and ecosystems."
   },
   {
     "kind": "h",
@@ -1053,12 +1450,59 @@ export const blocks: Block[] = [
   },
   {
     "kind": "p",
-    "text": "Zero’s governing body is made up of three independent governing DAOs, collectively referred to as Trinity. This three-part structure distributes power in order to support the governance of Zero in operating within the domain of Effective Choice. Whereas two represents duality, three represents balance: ● The yin, yang, and that which unites the two. ● The irrational, the rational, and the irrational rational. ● The zero, one, and infinity. For the purpose of Zero we express this pattern using the Body, Mind, and Spirit: ● The Zero Community (the Body): Comprising every Member across every Network. ● The Zero Guild (the Mind): Guild members who contribute work to the Zero Stack and Zero Community. ● The Zero Council (the Spirit): A council of wisdom keepers to ensure the principles of The Constitution are upheld. Each DAO in Trinity is responsible for making its own choices, including its own Fundamental Choices, which are choices prescribed by the Constitution as needing to be made. Three different ‘levels’ of Fundamental Choice require three different degrees of alignment among Trinity’s DAOs: 1. Local: Choices made within an individual DAO, not requiring the authority of any other DAOs. 2. Global: Choices that require a 2/3 majority among Trinity’s DAOs. 3. Universal: Choices that require a 3/3 majority among Trinity’s DAOs. LEVEL 1 (LOCAL) CHOICES: 1. Establishing and amending DAO’s own Mission, Principles, and Values. 2. Establishing and amending the DAO’s own parameters for collective choice-making within the DAO. 3. Establishing and amending the parameters of its own Reputation System. 4. Adding and removing Members from the DAO, as well as establishing and amending the process by which members are added and removed from the DAO. 5. Choosing whether to create a Network in Zero, and, if created, managing the Network’s Control Panel within Zero. 6. Issuing new DAO Token and changing its token protocol. 7. Allocating its own budget LEVEL 2 (GLOBAL) CHOICES:"
+    "text": "Zero’s governing body is made up of three independent governing DAOs, collectively referred to as Trinity. This three-part structure distributes power in order to support the governance of Zero in operating within the domain of Effective Choice. Whereas two represents duality, three represents balance:"
+  },
+  {
+    "kind": "ul",
+    "items": [
+      "The yin, yang, and that which unites the two.",
+      "The irrational, the rational, and the irrational rational.",
+      "The zero, one, and infinity. For the purpose of Zero we express this pattern using the Body, Mind, and Spirit:",
+      "The Zero Community (the Body): Comprising every Member across every Network.",
+      "The Zero Guild (the Mind): Guild members who contribute work to the Zero Stack and Zero Community.",
+      "The Zero Council (the Spirit): A council of wisdom keepers to ensure the principles of The Constitution are upheld."
+    ]
+  },
+  {
+    "kind": "p",
+    "text": "Each DAO in Trinity is responsible for making its own choices, including its own Fundamental Choices, which are choices prescribed by the Constitution as needing to be made. Three different ‘levels’ of Fundamental Choice require three different degrees of alignment among Trinity’s DAOs:"
   },
   {
     "kind": "ol",
     "items": [
-      "Printing new Infinity tokens 2. Extending the Infinity token cap 3. Issuing new Infinity tokens 4. Materially amending the Zero front-end website 5. Approving and removing new Networks in Zero 6. Making material changes to the DAO Protocol LEVEL 3 (UNIVERSAL) CHOICES: 1. Amending The Zero Constitution 2. Amending The InnerSource License by which Zero IP is bound. In addition to its authority to make the Fundamental Choices described above, The Guild has the following additional characteristics: ● The Guild is responsible for the design, development, branding, community management, architecture and maintenance of The Zero Stack. ● Anyone has the right to apply to become part of The Guild. New members are accepted by the existing Guild Members based on skill level, work ethic, and character. ● The Guild’s Reputation system is based on actual peer-reviewed work created for the Zero System based on its values. These values are consistent with the values expressed in the Zero Constitution, although focus on specificity for the task at hand -- building a world-class and ethical technology stack. ● Members of the Guild must contribute in a way that is both concrete, practical and meaningful. They must produce tangible work, whether it be actual code (developers), designs (designers), architecture diagrams (system architects), or written and recorded recommendations (strategists). ● They must choose to dedicate at least twenty (20) hours of work per week directly to the Zero Stack, or one or more Networks in Zero. In addition to its authority to make the Fundamental Choices described above, The Council has the following additional characteristics: ● The Zero Council is the primary steward and governing authority for Zero ● Its Members are initially selected by The One Foundation ● The goal is to create diverse, international, capable and wise group of members"
+      "Local: Choices made within an individual DAO, not requiring the authority of any other DAOs.",
+      "Global: Choices that require a 2/3 majority among Trinity’s DAOs.",
+      "Universal: Choices that require a 3/3 majority among Trinity’s DAOs."
+    ]
+  },
+  {
+    "kind": "p",
+    "text": "LEVEL 1 (LOCAL) CHOICES:"
+  },
+  {
+    "kind": "ol",
+    "items": [
+      "Establishing and amending DAO’s own Mission, Principles, and Values.",
+      "Establishing and amending the DAO’s own parameters for collective choice-making within the DAO.",
+      "Establishing and amending the parameters of its own Reputation System.",
+      "Adding and removing Members from the DAO, as well as establishing and amending the process by which members are added and removed from the DAO.",
+      "Choosing whether to create a Network in Zero, and, if created, managing the Network’s Control Panel within Zero.",
+      "Issuing new DAO Token and changing its token protocol.",
+      "Allocating its own budget LEVEL 2 (GLOBAL) CHOICES:"
+    ]
+  },
+  {
+    "kind": "ol",
+    "items": [
+      "Printing new Infinity tokens 2. Extending the Infinity token cap 3. Issuing new Infinity tokens 4. Materially amending the Zero front-end website 5. Approving and removing new Networks in Zero 6. Making material changes to the DAO Protocol LEVEL 3 (UNIVERSAL) CHOICES: 1. Amending The Zero Constitution 2. Amending The InnerSource License by which Zero IP is bound. In addition to its authority to make the Fundamental Choices described above, The Guild has the following additional characteristics:",
+      "The Guild is responsible for the design, development, branding, community management, architecture and maintenance of The Zero Stack.",
+      "Anyone has the right to apply to become part of The Guild. New members are accepted by the existing Guild Members based on skill level, work ethic, and character.",
+      "The Guild’s Reputation system is based on actual peer-reviewed work created for the Zero System based on its values. These values are consistent with the values expressed in the Zero Constitution, although focus on specificity for the task at hand -- building a world-class and ethical technology stack.",
+      "Members of the Guild must contribute in a way that is both concrete, practical and meaningful. They must produce tangible work, whether it be actual code (developers), designs (designers), architecture diagrams (system architects), or written and recorded recommendations (strategists).",
+      "They must choose to dedicate at least twenty (20) hours of work per week directly to the Zero Stack, or one or more Networks in Zero. In addition to its authority to make the Fundamental Choices described above, The Council has the following additional characteristics:",
+      "The Zero Council is the primary steward and governing authority for Zero",
+      "Its Members are initially selected by The One Foundation",
+      "The goal is to create diverse, international, capable and wise group of members"
     ]
   },
   {
@@ -1095,12 +1539,24 @@ export const blocks: Block[] = [
   },
   {
     "kind": "p",
-    "text": "In plain English, this means that You have the right to use, reproduce, make modifications and changes, and create other works from the things that You access and use under this License which have been contributed by others. 4.2 Grant of Patent License. Subject to the terms and conditions of this License, each Contributor hereby grants to You a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable (except as stated in this section) patent license to make, have made, use, offer to sell, sell, import, and otherwise transfer the Work, where such license applies only to those patent claims licensable by such Contributor that are necessarily infringed by their Contribution(s) alone or by combination of their Contribution(s) with the Work to which such Contribution(s) was submitted. If You institute patent litigation against any entity (including a cross-claim or counterclaim in a lawsuit) alleging that the Work or a Contribution incorporated within the Work constitutes direct or contributory patent infringement, then any patent licenses granted to You under this License for that Work shall terminate as of the date such litigation is filed. In plain English, this means that You have the right to freely use, sell, import, or transfer, works that have been contributed by others under this License, even if those contributed works are covered by a patent. 4.3. Contributor Monetization. The grant of the INNERSOURCE B License to You is conditioned on and subject to your agreement to use the Infinity Tokens as stated here: When using OSS under the INNERSOURCE B License, you are required to utilize the Infinity Token on the websites and platforms you develop in accordance with the design specifications established by The One Foundation. By way of an example only, in the Zero UI, a button to purchase Infinity Tokens is required to be labeled either as “buy” or “purchase” and marked with the corresponding Infinity logo, Infinity name, and a ticker (INI), which must be shown at all times in the core UX. These standards are subject to change at any time at the sole discretion of The One Foundation, as determined by the collective governance processes outlined in The Zero Constitution. 4.4. Modification. 1. You may modify Your copy or copies of the Library or any portion of it, thus forming a work based on the Library, and copy and distribute such modifications or work under the terms of this License, provided that You also meet all of these conditions: 1. The modified work must itself be a software library. 2. You must cause the files modified to carry prominent notices stating that You changed the files and the date of any change. 3. You must cause the whole of the work to be licensed at no charge to all third parties under the terms of this License."
+    "text": "In plain English, this means that You have the right to use, reproduce, make modifications and changes, and create other works from the things that You access and use under this License which have been contributed by others. 4.2 Grant of Patent License. Subject to the terms and conditions of this License, each Contributor hereby grants to You a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable (except as stated in this section) patent license to make, have made, use, offer to sell, sell, import, and otherwise transfer the Work, where such license applies only to those patent claims licensable by such Contributor that are necessarily infringed by their Contribution(s) alone or by combination of their Contribution(s) with the Work to which such Contribution(s) was submitted. If You institute patent litigation against any entity (including a cross-claim or counterclaim in a lawsuit) alleging that the Work or a Contribution incorporated within the Work constitutes direct or contributory patent infringement, then any patent licenses granted to You under this License for that Work shall terminate as of the date such litigation is filed. In plain English, this means that You have the right to freely use, sell, import, or transfer, works that have been contributed by others under this License, even if those contributed works are covered by a patent. 4.3. Contributor Monetization. The grant of the INNERSOURCE B License to You is conditioned on and subject to your agreement to use the Infinity Tokens as stated here: When using OSS under the INNERSOURCE B License, you are required to utilize the Infinity Token on the websites and platforms you develop in accordance with the design specifications established by The One Foundation. By way of an example only, in the Zero UI, a button to purchase Infinity Tokens is required to be labeled either as “buy” or “purchase” and marked with the corresponding Infinity logo, Infinity name, and a ticker (INI), which must be shown at all times in the core UX. These standards are subject to change at any time at the sole discretion of The One Foundation, as determined by the collective governance processes outlined in The Zero Constitution. 4.4. Modification. 1. You may modify Your copy or copies of the Library or any portion of it, thus forming a work based on the Library, and copy and distribute such modifications or work under the terms of this License, provided that You also meet all of these conditions:"
+  },
+  {
+    "kind": "ol",
+    "items": [
+      "The modified work must itself be a software library.",
+      "You must cause the files modified to carry prominent notices stating that You changed the files and the date of any change.",
+      "You must cause the whole of the work to be licensed at no charge to all third parties under the terms of this License."
+    ]
   },
   {
     "kind": "ol",
     "items": [
       "If You make any modifications to the licensed OSS, You must contribute Your changes back to the main OSS repository. 2. These requirements apply to the modified work as a whole. If identifiable sections of that work are not derived from the Library and can be reasonably considered independent and separate works in themselves, then this License, and its terms, do not apply to those sections when You distribute them as separate works. But when You distribute the same sections as part of a whole which is a work based on the Library, the distribution of the whole must be on the terms of this License, whose permissions for other licensees extend to the entire whole, and thus to each and every part regardless of who wrote it. 3. Thus, it is not the intent of this section to claim rights or contest Your rights to work written entirely by You; rather, the intent is to exercise the right to control the distribution of derivative or collective works based on the Library. 4. In addition, mere aggregation of another work not based on the Library with the Library (or with a work based on the Library) on a volume of a storage or distribution medium does not bring the other work under the scope of this License. 6. Redistribution. 1. The copyright notice \"Copyright <YEAR> <COPYRIGHT HOLDER>\" in this Section 8.1 and the permission notice consisting of the entire Section 8.2 below shall be included in all copies or substantial portions of the Work. 2. Permission is hereby granted, free of charge, to any person obtaining a copy of this Work and Derivative Works, to deal in the Work and Derivative Works without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Work and Derivative Works, and to permit persons to whom the Work and Derivative Works are furnished to do so, subject to the following conditions: 3. You may copy and distribute the Work and Derivative Works in Object Code or executable form under the terms of this License provided that You also do one of the following: 1. Accompany it with the complete corresponding machine-readable Source Code, which must be distributed under the terms of this License on a medium customarily used for software interchange; or, 2. Accompany it with a written offer, valid for at least three years, to give any third party, for a charge no more than Your cost of physically performing source distribution, a complete machine-readable copy of the corresponding Source Code, to be distributed under the terms of this License on a medium customarily used for software interchange; or, 3. Accompany it with the information You received as to the offer to distribute corresponding Source Code. (This alternative is allowed only for noncommercial distribution and only if You received the program in Object Code or executable form with such an offer, in accord with Section 8.3.2 above.) 4. If distribution of executable or Object Code is made by offering access to copy from a designated place, then offering equivalent access to copy the Source Code from the same place counts as distribution of the Source Code, even though third parties are not compelled to copy the source along with the Object Code. 5. When the Work is Distributed as Source Code: 1. it must be made available under this License, and 2. a copy of this License must be included with each copy of the Work. 6. Contributors may not remove or alter any copyright, patent, trademark, attribution notices, disclaimers of warranty, or limitations of liability (‘notices’) contained within the Work from any copy of the Work which they distribute, provided that Contributors may add their own appropriate notices. 4.6. Submission of Contributions. Unless You explicitly state otherwise, any Contribution intentionally submitted for inclusion in the Work by You to the Licensor shall be under the terms and conditions of this License, without any additional terms or conditions. Notwithstanding the above, nothing herein shall supersede or modify the terms of any separate license agreement You may have executed with Licensor regarding such Contributions. 4.7. Trademarks. This License does not grant permission to use the trade names, trademarks, service marks, or product names of the Licensor, except as required for reasonable and customary use in describing the origin of the Work and reproducing the content of the NOTICE file. 4.8. Disclaimer of Warranty. Unless required by applicable law or agreed to in writing, Licensor provides the Work (and each Contributor provides its Contributions) on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied, including, without limitation, any warranties or conditions of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A PARTICULAR PURPOSE. You are solely responsible for determining the appropriateness of using or redistributing the Work and assume any risks associated with Your exercise of permissions under this License. 4.9. Limitation of Liability. In no event and under no legal theory, whether in tort (including negligence), contract, or otherwise, unless required by applicable law (such as deliberate and grossly negligent acts) or agreed to in writing, shall any Contributor be liable to You for damages, including any direct, indirect, special, incidental, or consequential damages of any character arising as a result of this License or out of the use or inability to use the Work (including but not limited to damages for loss of goodwill, work stoppage, computer failure or malfunction, or any and all other commercial damages or losses), even if such Contributor has been advised of the possibility of such damages. 4.10. Termination. 1. This License and the rights granted hereunder will terminate automatically if You fail to comply with terms herein and fail to cure such breach within 30 days of becoming aware of the breach. Provisions which, by their nature, must remain in effect beyond the termination of this License shall survive. 2. In the event of termination under Sections 6 (institution of patent litigation) or 14.1 above, all end user licenses that have been validly granted by You or any distributor hereunder prior to termination (excluding licenses granted to You by any distributor) shall survive termination. 4.11. General. 1. If any provision of this License is invalid or unenforceable under applicable law, it shall not affect the validity or enforceability of the remainder of the terms of this License, and without further action by the parties hereto, such provision shall be reformed to the minimum extent necessary to make such provision valid and enforceable. 2. All Your rights under this License shall terminate if You fail to comply with any of the material terms or conditions of this License and does not cure such failure in a reasonable period of time after becoming aware of such noncompliance. If all Your rights under this License terminate, You agree to cease use and distribution of the Work as soon as reasonably practicable. However, Your obligations under this License and any licenses granted by You relating to the Work shall continue and survive. 3. Except as expressly stated in this License, You receive no rights or licenses to the intellectual property of any Contributor under this License, whether expressly, by implication, estoppel or otherwise. All rights in the Work not expressly granted under this License are reserved. Nothing in this License is intended to be enforceable by any entity that is not You or a Contributor. No third-party beneficiary rights are created under this License. 5. Zero Terms and Conditions Your use of any Software or Works under either the INNERSOURCE A or B Licenses are subject to your compliance with Zero’s Terms and Conditions. 6. Definitions. 1. \"Contribution\" shall mean any work of authorship, including the original version of the Work and any modifications or additions to that Work or Derivative Works thereof, that is intentionally submitted to Licensor for inclusion in the Work by the copyright owner or by an individual or Legal Entity authorized to submit on behalf of the copyright owner. For the purposes of this definition, \"submitted\" means any form of electronic, verbal, or written communication sent to the Licensor or its representatives, including but not limited to communication on electronic mailing lists, source code control systems, and issue tracking systems that are managed by, or on behalf of, the Licensor for the purpose of discussing and improving the Work, but excluding communication that is conspicuously marked or otherwise designated in writing by the copyright owner as \"Not a Contribution.\" 2. \"Contributor\" shall mean Licensor and any individual or Legal Entity on behalf of whom a Contribution has been received by Licensor and subsequently incorporated within the Work. 3. \"Derivative Works\" shall mean any work, whether in Source or Object form, that is based on (or derived from) the Work and for which the editorial revisions, annotations, elaborations, or other modifications represent, as a whole, an original work of authorship. For the purposes of this License, Derivative Works shall not include works that remain separable from, or merely link (or bind by name) to the interfaces of, the Work and Derivative Works thereof. 4. “Infinity Tokens” shall mean those crypto currency tokens developed by the One Foundation. 5. \"Legal Entity\" shall mean the union of the acting entity and all other entities that control, are controlled by, or are under common control with that entity. For the purposes of this definition, \"control\" means (i) the power, direct or indirect, to cause the direction or management of such entity, whether by contract or otherwise, or (ii) ownership of fifty percent (50%) or more of the outstanding shares, or (iii) beneficial ownership of such entity. 6. \"Library\" shall mean a collection of software functions and/or data prepared so as to be conveniently linked with application programs (which use some of those functions and data) to form executables. \"Library\" refers to any such software library or work, which has been distributed under these terms. A \"work based on the Library\" means either the Library or any derivative work under copyright law: that is to say, a work containing the Library or a portion of it, either verbatim or with modifications and/or translated straightforwardly into another language. (Hereinafter, translation is included without limitation in the term \"modification\".) 7. \"License\" shall mean the terms and conditions for use, reproduction, and distribution as defined by Sections 1 through 11 of this document. 8. \"Licensor\" shall mean the copyright owner or entity authorized by the copyright owner that is granting the License. 9. \"Object\" or \"Object Code\" shall mean any form resulting from mechanical transformation or translation of a Source form, including but not limited to compiled object code, generated documentation, and conversions to other media types. 10. \"Source\" or \"Source Code\" shall mean the form of a program preferred for making modifications, including but not limited to software source code, documentation source, and configuration files. For a library, complete source code means all the source code for all modules it contains, plus any associated interface definition files, plus the scripts used to control compilation and installation of the library. 11. \"Work\" shall mean the work of authorship, whether in Source or Object form, made available under the License. 12. \"You\" (or \"Your\") shall mean an individual or Legal Entity exercising permissions granted by this License. 13. “Zero Stack” shall mean the Source Code repository provided and managed by Zero and the One Foundation."
     ]
+  },
+  {
+    "kind": "p",
+    "text": "The InnerSource License can be found at zer0.io."
   }
 ];
