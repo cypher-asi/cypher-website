@@ -60,7 +60,7 @@
   min-height: 38%;
   background-color: #000;
   background-position: center;
-  background-size: cover;
+  background-size: contain;
   background-repeat: no-repeat;
 }
 
@@ -87,11 +87,21 @@
 .body {
   flex: 0 0 auto;
   display: flex;
-  flex-direction: column;
-  gap: clamp(0.85rem, 1.6vw, 1.25rem);
+  flex-direction: row;
+  align-items: flex-start;
+  gap: clamp(1.5rem, 4vw, 3rem);
   padding: clamp(1.25rem, 2.4vw, 2rem);
   border-top: 1px solid var(--color-border);
   overflow-y: auto;
+}
+
+/* Left column: title + description. */
+.bodyMain {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.85rem, 1.6vw, 1.25rem);
 }
 
 .name {
@@ -102,12 +112,18 @@
   color: var(--color-text-primary);
 }
 
+/* Right column: the info sheet, set off by a divider. */
 .meta {
+  flex: 0 0 auto;
+  width: clamp(13rem, 30%, 20rem);
   margin: 0;
   display: grid;
   grid-template-columns: max-content 1fr;
-  column-gap: clamp(1rem, 3vw, 2rem);
-  row-gap: 0.5rem;
+  column-gap: clamp(0.75rem, 2vw, 1.5rem);
+  row-gap: 0.6rem;
+  align-content: start;
+  padding-left: clamp(1.5rem, 4vw, 3rem);
+  border-left: 1px solid var(--color-border);
 }
 
 .metaRow {
@@ -175,6 +191,22 @@
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+/* Stack the two columns on narrow panels; the divider moves to the top. */
+@media (max-width: 760px) {
+  .body {
+    flex-direction: column;
+    gap: clamp(1rem, 4vw, 1.5rem);
+  }
+
+  .meta {
+    width: 100%;
+    padding-left: 0;
+    border-left: none;
+    padding-top: clamp(1rem, 4vw, 1.5rem);
+    border-top: 1px solid var(--color-border);
   }
 }
 
