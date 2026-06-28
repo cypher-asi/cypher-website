@@ -26,8 +26,8 @@ export const papers: Paper[] = [
     slug: 'aura-harness',
     title: 'AURA Harness',
     year: '2025',
-    blurb: 'A benchmark and evaluation harness for autonomous engineering agents.',
-    available: false,
+    blurb: 'A deterministic multi-agent runtime built on per-agent append-only record logs, a sealed kernel boundary, and cross-agent parallelism.',
+    available: true,
   },
   {
     slug: 'zero-os',
