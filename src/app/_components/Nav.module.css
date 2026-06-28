@@ -26,12 +26,21 @@
   height: 84px;
   z-index: -1;
   pointer-events: none;
+  opacity: 1;
+  transition: opacity 220ms ease;
   background: linear-gradient(
     180deg,
     var(--site-fade-to) 0%,
     var(--site-fade-to) 45%,
     transparent 100%
   );
+}
+
+/* While the dropdown is open the bar becomes the unified dark surface, so fade
+   the scrim out instead of letting --site-fade-to snap to its dark default
+   (which would flash a black gradient over a light section). */
+.siteTopbarOpen::before {
+  opacity: 0;
 }
 
 /* Hidden state while scrolling down: slides up and fades out. */

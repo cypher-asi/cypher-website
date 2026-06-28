@@ -360,7 +360,7 @@ export function Nav() {
       <header
         className={`${styles.siteTopbar} ${panelOpen ? styles.siteTopbarOpen : ''} ${hidden && !panelOpen ? styles.siteTopbarHidden : ''} ${overLightBg && !panelOpen ? styles.siteTopbarLight : ''}`}
         style={
-          overLightBg && !panelOpen
+          overLightBg
             ? ({ ['--site-fade-to']: overLightBg } as React.CSSProperties)
             : undefined
         }
