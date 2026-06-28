@@ -5,6 +5,7 @@ import { Nav } from './_components/Nav';
 import { Footer } from './_components/Footer';
 import { ThemeWrapper } from './_components/ThemeWrapper';
 import { MusicProvider } from './_components/MusicContext';
+import { CustomScrollbar } from './_components/CustomScrollbar';
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-sans',
@@ -32,6 +33,7 @@ export default function RootLayout({
       <body>
         <ThemeWrapper>
           <MusicProvider>
+            <CustomScrollbar />
             <Nav />
             <main id="page-main">
               {children}
