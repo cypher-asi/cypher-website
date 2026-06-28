@@ -8,6 +8,21 @@
   right: 0;
   z-index: 100;
   background: transparent;
+  transition: background 220ms ease, opacity 300ms ease, transform 300ms ease;
+}
+
+/* Hidden state while scrolling down: slides up and fades out. */
+.siteTopbarHidden {
+  opacity: 0;
+  transform: translateY(-100%);
+  pointer-events: none;
+}
+
+/* While the mega-panel is open, the topbar shares the panel's background so the
+   top strip and the dropdown read as one continuous surface. */
+.siteTopbarOpen {
+  background: var(--color-bg);
+  backdrop-filter: blur(14px);
 }
 
 .topbarInner {
@@ -38,14 +53,33 @@
   color: inherit;
 }
 
-/* Large, prominent /CYPHER wordmark */
+/* Large, prominent /CYPHER wordmark. */
 .brand {
-  font-size: 26px;
+  font-size: 30px;
   font-weight: 600;
   letter-spacing: 0.01em;
   color: var(--color-text-primary);
   line-height: 1;
   white-space: nowrap;
+}
+
+/* CYPHER letters: outlined (black fill, 1px white stroke) while the typewriter
+   runs, then fading into a solid fill once typing completes (.brandFilled).
+   Hovering reveals the outline again. The leading "/" keeps its own color and
+   has no outline. */
+.brandLetters {
+  color: #000;
+  -webkit-text-stroke: 1px var(--color-text-primary);
+  paint-order: stroke fill;
+  transition: color 450ms ease;
+}
+
+.brandFilled .brandLetters {
+  color: var(--color-text-primary);
+}
+
+.titleLink:hover .brandFilled .brandLetters {
+  color: #000;
 }
 
 /* ============================================================================
@@ -81,6 +115,19 @@
 
 .launchButton:hover {
   --corner-color: var(--color-inverse-muted);
+}
+
+.topbarGithub {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color 200ms ease;
+}
+
+.topbarGithub:hover {
+  color: var(--color-text-primary);
 }
 
 /* ============================================================================
@@ -356,6 +403,10 @@
     display: none;
   }
 
+  .topbarGithub {
+    display: none;
+  }
+
   .hamburger {
     display: flex;
   }
@@ -366,7 +417,7 @@
   }
 
   .brand {
-    font-size: 21px;
+    font-size: 24px;
   }
 
   .overlay {

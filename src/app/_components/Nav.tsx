@@ -2,13 +2,10 @@
 
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useTheme } from './ThemeContext';
-import { ArrowUpRight, ChevronRight, Menu, X, Sun, Moon, AudioLines } from 'lucide-react';
+import { ArrowUpRight, ChevronRight, Menu, X } from 'lucide-react';
 import { TypewriterText } from './TypewriterText';
 import type { TypewriterSegment } from './TypewriterText';
 import { SectionNav } from './SectionNav';
-import { BottomWidget } from './BottomWidget';
-import { useMusic } from './MusicContext';
 import styles from './Nav.module.css';
 
 interface SubItem {
@@ -26,12 +23,14 @@ interface NavSection {
   external?: boolean;
   blurb?: string;
   subItems?: SubItem[];
+  // When true, hovering this top-nav item does not open the mega-panel.
+  noPanel?: boolean;
 }
 
 const sections: NavSection[] = [
   {
     id: 'products',
-    label: 'Products',
+    label: 'Companies',
     href: 'https://aura.ai',
     external: true,
     blurb: 'Software and agents built for the machine age.',
@@ -57,6 +56,7 @@ const sections: NavSection[] = [
     label: 'Mission',
     href: '/vision',
     blurb: 'Why we build, and where we are going.',
+    noPanel: true,
     subItems: [
       { id: 'vision', label: 'Vision', description: 'The case for tools that build themselves', href: '/vision' },
     ],
@@ -67,6 +67,7 @@ const sections: NavSection[] = [
     href: 'https://zine.live',
     external: true,
     blurb: 'Dispatches from across the network.',
+    noPanel: true,
     subItems: [
       { id: 'zine', label: 'Zine', description: 'Stories from the network', href: 'https://zine.live', external: true },
     ],
@@ -77,14 +78,6 @@ function GithubIcon({ size = 13 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
       <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
-    </svg>
-  );
-}
-
-function XIcon({ size = 12 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
     </svg>
   );
 }
@@ -166,10 +159,9 @@ export function Nav() {
   const [panelOpen, setPanelOpen] = useState(false);
   const [panelHeight, setPanelHeight] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [widgetCollapsed, setWidgetCollapsed] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [brandKey, setBrandKey] = useState(0);
-  const { resolvedTheme, setTheme } = useTheme();
-  const { isPlaying, toggle: toggleMusic } = useMusic();
+  const [brandTyped, setBrandTyped] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const unmountTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const megaContentRef = useRef<HTMLDivElement | null>(null);
@@ -182,6 +174,32 @@ export function Nav() {
     }
     return () => { document.body.style.overflow = ''; };
   }, [mobileOpen]);
+
+  // Hide the topbar when scrolling down, reveal it when scrolling up. Stays
+  // visible near the top of the page; the panelOpen guard (applied on render)
+  // keeps it visible while the mega-panel is open.
+  useEffect(() => {
+    let lastY = window.scrollY;
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        if (y <= 80) {
+          setHidden(false);
+        } else if (y > lastY) {
+          setHidden(true);
+        } else if (y < lastY) {
+          setHidden(false);
+        }
+        lastY = y;
+        ticking = false;
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const handleToggle = (id: string) => {
     setOpenSectionId((prev) => (prev === id ? null : id));
@@ -205,6 +223,7 @@ export function Nav() {
   const handleBrandClick = useCallback(() => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
     setPanelOpen(false);
+    setBrandTyped(false);
     setBrandKey((k) => k + 1);
   }, []);
 
@@ -286,7 +305,7 @@ export function Nav() {
   const expandedSegments: TypewriterSegment[] = useMemo(
     () => [
       { text: '/', style: { color: 'var(--color-text-secondary)' } },
-      { text: 'CYPHER' },
+      { text: 'CYPHER', className: styles.brandLetters },
     ],
     []
   );
@@ -295,15 +314,19 @@ export function Nav() {
 
   return (
     <>
-      <header className={styles.siteTopbar} onMouseLeave={scheduleClose}>
+      <header
+        className={`${styles.siteTopbar} ${panelOpen ? styles.siteTopbarOpen : ''} ${hidden && !panelOpen ? styles.siteTopbarHidden : ''}`}
+        onMouseLeave={scheduleClose}
+      >
         <div className={styles.topbarInner}>
-          <div className={styles.topbarLeft}>
+          <div className={styles.topbarLeft} onMouseEnter={scheduleClose}>
             <Link href="/" className={styles.titleLink} onClick={handleBrandClick}>
               <TypewriterText
                 key={brandKey}
                 segments={expandedSegments}
                 speed={80}
-                className={styles.brand}
+                className={`${styles.brand} ${brandTyped ? styles.brandFilled : ''}`}
+                onComplete={() => setBrandTyped(true)}
               />
             </Link>
           </div>
@@ -311,38 +334,58 @@ export function Nav() {
           <nav className={styles.topNav}>
             {sections.map((section) => {
               const inner = <span>{section.label}</span>;
+              const linkClass = `${styles.topNavLink} ${activeId === section.id ? styles.topNavLinkActive : ''}`;
               return (
                 <div
                   key={section.id}
                   className={styles.topNavItem}
-                  onMouseEnter={() => openPanel(section.id)}
-                  onFocus={() => openPanel(section.id)}
+                  onMouseEnter={() => (section.noPanel ? scheduleClose() : openPanel(section.id))}
+                  onMouseLeave={scheduleClose}
+                  onFocus={() => (section.noPanel ? scheduleClose() : openPanel(section.id))}
                 >
-                  {section.external ? (
-                    <a
-                      href={section.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`${styles.topNavLink} ${activeId === section.id ? styles.topNavLinkActive : ''}`}
-                      onClick={closePanelNow}
-                    >
-                      {inner}
-                    </a>
+                  {section.noPanel ? (
+                    section.external ? (
+                      <a
+                        href={section.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={linkClass}
+                        onClick={closePanelNow}
+                      >
+                        {inner}
+                      </a>
+                    ) : (
+                      <Link href={section.href} className={linkClass} onClick={closePanelNow}>
+                        {inner}
+                      </Link>
+                    )
                   ) : (
-                    <Link
-                      href={section.href}
-                      className={`${styles.topNavLink} ${activeId === section.id ? styles.topNavLinkActive : ''}`}
-                      onClick={closePanelNow}
+                    // Sections with a mega-panel are not navigable; the label only
+                    // opens the panel (its sub-items are the actual links).
+                    <button
+                      type="button"
+                      className={linkClass}
+                      aria-expanded={activeId === section.id}
+                      onClick={() => openPanel(section.id)}
                     >
                       {inner}
-                    </Link>
+                    </button>
                   )}
                 </div>
               );
             })}
           </nav>
 
-          <div className={styles.topbarRight}>
+          <div className={styles.topbarRight} onMouseEnter={scheduleClose}>
+            <a
+              href="https://github.com/cypher-asi"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.topbarGithub}
+              aria-label="GitHub"
+            >
+              <GithubIcon size={16} />
+            </a>
             <a
               href="https://aura.ai"
               target="_blank"
@@ -419,10 +462,6 @@ export function Nav() {
       </header>
 
       <SectionNav />
-      <BottomWidget
-        collapsed={widgetCollapsed}
-        onToggle={() => setWidgetCollapsed((c) => !c)}
-      />
 
       {/* Mobile drawer */}
       <div
@@ -462,13 +501,6 @@ export function Nav() {
           ))}
         </div>
         <div className={styles.drawerFooter}>
-          <button
-            className={`${styles.drawerIconBtn} ${isPlaying ? styles.musicActive : ''}`}
-            onClick={toggleMusic}
-            aria-label={isPlaying ? 'Stop music' : 'Play music'}
-          >
-            <AudioLines size={15} />
-          </button>
           <a
             href="https://github.com/cypher-asi"
             target="_blank"
@@ -478,22 +510,6 @@ export function Nav() {
           >
             <GithubIcon size={15} />
           </a>
-          <a
-            href="https://x.com/aura_asi"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.drawerIconBtn}
-            aria-label="X"
-          >
-            <XIcon size={14} />
-          </a>
-          <button
-            className={styles.drawerIconBtn}
-            onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-            aria-label={`Switch to ${resolvedTheme === 'dark' ? 'light' : 'dark'} mode`}
-          >
-            {resolvedTheme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
-          </button>
         </div>
       </div>
     </>
