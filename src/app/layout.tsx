@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import './styles/globals.css';
 import { Nav } from './_components/Nav';
+import { Footer } from './_components/Footer';
 import { ThemeWrapper } from './_components/ThemeWrapper';
 import { MusicProvider } from './_components/MusicContext';
 const inter = Inter({
@@ -32,7 +33,10 @@ export default function RootLayout({
         <ThemeWrapper>
           <MusicProvider>
             <Nav />
-            <main id="page-main">{children}</main>
+            <main id="page-main">
+              {children}
+              <Footer />
+            </main>
           </MusicProvider>
         </ThemeWrapper>
       </body>
