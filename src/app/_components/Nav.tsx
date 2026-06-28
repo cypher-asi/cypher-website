@@ -186,7 +186,9 @@ export function Nav() {
       ticking = true;
       requestAnimationFrame(() => {
         const y = window.scrollY;
-        if (y <= 80) {
+        const atBottom =
+          window.innerHeight + y >= document.documentElement.scrollHeight - 4;
+        if (y <= 80 || atBottom) {
           setHidden(false);
         } else if (y > lastY) {
           setHidden(true);
