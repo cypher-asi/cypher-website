@@ -12,8 +12,8 @@ export const papers: Paper[] = [
     slug: 'the-grid',
     title: 'The Grid',
     year: '2026',
-    blurb: 'A distributed compute fabric for running autonomous agents at scale.',
-    available: false,
+    blurb: 'A distributed verifiable execution environment that separates execution from coordination, built on zero-knowledge proofs and post-quantum cryptography.',
+    available: true,
   },
   {
     slug: 'zns',

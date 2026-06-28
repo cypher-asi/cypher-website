@@ -7,6 +7,28 @@ function isTopLevel(num: string) {
   return /^\d+\.0$/.test(num) || num.startsWith('Appendix');
 }
 
+// Lightweight inline markup so data files can stay plain strings: `code`,
+// **bold**, and *emphasis*. Returns React nodes with the markers stripped.
+function renderInline(text: string): ReactNode {
+  const tokens = text.split(/(`[^`]+`|\*\*[^*]+\*\*|\*[^*]+\*)/g);
+  return tokens.map((tok, i) => {
+    if (tok.startsWith('`') && tok.endsWith('`')) {
+      return (
+        <code key={i} className={styles.inlineCode}>
+          {tok.slice(1, -1)}
+        </code>
+      );
+    }
+    if (tok.startsWith('**') && tok.endsWith('**')) {
+      return <strong key={i}>{tok.slice(2, -2)}</strong>;
+    }
+    if (tok.startsWith('*') && tok.endsWith('*')) {
+      return <em key={i}>{tok.slice(1, -1)}</em>;
+    }
+    return tok;
+  });
+}
+
 // Many list items follow a "Term: definition" shape. Emphasize the term so
 // the lists read like a glossary rather than a wall of text.
 function renderItem(item: string): ReactNode {
@@ -14,17 +36,18 @@ function renderItem(item: string): ReactNode {
   if (idx > 0 && idx <= 48) {
     const term = item.slice(0, idx);
     const rest = item.slice(idx + 1);
-    // Only treat as a label when the term is short and has no sentence break.
-    if (!/[.!?]/.test(term)) {
+    // Only treat as a label when the term is short, has no sentence break, and
+    // carries no inline markup of its own.
+    if (!/[.!?`*]/.test(term)) {
       return (
         <>
           <strong className={styles.term}>{term}</strong>
-          {rest}
+          {renderInline(rest)}
         </>
       );
     }
   }
-  return item;
+  return renderInline(item);
 }
 
 export function WhitepaperBody({ blocks }: { blocks: Block[] }) {
@@ -49,7 +72,7 @@ export function WhitepaperBody({ blocks }: { blocks: Block[] }) {
           case 'p':
             return (
               <p key={i} className={styles.paragraph}>
-                {block.text}
+                {renderInline(block.text)}
               </p>
             );
           case 'ul':
@@ -67,6 +90,35 @@ export function WhitepaperBody({ blocks }: { blocks: Block[] }) {
                   <li key={j}>{renderItem(it)}</li>
                 ))}
               </ol>
+            );
+          case 'table':
+            return (
+              <div key={i} className={styles.tableWrap}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      {block.headers.map((h, j) => (
+                        <th key={j}>{renderInline(h)}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {block.rows.map((row, r) => (
+                      <tr key={r}>
+                        {row.map((cell, c) => (
+                          <td key={c}>{renderInline(cell)}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            );
+          case 'code':
+            return (
+              <pre key={i} className={styles.code}>
+                <code>{block.text}</code>
+              </pre>
             );
           case 'figure':
             return (

@@ -12,6 +12,8 @@ export type Block =
   | { kind: 'p'; text: string }
   | { kind: 'ul'; items: string[] }
   | { kind: 'ol'; items: string[] }
+  | { kind: 'table'; headers: string[]; rows: string[][] }
+  | { kind: 'code'; text: string }
   | { kind: 'figure'; src: string; w: number; h: number; caption?: string };
 
 export const abstract = "zer0 (Zero) is a peer-to-peer social network and operating system. A necessary and timely alternative to centralized social networks and messaging platforms like Facebook, Twitter, YouTube and WhatsApp. It enables social communication, remote collaboration, financial transactions and onchain governance to occur directly between content-creators, developers, and users (hereinafter referred to as Members), independent of third parties. This architecture removes the possibility of censorship at the level of code, significantly reducing the potential for security breaches and data violations. Zero moves data ownership, platform incentives and governance to individual Members, communities and decentralized autonomous organizations (DAOs). Zero is operated with Infinity, its native protocol token, which enables Members to buy and sell hosting power in the Zero Grid, a distributed peer-to-peer network run entirely by Zero Members. Similar to Bitcoin mining, Infinity creates a powerful cryptographic incentive for Members to secure, maintain, and expand the Zero Grid, creating long-term value for network participants. Zero Open System (zOS), including the Zero Name Service (ZNS), zDAO, zChain, Ethereum and Filecoin/IPFS are the primary technologies that comprise the Zero Stack. The result is a fully decentralized, hyper-scalable, and self-governing alternative to centralized social networks, societal systems, and internet platforms.";
