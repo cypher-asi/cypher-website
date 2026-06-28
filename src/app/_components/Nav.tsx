@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { ArrowUpRight, ChevronRight, Menu, X } from 'lucide-react';
+import { ArrowDown, ArrowUpRight, ChevronRight, Menu, X } from 'lucide-react';
 import { TypewriterText } from './TypewriterText';
 import type { TypewriterSegment } from './TypewriterText';
 import { SectionNav } from './SectionNav';
@@ -160,6 +160,7 @@ export function Nav() {
   const [panelHeight, setPanelHeight] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const [overLightBg, setOverLightBg] = useState<string | null>(null);
   const [brandKey, setBrandKey] = useState(0);
   const [brandTyped, setBrandTyped] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -175,32 +176,78 @@ export function Nav() {
     return () => { document.body.style.overflow = ''; };
   }, [mobileOpen]);
 
-  // Hide the topbar when scrolling down, reveal it when scrolling up. Stays
-  // visible near the top of the page; the panelOpen guard (applied on render)
-  // keeps it visible while the mega-panel is open.
+  // Hide the topbar when scrolling down, reveal it when scrolling up (and at the
+  // very bottom). Also sample whatever background sits just beneath the bar so
+  // its scrim + text adapt to the section behind it (dark vs light).
   useEffect(() => {
+    const NAV_HEIGHT = 84;
     let lastY = window.scrollY;
     let ticking = false;
+
+    // Walk up from the point just below the bar to the nearest element with an
+    // opaque background, then decide light/dark by relative luminance.
+    const sampleLightBg = (): string | null => {
+      const x = Math.round(window.innerWidth / 2);
+      // Sample at the bar's vertical center (where the text sits) rather than
+      // just below it, so the theme only flips once the section is actually
+      // behind the header -- not while the bar still overlaps the dark section.
+      const y = Math.round(NAV_HEIGHT / 2);
+      // The header is fixed (z-index 100), so elementFromPoint at this pixel
+      // would return the header itself -- whose ancestors are all transparent.
+      // Walk the full hit stack instead and only consider the page content
+      // (#page-main), skipping the header and other fixed chrome, so we read
+      // the section that actually sits behind the bar.
+      const main = document.getElementById('page-main');
+      if (!main) return null;
+      const stack = document.elementsFromPoint(x, y) as HTMLElement[];
+      for (const el of stack) {
+        if (!main.contains(el)) continue;
+        const c = getComputedStyle(el).backgroundColor;
+        const m = c.match(/^rgba?\(([^)]+)\)/);
+        if (!m) continue;
+        const parts = m[1].split(',').map((s) => parseFloat(s));
+        const [r, g, b] = parts;
+        const a = parts[3] === undefined ? 1 : parts[3];
+        if (a > 0.1) {
+          const lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+          return lum > 0.5 ? `rgb(${r}, ${g}, ${b})` : null;
+        }
+      }
+      return null;
+    };
+
+    const update = () => {
+      const y = window.scrollY;
+      const atBottom =
+        window.innerHeight + y >= document.documentElement.scrollHeight - 4;
+      if (y <= 80 || atBottom) {
+        setHidden(false);
+      } else if (y > lastY) {
+        setHidden(true);
+      } else if (y < lastY) {
+        setHidden(false);
+      }
+      lastY = y;
+
+      setOverLightBg(sampleLightBg());
+    };
+
     const onScroll = () => {
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(() => {
-        const y = window.scrollY;
-        const atBottom =
-          window.innerHeight + y >= document.documentElement.scrollHeight - 4;
-        if (y <= 80 || atBottom) {
-          setHidden(false);
-        } else if (y > lastY) {
-          setHidden(true);
-        } else if (y < lastY) {
-          setHidden(false);
-        }
-        lastY = y;
+        update();
         ticking = false;
       });
     };
+
+    update();
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    window.addEventListener('resize', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
   }, []);
 
   const handleToggle = (id: string) => {
@@ -234,6 +281,19 @@ export function Nav() {
   const closePanelNow = useCallback(() => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
     setPanelOpen(false);
+  }, []);
+
+  const scrollToWhatWeDo = useCallback(() => {
+    const section = document.getElementById('what-we-do');
+    if (!section) return;
+    // Land the first row's content just below the fixed header, rather than the
+    // section wrapper (whose large top padding would otherwise leave a visible
+    // gap under the header).
+    const target = section.querySelector('article') ?? section;
+    const header = document.querySelector('header');
+    const headerOffset = header ? header.getBoundingClientRect().height : 84;
+    const top = target.getBoundingClientRect().top + window.scrollY - headerOffset;
+    window.scrollTo({ top, behavior: 'smooth' });
   }, []);
 
   // Measure and apply the panel height whenever the displayed section or open
@@ -317,7 +377,12 @@ export function Nav() {
   return (
     <>
       <header
-        className={`${styles.siteTopbar} ${panelOpen ? styles.siteTopbarOpen : ''} ${hidden && !panelOpen ? styles.siteTopbarHidden : ''}`}
+        className={`${styles.siteTopbar} ${panelOpen ? styles.siteTopbarOpen : ''} ${hidden && !panelOpen ? styles.siteTopbarHidden : ''} ${overLightBg && !panelOpen ? styles.siteTopbarLight : ''}`}
+        style={
+          overLightBg && !panelOpen
+            ? ({ ['--site-fade-to']: overLightBg } as React.CSSProperties)
+            : undefined
+        }
         onMouseLeave={scheduleClose}
       >
         <div className={styles.topbarInner}>
@@ -388,15 +453,14 @@ export function Nav() {
             >
               <GithubIcon size={16} />
             </a>
-            <a
-              href="https://aura.ai"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              type="button"
               className={styles.launchButton}
+              onClick={scrollToWhatWeDo}
             >
-              Launch Agents
-              <ArrowUpRight size={14} style={{ color: 'var(--color-text-secondary)' }} />
-            </a>
+              Learn More
+              <ArrowDown size={14} style={{ color: 'var(--color-text-secondary)' }} />
+            </button>
             <button
               className={styles.hamburger}
               onClick={() => setMobileOpen(true)}
@@ -481,16 +545,17 @@ export function Nav() {
             <X size={18} />
           </button>
         </div>
-        <a
-          href="https://aura.ai"
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          type="button"
           className={styles.drawerLaunch}
-          onClick={() => setMobileOpen(false)}
+          onClick={() => {
+            setMobileOpen(false);
+            scrollToWhatWeDo();
+          }}
         >
-          Launch Agents
-          <ArrowUpRight size={14} />
-        </a>
+          Learn More
+          <ArrowDown size={14} />
+        </button>
         <div className={styles.drawerNav}>
           {sections.map((section) => (
             <AccordionSection
