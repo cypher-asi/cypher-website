@@ -192,12 +192,12 @@ const stack: { name: string; tags: string[][] }[] = [
   { name: 'Clean Energy', tags: [['ZODE']] },
   { name: 'Land Acquisition', tags: [['ZODE']] },
   { name: 'Manufacturing', tags: [['ZODE']] },
-  { name: 'Compute Protocol', tags: [['THE GRID', 'ZERO']] },
+  { name: 'Compute Protocol', tags: [['THE GRID']] },
   { name: 'Identity & Payments', tags: [['ZNS', 'Z CHAIN']] },
   { name: 'Training', tags: [['THE GRID']] },
   { name: 'Fine-tuning', tags: [['THE GRID']] },
-  { name: 'Token Routing', tags: [['AURA-HARNESS']] },
-  { name: 'Harness + Agents', tags: [['AURA-HARNESS'], ['AURA-SWARM']] },
+  { name: 'Harness + Routing', tags: [['AURA-HARNESS']] },
+  { name: 'Agent TEE', tags: [['AURA-SWARM']] },
   { name: 'End-products', tags: [['AURA', 'WILDER WORLD', 'ZERO']] },
 ];
 
@@ -209,12 +209,12 @@ export function Facts() {
           <p className={styles.eyebrow}>What We Do</p>
           <div className={styles.content}>
             <h2 className={styles.heading}>
-              Cypher builds sovereign AI systems for an autonomous world.
+              Sovereign AI systems for an autonomous world.
             </h2>
             <p className={styles.body}>
-              We design and operate the agents, applications, and protocols that
-              let people own their intelligence, identity, and data, free from
-              centralized control and built to endure.
+              We build distributed protocols, micro-data centers and AI-focused
+              applications that enable people, communities, and countries to own
+              their intelligence.
             </p>
           </div>
         </article>
@@ -222,12 +222,11 @@ export function Facts() {
         <article className={styles.row}>
           <p className={styles.eyebrow}>Our Vision</p>
           <div className={styles.content}>
-            <h2 className={styles.heading}>A world that runs on sovereign intelligence.</h2>
+            <h2 className={styles.heading}>Open source decentralized AI becomes the leader.</h2>
             <p className={styles.body}>
-              We imagine a future where autonomous agents work on behalf of the
+              A future where autonomous agents work on behalf of and empower the
               individual, not the platform. Where compute, identity, and value
-              flow across open networks no single party can capture, censor, or
-              switch off.
+              flow across open networks no single party can censor or capture.
             </p>
           </div>
         </article>
@@ -235,12 +234,11 @@ export function Facts() {
         <article className={styles.row}>
           <p className={styles.eyebrow}>Our Mission</p>
           <div className={styles.content}>
-            <h2 className={styles.heading}>To put sovereignty back in the hands of the user.</h2>
+            <h2 className={styles.heading}>People own their intelligence.</h2>
             <p className={styles.body}>
-              We ship the infrastructure that makes private, verifiable, and
-              decentralized AI the default, building tools and protocols that are
-              open by design and resistant to capture at every layer of the
-              stack.
+              We make private, verifiable, and decentralized AI the default,
+              building tools and protocols that are open, private and accessible
+              by design.
             </p>
           </div>
         </article>
@@ -267,10 +265,9 @@ export function Facts() {
             <h2 className={styles.heading}>From raw materials to human interaction.</h2>
             <p className={styles.body}>
               We believe the best solutions are the ones considered from raw
-              materials all the way to human interaction. Owning every layer
-              gives the deepest understanding and the most ubiquitous
-              connectivity. As AI improves, it becomes possible for small teams
-              to work up and down the entire stack.
+              materials all the way to human interaction. Operating at every
+              layer of the stack gives the deepest and most integrated
+              understanding and solutions.
             </p>
             <ol className={styles.stack}>
               {stack.map((item, index) => (

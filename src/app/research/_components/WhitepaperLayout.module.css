@@ -87,6 +87,13 @@
   max-height: calc(100vh - 11rem);
   overflow-y: auto;
   padding-right: 0.5rem;
+  /* Native scrollbar is replaced by the custom one (shown on hover). */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tocSticky::-webkit-scrollbar {
+  display: none;
 }
 
 .tocTitle {

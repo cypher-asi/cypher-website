@@ -130,6 +130,7 @@
 
 .titleLink:hover .brandFilled .brandLetters {
   color: #000;
+  -webkit-text-stroke-color: var(--color-link-hover);
 }
 
 /* ============================================================================
@@ -155,7 +156,8 @@
 }
 
 .launchButton:hover {
-  color: var(--color-text-secondary);
+  color: var(--color-link-hover);
+  text-shadow: var(--link-hover-glow);
 }
 
 .topbarGithub {
@@ -169,7 +171,8 @@
 }
 
 .topbarGithub:hover {
-  color: var(--color-text-primary);
+  color: var(--color-link-hover);
+  filter: drop-shadow(0 0 8px rgba(242, 228, 196, 0.5));
 }
 
 /* ============================================================================
@@ -287,6 +290,122 @@
   gap: 2px;
 }
 
+/* Open-source repo directory: spans both columns, set off from the sub-items
+   above by a thin separator, grouped by project. */
+.megaRepoSection {
+  grid-column: 1 / -1;
+  margin-top: 36px;
+  padding-top: 32px;
+  border-top: 1px solid var(--color-overlay-medium);
+}
+
+.megaRepoHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 14px;
+  margin-bottom: 22px;
+}
+
+.megaGroupLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.megaRepoAll {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color 200ms ease;
+}
+
+.megaRepoAll:hover {
+  color: var(--color-link-hover, #fff);
+}
+
+.megaRepoGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 28px 20px;
+}
+
+/* A single vertical column that can stack multiple project groups
+   (e.g. The Grid with Wilder World beneath it). */
+.megaRepoColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.megaRepoGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.megaRepoGroupHeading {
+  margin: 0 0 4px;
+  padding: 0 14px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-primary);
+}
+
+.megaRepoList {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.megaRepoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 7px 14px;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: background 200ms ease, border-color 200ms ease;
+}
+
+.megaRepoItem:hover {
+  background: var(--color-overlay-light);
+  border-color: var(--color-overlay-medium);
+}
+
+.megaRepoItem:hover .megaRepoName {
+  color: var(--color-link-hover, #fff);
+  text-shadow: var(--link-hover-glow, none);
+}
+
+.megaRepoName {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.megaRepoDesc {
+  font-size: 12px;
+  font-weight: 300;
+  line-height: 1.35;
+  color: var(--color-text-secondary);
+}
+
 .megaItem {
   display: flex;
   flex-direction: column;
@@ -318,6 +437,19 @@
 
 .megaItemIcon {
   opacity: 0.5;
+}
+
+/* Small publication-year tick beside whitepaper items, mirroring the date
+   ticks in the footer's Research column. */
+.yearTick {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-secondary);
 }
 
 .megaItemDesc {
@@ -403,6 +535,36 @@
 .subItemLink:hover {
   color: var(--color-link-hover, #fff);
   text-shadow: var(--link-hover-glow, none);
+}
+
+.accordionGroupHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 8px 2px 4px 12px;
+  border-top: 1px solid var(--color-overlay-medium);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.accordionRepoGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.accordionRepoProject {
+  margin: 8px 0 2px;
+  padding-left: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-primary);
 }
 
 .externalIcon {

@@ -100,6 +100,36 @@
   opacity: 0.4;
 }
 
+/* Hover-only bottom scrim. While the card is active the image brightens and
+   extra text (tagline + stats) slides up, so deepen a gradient anchored to the
+   bottom edge -- concentrated where the text sits -- to keep it readable
+   without dimming the brighter upper image. Sits above the image (-2) but
+   below the footer content (auto). */
+.card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 75%;
+  z-index: -1;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.92) 0%,
+    rgba(0, 0, 0, 0.72) 26%,
+    rgba(0, 0, 0, 0.35) 58%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-slow);
+}
+
+.card:hover::before,
+.card:focus-visible::before {
+  opacity: 1;
+}
+
 /* Background image: visible by default. Dimmed at rest with a subtle dark
    overlay so the foreground text stays legible; brightens on hover/focus. */
 .cardImage {
@@ -192,6 +222,12 @@
   --logo-scale: 0.6;
 }
 
+.cardLogo[data-logo-id='zns'] {
+  /* Enlarge via real height (not transform) so max-width + object-fit keep the
+     mark inside the card; a transform scale would overflow the clipped box. */
+  height: calc(clamp(1.5rem, 2.4vw, 2.25rem) * 0.89);
+}
+
 .cardLogoPlaceholder {
   display: flex;
   align-items: center;
@@ -206,17 +242,7 @@
 /* On the light theme, drop the marks to a uniform off-black instead. */
 :global([data-theme='light']) .cardLogo {
   filter: brightness(0) invert(0.15);
-}
-
-/* ZNS ships as white-on-black artwork (no alpha); skip the silhouette
-   inversion so its black field blends into the black card and only the
-   mark softens to off-white. */
-.cardLogo[data-logo-id='zns'],
-:global([data-theme='light']) .cardLogo[data-logo-id='zns'] {
-  filter: brightness(0.92);
-}
-
-.cardArrow {
+}.cardArrow {
   position: absolute;
   top: clamp(1rem, 1.6vw, 1.5rem);
   right: clamp(1rem, 1.6vw, 1.5rem);
@@ -279,6 +305,13 @@
   transition:
     max-height var(--transition-normal),
     margin-bottom var(--transition-normal);
+}
+
+/* ZNS is scaled up, so give its section the extra headroom it needs;
+   otherwise the enlarged mark clips against the overflow-hidden box. */
+.card:hover .cardLogoSection:has(.cardLogo[data-logo-id='zns']),
+.card:focus-visible .cardLogoSection:has(.cardLogo[data-logo-id='zns']) {
+  max-height: calc(clamp(1.5rem, 2.4vw, 2.25rem) * 0.89 + 0.25rem);
 }
 
 /* Product name shows at rest and collapses on hover so the logo can take its

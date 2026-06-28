@@ -52,7 +52,7 @@ const products: Product[] = [
   {
     id: 'aura',
     name: 'AURA',
-    tagline: 'Autonomous engineering agents.',
+    tagline: 'An agentic coding system.',
     accent: 'cyan',
     span: 'tall',
     image: '/images/aura/aura-bg.png',
@@ -61,14 +61,14 @@ const products: Product[] = [
     url: 'aura.ai',
     year: '2024',
     handle: '@aura_asi',
-    focus: 'Autonomous engineering agents',
+    focus: 'Agentic coding system',
     description:
-      'AURA builds autonomous engineering agents that plan, write, and ship software end to end, operating as a sovereign workforce that compounds over time.',
+      'AURA is an agentic coding system that plans, writes, tests, and ships software end to end, operating as a sovereign engineering workforce that compounds with every task.',
   },
   {
     id: 'zero',
     name: 'ZERO',
-    tagline: 'A secure OS for an agentic world.',
+    tagline: 'A secure messenger.',
     accent: 'blue',
     image: '/images/zero/zero-bg.png',
     imagePositionMobile: 'center 35%',
@@ -76,39 +76,39 @@ const products: Product[] = [
     url: 'zero.tech',
     year: '2017',
     handle: '@zero_app',
-    focus: 'Secure operating system',
+    focus: 'Secure messenger',
     description:
-      'ZERO is a secure operating system for an agentic world, pairing private messaging and identity with the infrastructure people need to own their data.',
+      'ZERO is a secure, private messenger for an agentic world, pairing end-to-end encrypted communication with the identity and infrastructure people need to own their data.',
   },
   {
     id: 'zns',
     name: 'ZNS',
-    tagline: 'Naming for the network.',
+    tagline: 'A sovereign identity system.',
     accent: 'cyan',
     image: '/images/zns/zns-bg.png',
     logo: '/images/zns/zns-logo.png',
-    focus: 'Decentralized naming',
+    focus: 'Sovereign identity system',
     description:
-      'ZNS is a decentralized naming layer for the network, mapping human-readable identities to the addresses, agents, and services that run on it.',
+      'ZNS is a sovereign identity system that maps human-readable names to the people, agents, and services on the network—portable identity that you own and fully control.',
   },
   {
     id: 'z-chain',
     name: 'Z Chain',
-    tagline: 'Trust layer for autonomous systems.',
+    tagline: 'A blazing-fast blockchain.',
     accent: 'green',
     image: '/images/z-chain/z-chain-bg.png',
     logo: '/images/z-chain/z-chain-logo.svg',
     url: 'zchain.org',
     year: '2023',
     handle: '@zchain_org',
-    focus: 'Trust layer for autonomous systems',
+    focus: 'Blazing-fast blockchain',
     description:
-      'Z Chain is the trust layer for autonomous systems, providing verifiable settlement and coordination so agents can transact without a central authority.',
+      'Z Chain is a blazing-fast blockchain built for autonomous systems, delivering verifiable, high-throughput settlement so agents can transact and coordinate without a central authority.',
   },
   {
     id: 'zode',
     name: 'ZODE',
-    tagline: 'Agentic coding, end to end.',
+    tagline: 'A micro-data center.',
     accent: 'orange',
     span: 'wide',
     image: '/images/zode/zode-bg.png',
@@ -116,27 +116,27 @@ const products: Product[] = [
     url: 'thegrid.host',
     year: '2026',
     handle: '@zode_org',
-    focus: 'Agentic coding, end to end',
+    focus: 'Micro-data center',
     description:
-      'ZODE delivers agentic coding from idea to deployment, orchestrating agents across the full development lifecycle on open, distributed infrastructure.',
+      'ZODE is a micro-data center for AI—compact, energy-aware compute infrastructure that brings sovereign training and inference closer to where it is needed.',
   },
   {
     id: 'the-grid',
     name: 'THE GRID',
-    tagline: 'Distributed compute fabric.',
+    tagline: 'A distributed compute network.',
     accent: 'rose',
     span: 'tall',
     image: '/images/the-grid/the-grid-bg.png',
     imagePositionMobile: 'center center',
     logo: '/images/the-grid/the-grid-logo.png',
-    focus: 'Distributed compute fabric',
+    focus: 'Distributed compute network',
     description:
-      'THE GRID is a distributed compute fabric that pools resources across the network, giving sovereign agents and applications the power they need on demand.',
+      'THE GRID is a distributed compute network that pools resources across the world, giving sovereign agents and applications the power they need on demand.',
   },
   {
     id: 'wilder-world',
     name: 'Wilder World',
-    tagline: 'An immersive on-chain metaverse.',
+    tagline: 'A virtual simulation.',
     accent: 'purple',
     span: 'wide3',
     image: '/images/wilder-world/wilder-world-bg.png',
@@ -146,9 +146,9 @@ const products: Product[] = [
     url: 'wilderworld.com',
     year: '2021',
     handle: '@wilderworld',
-    focus: 'Immersive on-chain metaverse',
+    focus: 'Virtual simulation',
     description:
-      'Wilder World is an immersive on-chain metaverse, a photorealistic virtual world owned by its community and built on open, decentralized rails.',
+      'Wilder World is an AI-powered virtual simulation—a photorealistic, living world owned by its community and built on open, decentralized rails.',
   },
 ];
 
@@ -237,7 +237,12 @@ export function ProductGrid() {
 
   const open = (product: Product) => {
     if (gridRef.current) {
-      setRect(gridRef.current.getBoundingClientRect());
+      const r = gridRef.current.getBoundingClientRect();
+      // Normalize to the grid's position as if the page were scrolled to the
+      // top. The modal panel is position: fixed, so using the live (scrolled)
+      // rect would shift it off-screen; this keeps it anchored to the grid's
+      // first-screen location no matter how far the page is scrolled.
+      setRect(new DOMRect(r.left + window.scrollX, r.top + window.scrollY, r.width, r.height));
     }
     setActive(product);
   };

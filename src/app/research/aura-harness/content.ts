@@ -6,7 +6,7 @@ import type { Block } from '../zero-os/content';
 export type { Block };
 
 export const abstract =
-  "AURA Harness is a deterministic multi-agent runtime for running many autonomous agents concurrently with sandboxed tool execution. The system is built around per-agent kernels with cross-agent parallelism: each agent owns its own deterministic kernel and append-only record log, a single processor advances that agent's state by consuming transactions, and reasoning is delegated to a proxy-routed model provider. Every external effect — every model call, every tool execution, every state change — flows through the agent's kernel and is written to its record, so any one agent's full history is byte-for-byte replayable from its log alone, regardless of which other agents were running at the same time. The runtime backs interactive terminal sessions, headless servers, and long-running automatons from the same kernel, storage, and reasoning stack. As autonomous agents take on real work with real consequences, the question is no longer only what an agent can do, but whether we can prove what it did. AURA Harness answers that question with an architecture where auditability and determinism are structural guarantees rather than best-effort features.";
+  "AURA Harness is a deterministic multi-agent runtime for running many autonomous agents concurrently with sandboxed tool execution. The system is built around per-agent kernels with cross-agent parallelism: each agent owns its own deterministic kernel and append-only record log, a single processor advances that agent's state by consuming transactions, and reasoning is delegated to a proxy-routed model provider. Every external effect, including every model call, every tool execution, and every state change, flows through the agent's kernel and is written to its record, so any one agent's full history is byte-for-byte replayable from its log alone, regardless of which other agents were running at the same time. The runtime backs interactive terminal sessions, headless servers, and long-running automatons from the same kernel, storage, and reasoning stack. As autonomous agents take on real work with real consequences, the question is no longer only what an agent can do, but whether we can prove what it did. AURA Harness answers that question with an architecture where auditability and determinism are structural guarantees rather than best-effort features.";
 
 export const blocks: Block[] = [
   // 1.0 Introduction
@@ -18,19 +18,19 @@ export const blocks: Block[] = [
   },
   {
     kind: 'p',
-    text: "Autonomous software agents are moving from demos into production. They read and write files, run commands, call external services, spawn other agents, and make decisions that ripple through real systems. As that capability grows, a harder question follows close behind: not merely what an agent is able to do, but whether anyone can later prove what it actually did, in what order, and on whose authority. Most agent frameworks treat history as a convenience — a transcript to scroll through — rather than as the canonical, authoritative record of the system's behavior.",
+    text: "Autonomous software agents are moving from demos into production. They read and write files, run commands, call external services, spawn other agents, and make decisions that ripple through real systems. As that capability grows, a harder question follows close behind: not merely what an agent is able to do, but whether anyone can later prove what it actually did, in what order, and on whose authority. Most agent frameworks treat history as a convenience, a transcript to scroll through, rather than as the canonical, authoritative record of the system's behavior.",
   },
   {
     kind: 'p',
-    text: 'AURA Harness takes the opposite stance. It is a deterministic multi-agent runtime in which the record is the fundamental unit of truth. Every agent has its own append-only log of entries, strictly ordered by a per-agent sequence number, and all state is derivable from that log. There is no hidden state: if a thing is not in the record, it did not happen. This single commitment — that the log is the system, not a side effect of it — propagates into every layer of the design, from how the kernel computes context hashes to how unrelated agents are allowed to run in parallel.',
+    text: 'AURA Harness takes the opposite stance. It is a deterministic multi-agent runtime in which the record is the fundamental unit of truth. Every agent has its own append-only log of entries, strictly ordered by a per-agent sequence number, and all state is derivable from that log. There is no hidden state: if a thing is not in the record, it did not happen. This single commitment, that the log is the system and not a side effect of it, propagates into every layer of the design, from how the kernel computes context hashes to how unrelated agents are allowed to run in parallel.',
   },
   {
     kind: 'p',
-    text: 'The runtime is an open-source Rust workspace. It builds two binaries — an interactive terminal client and a headless node server — over a shared kernel, storage, and reasoning stack. The same pipeline that drives a developer typing into a terminal also drives a headless server processing transactions over HTTP and a long-running automaton iterating on a task overnight. Because every front-end reduces to the same per-agent kernel, the guarantees described in this paper hold uniformly across all of them.',
+    text: 'The runtime is an open-source Rust workspace. It builds two binaries, an interactive terminal client and a headless node server, over a shared kernel, storage, and reasoning stack. The same pipeline that drives a developer typing into a terminal also drives a headless server processing transactions over HTTP and a long-running automaton iterating on a task overnight. Because every front-end reduces to the same per-agent kernel, the guarantees described in this paper hold uniformly across all of them.',
   },
   {
     kind: 'p',
-    text: 'This document describes the architecture of that runtime: its core concepts, its layered structure, the determinism and replay guarantees that make agent behavior auditable, the concurrency model that lets many agents run at once without weakening those guarantees, the policy and authorization model that gates every external effect, and the fifteen architectural invariants — each enforced in continuous integration — that hold the whole system to its promises.',
+    text: 'This document describes the architecture of that runtime: its core concepts, its layered structure, the determinism and replay guarantees that make agent behavior auditable, the concurrency model that lets many agents run at once without weakening those guarantees, the policy and authorization model that gates every external effect, and the fifteen architectural invariants, each enforced in continuous integration, that hold the whole system to its promises.',
   },
 
   // 2.0 Goals
@@ -48,7 +48,7 @@ export const blocks: Block[] = [
     kind: 'ol',
     items: [
       'Determinism: Given the same record, an agent must produce the same result. Replaying an agent\u2019s log must reconstruct its state byte-for-byte, without a live model or executor in the loop.',
-      'Auditability: Every external effect — model calls, tool executions, policy decisions, state changes — must be captured in the record with the full decision chain that produced it, so behavior can be verified after the fact.',
+      'Auditability: Every external effect, whether model calls, tool executions, policy decisions, or state changes, must be captured in the record with the full decision chain that produced it, so behavior can be verified after the fact.',
       'Parallelism: Many unrelated agents must run concurrently for throughput, and this must not come at the cost of determinism or auditability. Concurrency is a first-class property, not a hazard the design merely tolerates.',
       'Openness and sovereignty: The runtime is MIT-licensed and self-contained. Every layer is auditable and reusable, and the system is the authorization and execution boundary for agents, not a black box that owns user credentials or behavior.',
     ],
@@ -77,7 +77,7 @@ export const blocks: Block[] = [
   },
   {
     kind: 'p',
-    text: "The record is the fundamental unit of truth. Every agent owns an append-only log of record entries, strictly ordered by a per-agent sequence number with no reordering and no gaps. All agent state is derivable from this log. The log is immutable: there is no operation to update, delete, or truncate an entry. Compaction, where it happens, operates only on in-memory message history used to build prompts — never on the persisted record. This is what makes an agent's behavior auditable and replayable: the record is the system of record, and everything else is a projection of it.",
+    text: "The record is the fundamental unit of truth. Every agent owns an append-only log of record entries, strictly ordered by a per-agent sequence number with no reordering and no gaps. All agent state is derivable from this log. The log is immutable: there is no operation to update, delete, or truncate an entry. Compaction, where it happens, operates only on in-memory message history used to build prompts, never on the persisted record. This is what makes an agent's behavior auditable and replayable: the record is the system of record, and everything else is a projection of it.",
   },
   {
     kind: 'h',
@@ -97,7 +97,7 @@ export const blocks: Block[] = [
   },
   {
     kind: 'p',
-    text: 'Before any external effect, two checks run in sequence. First the resolved agent mode — Agent, Plan, Ask, or Debug — gates the action. The mode gate runs before the policy layer, not as a substitute for it. Then the policy layer narrows further per tool, evaluating hard-denial layers (allowed action kinds, required capabilities, argument scope, installed integrations) and a tri-state per-tool decision of on, off, or ask. Only actions that survive both gates become executable.',
+    text: 'Before any external effect, two checks run in sequence. First the resolved agent mode, which is Agent, Plan, Ask, or Debug, gates the action. The mode gate runs before the policy layer, not as a substitute for it. Then the policy layer narrows further per tool, evaluating hard-denial layers (allowed action kinds, required capabilities, argument scope, installed integrations) and a tri-state per-tool decision of on, off, or ask. Only actions that survive both gates become executable.',
   },
   {
     kind: 'h',
@@ -107,7 +107,7 @@ export const blocks: Block[] = [
   },
   {
     kind: 'p',
-    text: 'Probabilistic model calls are isolated behind a single provider trait and recorded by the kernel. There is exactly one real provider in production: an Anthropic-shaped client that always routes through a JWT-authenticated proxy router. There is no direct-to-provider path — the runtime never calls a model vendor on its own. A mock provider is available for tests. Every model call passes through the kernel\u2019s reasoning entry points and produces a record entry capturing the request snapshot and the response metadata, so the reasoning step is as auditable as any other.',
+    text: 'Probabilistic model calls are isolated behind a single provider trait and recorded by the kernel. There is exactly one real provider in production: an Anthropic-shaped client that always routes through a JWT-authenticated proxy router. There is no direct-to-provider path: the runtime never calls a model vendor on its own. A mock provider is available for tests. Every model call passes through the kernel\u2019s reasoning entry points and produces a record entry capturing the request snapshot and the response metadata, so the reasoning step is as auditable as any other.',
   },
   {
     kind: 'h',
@@ -117,7 +117,7 @@ export const blocks: Block[] = [
   },
   {
     kind: 'p',
-    text: 'All side effects — filesystem operations, shell commands, domain API calls, automaton actions — are explicit and flow through authorized executors. The executor router dispatches approved actions and captures structured effects, keeping the kernel boundary clean. Filesystem and command tools run inside an OS-level sandbox that canonicalizes paths, guards against symlink escapes, and constrains subprocess spawning. Mutating git operations are funneled through a single sanctioned call site so that the boundary between read-only inspection and state-changing commits is explicit and enforced.',
+    text: 'All side effects, including filesystem operations, shell commands, domain API calls, and automaton actions, are explicit and flow through authorized executors. The executor router dispatches approved actions and captures structured effects, keeping the kernel boundary clean. Filesystem and command tools run inside an OS-level sandbox that canonicalizes paths, guards against symlink escapes, and constrains subprocess spawning. Mutating git operations are funneled through a single sanctioned call site so that the boundary between read-only inspection and state-changing commits is explicit and enforced.',
   },
   {
     kind: 'h',
@@ -127,7 +127,7 @@ export const blocks: Block[] = [
   },
   {
     kind: 'p',
-    text: 'Per-agent memory and skill packages extend an agent\u2019s abilities at runtime without widening the deterministic kernel. Memory comes in three forms — durable facts, episodic events, and procedures detected over repeated behavior — stored in dedicated column families rather than in the record log. Writes flow through a two-stage pipeline that combines heuristic extraction with optional model-based refinement, and a retriever injects a size-budgeted slice of memory into the kernel context on each turn. Skills are packaged as standard skill files, wire-compatible with an open skill standard, and loaded by precedence from workspace, agent-personal, personal, configured, and bundled sources.',
+    text: 'Per-agent memory and skill packages extend an agent\u2019s abilities at runtime without widening the deterministic kernel. Memory comes in three forms, namely durable facts, episodic events, and procedures detected over repeated behavior, stored in dedicated column families rather than in the record log. Writes flow through a two-stage pipeline that combines heuristic extraction with optional model-based refinement, and a retriever injects a size-budgeted slice of memory into the kernel context on each turn. Skills are packaged as standard skill files, wire-compatible with an open skill standard, and loaded by precedence from workspace, agent-personal, personal, configured, and bundled sources.',
   },
 
   // 4.0 Architecture
@@ -151,15 +151,15 @@ export const blocks: Block[] = [
     kind: 'ul',
     items: [
       'Core: Behavior-free identifiers, capability enums, mode primitives, and wire types, with no I/O and no async.',
-      'Store: Durable storage — the append-only record log and its column families, behind a sealed write surface.',
+      'Store: Durable storage, namely the append-only record log and its column families, behind a sealed write surface.',
       'Config: A single source of truth for environment variables and configuration.',
       'Model: The LLM provider abstraction and the single proxy-routed client.',
-      'Context: Read-only context assembly — prompts, memory, compaction, and skills.',
-      'Plugin: The plugin runtime — manifest schema, in-process API, hooks, MCP, and connectors.',
-      'Exec: The tool execution surface — catalog, runner, sandbox, policy evaluation, isolation, and conflict locks.',
-      'Agent: The deterministic core of a single agent — kernel, turn loop, steering, and subagent derivation.',
-      'Fleet: The multi-agent runtime — registry, spawn, dispatch, quota, mailbox, and the daemon composition root.',
-      'Surface: Composition roots — CLI, TUI, SDK, the HTTP/WebSocket gateway, the orchestration engine, and automatons.',
+      'Context: Read-only context assembly, covering prompts, memory, compaction, and skills.',
+      'Plugin: The plugin runtime, covering manifest schema, in-process API, hooks, MCP, and connectors.',
+      'Exec: The tool execution surface, covering catalog, runner, sandbox, policy evaluation, isolation, and conflict locks.',
+      'Agent: The deterministic core of a single agent, covering kernel, turn loop, steering, and subagent derivation.',
+      'Fleet: The multi-agent runtime, covering registry, spawn, dispatch, quota, mailbox, and the daemon composition root.',
+      'Surface: Composition roots such as the CLI, TUI, SDK, the HTTP/WebSocket gateway, the orchestration engine, and automatons.',
     ],
   },
   {
@@ -174,7 +174,7 @@ export const blocks: Block[] = [
   },
   {
     kind: 'p',
-    text: "For any agent, the only code permitted to interact with external systems on that agent's behalf is that agent's kernel. No code outside the kernel may call a model provider, execute an action through the executor, append to the record log, make mutating domain calls, or spawn subprocesses for git mutations. All external interactions are mediated through the kernel's processing and reasoning entry points, or through a single helper that assembles a context-hashed entry and commits it through the sealed write surface. A small number of sanctioned non-kernel append sites exist — an HTTP-driven tool-permissions write and the spawn audit rows — and each is individually allowlisted and serialized so the boundary stays tight.",
+    text: "For any agent, the only code permitted to interact with external systems on that agent's behalf is that agent's kernel. No code outside the kernel may call a model provider, execute an action through the executor, append to the record log, make mutating domain calls, or spawn subprocesses for git mutations. All external interactions are mediated through the kernel's processing and reasoning entry points, or through a single helper that assembles a context-hashed entry and commits it through the sealed write surface. A small number of sanctioned non-kernel append sites exist, namely an HTTP-driven tool-permissions write and the spawn audit rows, and each is individually allowlisted and serialized so the boundary stays tight.",
   },
   {
     kind: 'h',
@@ -184,7 +184,7 @@ export const blocks: Block[] = [
   },
   {
     kind: 'p',
-    text: 'The kernel mediates external systems through gateways that implement the same traits their consumers already expect. A model gateway implements the provider trait, a tool gateway implements the executor trait, and a domain gateway implements the domain API. Consumers — the agent loop, automatons — are unaware of kernel mediation: they hold an ordinary trait object and call it normally, while the gateway transparently records every call. The agent loop in particular is held in isolation: it owns iteration, streaming, compaction, budget management, and stall detection, but it may not touch store types, construct transactions, or reach a provider other than the one it was handed.',
+    text: 'The kernel mediates external systems through gateways that implement the same traits their consumers already expect. A model gateway implements the provider trait, a tool gateway implements the executor trait, and a domain gateway implements the domain API. Consumers, namely the agent loop and automatons, are unaware of kernel mediation: they hold an ordinary trait object and call it normally, while the gateway transparently records every call. The agent loop in particular is held in isolation: it owns iteration, streaming, compaction, budget management, and stall detection, but it may not touch store types, construct transactions, or reach a provider other than the one it was handed.',
   },
 
   // 5.0 Determinism & Replay
@@ -206,7 +206,7 @@ export const blocks: Block[] = [
   },
   {
     kind: 'p',
-    text: 'The context hash for an entry in an agent\u2019s log is derived solely from that transaction and that agent\u2019s record window — the transaction body chained against the context hashes of the preceding entries. Re-processing the same transaction against the same window for the same agent always produces the same hash. There is no cross-agent dependency in the chain, which is precisely what lets unrelated agents run in parallel without weakening per-agent determinism. The hashing is order-sensitive, insertion-sensitive, and transaction-sensitive, and these properties are pinned by property-based tests.',
+    text: 'The context hash for an entry in an agent\u2019s log is derived solely from that transaction and that agent\u2019s record window: the transaction body chained against the context hashes of the preceding entries. Re-processing the same transaction against the same window for the same agent always produces the same hash. There is no cross-agent dependency in the chain, which is precisely what lets unrelated agents run in parallel without weakening per-agent determinism. The hashing is order-sensitive, insertion-sensitive, and transaction-sensitive, and these properties are pinned by property-based tests.',
   },
   {
     kind: 'h',
@@ -216,7 +216,7 @@ export const blocks: Block[] = [
   },
   {
     kind: 'p',
-    text: 'Within each agent, record entries carry strictly increasing, contiguous sequence numbers: the next sequence is always one greater than the head, with no gaps and no duplicates. Inbox dequeue and record append happen atomically in a single write batch, so a crash cannot leave a half-applied transaction. No cross-agent ordering is implied or required — two agents committing at the same wall-clock moment produce two independent, internally-monotonic chains.',
+    text: 'Within each agent, record entries carry strictly increasing, contiguous sequence numbers: the next sequence is always one greater than the head, with no gaps and no duplicates. Inbox dequeue and record append happen atomically in a single write batch, so a crash cannot leave a half-applied transaction. No cross-agent ordering is implied or required: two agents committing at the same wall-clock moment produce two independent, internally-monotonic chains.',
   },
   {
     kind: 'h',
@@ -302,7 +302,7 @@ export const blocks: Block[] = [
   },
   {
     kind: 'p',
-    text: 'Every tool call passes through the complete policy check before execution. The check evaluates orthogonal hard-denial layers first — whether the action kind is allowed, whether the caller holds every required capability, whether scoped arguments fall inside the caller\u2019s scope, and whether required integrations are installed — and then resolves the per-tool tri-state of allow, deny, or ask. A deny-only shortcut is explicitly insufficient: the full check must run. Tool execution guardrails remain orthogonal on top of policy, so even an allowed command tool still enforces binary allowlists, shell-script constraints, sandbox and working-directory checks, and timeout limits.',
+    text: 'Every tool call passes through the complete policy check before execution. The check evaluates orthogonal hard-denial layers first, namely whether the action kind is allowed, whether the caller holds every required capability, whether scoped arguments fall inside the caller\u2019s scope, and whether required integrations are installed, and then resolves the per-tool tri-state of allow, deny, or ask. A deny-only shortcut is explicitly insufficient: the full check must run. Tool execution guardrails remain orthogonal on top of policy, so even an allowed command tool still enforces binary allowlists, shell-script constraints, sandbox and working-directory checks, and timeout limits.',
   },
   {
     kind: 'h',
@@ -330,7 +330,7 @@ export const blocks: Block[] = [
   },
   {
     kind: 'p',
-    text: 'Above the single-agent kernel sits the fleet — the multi-agent runtime. A registry holds an in-memory directory of live and recently-terminated agents. A quota pool enforces concurrency and resource budgets through tickets that release on drop. A bounded mailbox carries agent jobs with backpressure and typed send errors, and a dispatcher routes those jobs into the spawn pipeline. A daemon composition root wires these pieces together and hosts the mode-resolution helpers.',
+    text: 'Above the single-agent kernel sits the fleet, the multi-agent runtime. A registry holds an in-memory directory of live and recently-terminated agents. A quota pool enforces concurrency and resource budgets through tickets that release on drop. A bounded mailbox carries agent jobs with backpressure and typed send errors, and a dispatcher routes those jobs into the spawn pipeline. A daemon composition root wires these pieces together and hosts the mode-resolution helpers.',
   },
   {
     kind: 'h',
@@ -340,7 +340,7 @@ export const blocks: Block[] = [
   },
   {
     kind: 'p',
-    text: 'A parent agent delegates work by calling a task tool, which validates the spawn capability and hands a dispatch request to a subagent dispatch hook; the tool is fail-closed when no hook is present. Derivation produces a child specification that may only narrow the parent\u2019s mode, permissions, and model — never widen them. Subagent dispatch is deliberately split across layers so that every dependency edge stays downward: the exec layer declares the hook the tool consumes, the agent layer owns the pure derivation and data adapters, the fleet layer owns the concrete dispatcher, and the surface layer owns the runner that drives the scheduler. Child work re-enters the same scheduler lane and inherits the same per-agent claim and record pipeline as ordinary scheduled work.',
+    text: 'A parent agent delegates work by calling a task tool, which validates the spawn capability and hands a dispatch request to a subagent dispatch hook; the tool is fail-closed when no hook is present. Derivation produces a child specification that may only narrow the parent\u2019s mode, permissions, and model, never widen them. Subagent dispatch is deliberately split across layers so that every dependency edge stays downward: the exec layer declares the hook the tool consumes, the agent layer owns the pure derivation and data adapters, the fleet layer owns the concrete dispatcher, and the surface layer owns the runner that drives the scheduler. Child work re-enters the same scheduler lane and inherits the same per-agent claim and record pipeline as ordinary scheduled work.',
   },
   {
     kind: 'h',
@@ -368,7 +368,7 @@ export const blocks: Block[] = [
   },
   {
     kind: 'p',
-    text: 'Plugins extend the runtime through a sandboxed external-process surface and cannot bypass the kernel boundary for record writes, model calls, or domain mutations. Hook subprocesses spawn with a scrubbed environment that strips runtime credentials and host secrets, and the MCP client applies the same env-clearing discipline with per-request timeouts so a silent plugin server cannot pin the pool. No plugin crate touches the kernel\u2019s external surfaces — no record append, no model call, no mutating domain method, and no store handle appears anywhere in plugin code.',
+    text: 'Plugins extend the runtime through a sandboxed external-process surface and cannot bypass the kernel boundary for record writes, model calls, or domain mutations. Hook subprocesses spawn with a scrubbed environment that strips runtime credentials and host secrets, and the MCP client applies the same env-clearing discipline with per-request timeouts so a silent plugin server cannot pin the pool. No plugin crate touches the kernel\u2019s external surfaces: no record append, no model call, no mutating domain method, and no store handle appears anywhere in plugin code.',
   },
   {
     kind: 'h',
@@ -390,7 +390,7 @@ export const blocks: Block[] = [
   },
   {
     kind: 'p',
-    text: 'The runtime upholds fifteen architectural invariants, grouped into five parts. Each is guarded in continuous integration — either by a ripgrep-band script that pins sanctioned call sites, or by a dedicated test suite. Unless stated otherwise, every invariant is scoped to a single agent\u2019s kernel and that agent\u2019s record log; the cross-agent contracts live in the concurrency part.',
+    text: 'The runtime upholds fifteen architectural invariants, grouped into five parts. Each is guarded in continuous integration, either by a ripgrep-band script that pins sanctioned call sites, or by a dedicated test suite. Unless stated otherwise, every invariant is scoped to a single agent\u2019s kernel and that agent\u2019s record log; the cross-agent contracts live in the concurrency part.',
   },
   {
     kind: 'ul',
@@ -432,7 +432,7 @@ export const blocks: Block[] = [
   },
   {
     kind: 'p',
-    text: 'A headless node server exposes an HTTP and WebSocket gateway. A run — a chat session, a dev-loop, or a single-task automaton — is started by posting a runtime request to a single run endpoint, which synchronously returns a run identifier and the WebSocket path to open for events. The exchange is deliberately two-step: the client posts over HTTP, receives the identifier, then opens the per-run stream; the run is already live by the time the socket attaches, with no client init frame. Chat streams are bidirectional, while dev-loop and task-run streams are event-only. Additional routes cover transactions and record scans, tri-state tool permissions, per-agent memory, and skills.',
+    text: 'A headless node server exposes an HTTP and WebSocket gateway. A run, whether a chat session, a dev-loop, or a single-task automaton, is started by posting a runtime request to a single run endpoint, which synchronously returns a run identifier and the WebSocket path to open for events. The exchange is deliberately two-step: the client posts over HTTP, receives the identifier, then opens the per-run stream; the run is already live by the time the socket attaches, with no client init frame. Chat streams are bidirectional, while dev-loop and task-run streams are event-only. Additional routes cover transactions and record scans, tri-state tool permissions, per-agent memory, and skills.',
   },
   {
     kind: 'h',
@@ -442,7 +442,7 @@ export const blocks: Block[] = [
   },
   {
     kind: 'p',
-    text: 'A single gateway crate is the sole supported surface for any external consumer. External repositories interact with the harness exclusively over the wire — the run endpoint for submission, the per-run stream for events, and the management endpoints for everything else — never by depending on the engine, the domain HTTP layer, or any lower crate directly. This rule is load-bearing: it lets the gateway\u2019s composition root evolve internally without dragging every external consumer through a coordinated migration. An SDK provides typed client and session shapes over the same wire protocol, with pluggable transport.',
+    text: 'A single gateway crate is the sole supported surface for any external consumer. External repositories interact with the harness exclusively over the wire, using the run endpoint for submission, the per-run stream for events, and the management endpoints for everything else, never by depending on the engine, the domain HTTP layer, or any lower crate directly. This rule is load-bearing: it lets the gateway\u2019s composition root evolve internally without dragging every external consumer through a coordinated migration. An SDK provides typed client and session shapes over the same wire protocol, with pluggable transport.',
   },
 
   // 12.0 Conclusion
@@ -458,7 +458,7 @@ export const blocks: Block[] = [
   },
   {
     kind: 'p',
-    text: 'As agents take on more consequential work, the systems that host them will be judged less by what they make possible and more by what they make verifiable. AURA Harness is built for that standard — an open, auditable foundation on which autonomous intelligence can act with both capability and accountability.',
+    text: 'As agents take on more consequential work, the systems that host them will be judged less by what they make possible and more by what they make verifiable. AURA Harness is built for that standard: an open, auditable foundation on which autonomous intelligence can act with both capability and accountability.',
   },
 
   // Appendix A

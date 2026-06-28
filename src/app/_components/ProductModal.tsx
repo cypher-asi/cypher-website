@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Clock, Link2, X } from 'lucide-react';
+import { ArrowUpRight, Clock, Link2, X } from 'lucide-react';
 import type { Product } from './ProductGrid';
 import { XIcon } from './ProductGrid';
 import styles from './ProductModal.module.css';
@@ -98,6 +98,17 @@ export function ProductModal({ product, gridRect, onClose }: ProductModalProps) 
           <div className={styles.bodyMain}>
             <h2 className={styles.name}>{product.name}</h2>
             <p className={styles.description}>{product.description}</p>
+            {product.url && (
+              <a
+                className={styles.launch}
+                href={`https://${product.url}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Launch Site
+                <ArrowUpRight size={15} />
+              </a>
+            )}
           </div>
 
           <dl className={styles.meta}>

@@ -18,6 +18,19 @@
   pointer-events: auto;
 }
 
+/* Container mode: the track is an absolute child of a scroll container
+   (e.g. the whitepaper table of contents) rather than fixed to the viewport.
+   `top`/`height` are set inline so it stays pinned over the visible area as
+   the container scrolls. */
+.trackContainer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 10px;
+  height: auto;
+  z-index: 5;
+}
+
 .thumb {
   position: absolute;
   top: 0;
