@@ -21,6 +21,72 @@ interface FooterColumn {
   links: FooterLink[];
 }
 
+interface Repo {
+  name: string;
+  description: string;
+}
+
+interface RepoGroup {
+  project: string;
+  repos: Repo[];
+}
+
+const GITHUB_ORG = 'https://github.com/cypher-asi';
+
+// Public org repositories, grouped by project. Static snapshot.
+const repoGroups: RepoGroup[] = [
+  {
+    project: 'AURA',
+    repos: [
+      { name: 'aura-os', description: 'The Secure OS for AI agents.' },
+      { name: 'aura-harness', description: 'A frontier harness for agentic intelligence.' },
+      { name: 'aura-router', description: 'Model proxy and billing router for the AURA network.' },
+      { name: 'aura-storage', description: 'The execution data layer for the AURA platform.' },
+      { name: 'aura-swarm', description: 'An orchestration environment for deploying agent swarms at scale.' },
+      { name: 'aura-network', description: 'The social network layer for autonomous agents and teams.' },
+      { name: 'aura-bridge', description: 'The AURA bridge to open messaging systems.' },
+      { name: 'aura-website', description: 'The official aura.ai website.' },
+    ],
+  },
+  {
+    project: 'ZERO',
+    repos: [
+      { name: 'zero-os', description: 'A verifiable OS.' },
+      { name: 'zos', description: 'A secure and resilient communication system.' },
+      { name: 'zero-sdk', description: 'Official SDK for the ZERO messaging protocol.' },
+      { name: 'zero-auth', description: 'The auth service for zero-id.' },
+      { name: 'zero-vault', description: 'A system for secrets, remote key signing, and access policies.' },
+      { name: 'zid', description: 'A post-quantum sovereign identity system.' },
+    ],
+  },
+  {
+    project: 'The Grid',
+    repos: [
+      { name: 'the-grid', description: 'The Global Resilient Internet Datalink.' },
+      { name: 'machina', description: 'A compute orchestration environment for the Machine Age.' },
+      { name: 'the-grid-legacy', description: 'An unstoppable distributed compute network.' },
+    ],
+  },
+  {
+    project: 'Wilder World',
+    repos: [
+      { name: 'wilderworld-com', description: 'The official Wilder World site and web platform.' },
+    ],
+  },
+  {
+    project: 'Cypher Core',
+    repos: [
+      { name: 'cypher-website', description: 'The official cypher.net website.' },
+      { name: 'cypher-asi', description: 'Tools for the Machine Age.' },
+      { name: 'z-billing', description: 'The core payments, billing and usage system for the Cypher network.' },
+      { name: 'orbit', description: 'A fast git system for machines.' },
+      { name: 'spectron', description: 'A code analysis tool for complex code bases.' },
+      { name: 'shell', description: 'The standard app shell used to build Cypher ecosystem projects.' },
+      { name: 'zui', description: 'A future UI kit made for machines.' },
+    ],
+  },
+];
+
 const columns: FooterColumn[] = [
   {
     heading: 'Companies',
@@ -117,6 +183,46 @@ export function Footer() {
             </div>
           ))}
         </nav>
+
+        <section className={styles.openSource} aria-label="Open source repositories">
+          <div className={styles.openSourceHead}>
+            <h2 className={styles.heading}>Open Source</h2>
+            <a
+              className={styles.openSourceAll}
+              href={`${GITHUB_ORG}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              All repositories
+              <ArrowUpRight size={12} className={styles.externalIcon} />
+            </a>
+          </div>
+          <div className={styles.repoGroups}>
+            {repoGroups.map((group) => (
+              <div key={group.project} className={styles.repoGroup}>
+                <h3 className={styles.repoGroupHeading}>{group.project}</h3>
+                <ul className={styles.repoList}>
+                  {group.repos.map((repo) => (
+                    <li key={repo.name}>
+                      <a
+                        className={styles.repoItem}
+                        href={`${GITHUB_ORG}/${repo.name}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <span className={styles.repoName}>
+                          {repo.name}
+                          <ArrowUpRight size={11} className={styles.externalIcon} />
+                        </span>
+                        <span className={styles.repoDesc}>{repo.description}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </section>
 
         <div className={styles.bottom}>
           <div className={styles.social}>

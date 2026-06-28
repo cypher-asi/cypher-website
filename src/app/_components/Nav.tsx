@@ -34,7 +34,7 @@ const sections: NavSection[] = [
     label: 'Companies',
     href: 'https://aura.ai',
     external: true,
-    blurb: 'Software and agents built for the machine age.',
+    blurb: 'A sovereign AI stack spanning energy, infrastructure, protocols, and end-products.',
     subItems: [
       { id: 'aura', label: 'AURA', description: 'Autonomous engineering agents', href: 'https://aura.ai', external: true },
       { id: 'zode', label: 'ZODE', description: 'Agentic coding, end to end', href: 'https://zode.org', external: true },
@@ -47,7 +47,7 @@ const sections: NavSection[] = [
     id: 'research',
     label: 'Research',
     href: '/research',
-    blurb: 'Open work on intelligence, systems, and protocols.',
+    blurb: 'Open source research to accelerate AI sovereignty for people and communities.',
     subItems: [
       { id: 'the-grid', label: 'THE GRID', description: 'Distributed compute fabric', href: '/research/the-grid' },
       { id: 'aura-harness', label: 'AURA Harness', description: 'Evaluating autonomous agents', href: '/research/aura-harness' },
