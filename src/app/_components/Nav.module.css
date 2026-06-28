@@ -41,6 +41,23 @@
   pointer-events: none;
 }
 
+/* While the bar sits over a light-background section, flip the scrim color
+   (driven by an inline --site-fade-to set to the section's background) and the
+   bar text/icons to dark so everything stays legible against the light band. */
+.siteTopbarLight {
+  --color-text-primary: #1a1814;
+  --color-text-secondary: #44403a;
+  --color-link-hover: #1a1814;
+}
+
+.siteTopbarLight .brandLetters {
+  -webkit-text-stroke-color: #1a1814;
+}
+
+.siteTopbarLight .brandFilled .brandLetters {
+  color: #1a1814;
+}
+
 /* While the mega-panel is open, the topbar shares the panel's background so the
    top strip and the dropdown read as one continuous surface. */
 .siteTopbarOpen {
@@ -182,13 +199,12 @@
   color: var(--color-text-primary);
   text-decoration: none;
   cursor: pointer;
-  transition: opacity 200ms ease;
+  transition: opacity 200ms ease, color 250ms ease;
 }
 
 .topNavLink:hover,
 .topNavLinkActive {
-  color: var(--color-text-primary);
-  opacity: 0.7;
+  color: var(--color-link-hover, #fff);
 }
 
 /* ============================================================================
@@ -281,6 +297,10 @@
 .megaItem:hover {
   background: var(--color-overlay-light);
   border-color: var(--color-overlay-medium);
+}
+
+.megaItem:hover .megaItemLabel {
+  color: var(--color-link-hover, #fff);
 }
 
 .megaItemLabel {
@@ -377,7 +397,7 @@
 }
 
 .subItemLink:hover {
-  color: var(--color-text-primary);
+  color: var(--color-link-hover, #fff);
 }
 
 .externalIcon {
