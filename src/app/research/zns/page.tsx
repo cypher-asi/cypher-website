@@ -26,6 +26,7 @@ export default function ZnsPaper() {
         </>
       }
       status="Whitepaper · 2025"
+      author="n3o"
       year="2025"
       lead={<p>{abstract}</p>}
       sections={sections}

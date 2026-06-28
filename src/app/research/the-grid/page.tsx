@@ -26,6 +26,7 @@ export default function TheGridPaper() {
         </>
       }
       status="Whitepaper · v0.6.0 · 2026"
+      author="n3o"
       year="2026"
       lead={
         <>

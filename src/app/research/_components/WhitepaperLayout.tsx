@@ -1,9 +1,10 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { List, X } from 'lucide-react';
 import { TableOfContents } from './TableOfContents';
+import { CustomScrollbar } from '../../_components/CustomScrollbar';
 import { flattenToc, type TocNode } from './toc';
 import styles from './WhitepaperLayout.module.css';
 
@@ -14,6 +15,7 @@ interface WhitepaperLayoutProps {
   title: ReactNode;
   year?: string;
   status?: string;
+  author?: string;
   lead?: ReactNode;
   sections: TocNode[];
   children: ReactNode;
@@ -33,6 +35,7 @@ export function WhitepaperLayout({
   title,
   year,
   status,
+  author,
   lead,
   sections,
   children,
@@ -40,6 +43,7 @@ export function WhitepaperLayout({
   const flat = useMemo(() => flattenToc(sections), [sections]);
   const [activeId, setActiveId] = useState<string | null>(flat[0]?.id ?? null);
   const [mobileTocOpen, setMobileTocOpen] = useState(false);
+  const tocScrollRef = useRef<HTMLElement>(null);
 
   // Scroll-spy: highlight the section currently nearest the top of the viewport.
   useEffect(() => {
@@ -90,9 +94,10 @@ export function WhitepaperLayout({
     <div className={styles.page}>
       <div className={styles.body}>
         <aside className={styles.sidebar} aria-label="Table of contents">
-          <nav className={styles.tocSticky} data-toc-scroll>
+          <nav ref={tocScrollRef} className={styles.tocSticky} data-toc-scroll>
             <p className={styles.tocTitle}>Contents</p>
             <TableOfContents items={sections} activeId={activeId} onSelect={handleSelect} />
+            <CustomScrollbar targetRef={tocScrollRef} showOnHoverOnly />
           </nav>
         </aside>
 
@@ -100,9 +105,10 @@ export function WhitepaperLayout({
           <header className={styles.hero}>
             <p className={styles.eyebrow}>{eyebrow}</p>
             <h1 className={styles.heading}>{title}</h1>
-            {(year || status) && (
+            {(year || status || author) && (
               <div className={styles.meta}>
                 {status && <span className={styles.metaItem}>{status}</span>}
+                {author && <span className={styles.metaItem}>By {author}</span>}
                 {year && <span className={styles.metaItem}>{year}</span>}
               </div>
             )}

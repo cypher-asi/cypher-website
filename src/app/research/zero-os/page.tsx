@@ -26,6 +26,7 @@ export default function ZeroOsPaper() {
         </>
       }
       status="Whitepaper · v0.8"
+      author="n3o"
       year="2020"
       lead={<p>{abstract}</p>}
       sections={sections}
