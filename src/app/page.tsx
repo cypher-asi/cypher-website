@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ArrowUpRight, Clock, Link2 } from 'lucide-react';
+import { Facts } from './_components/Facts';
 import styles from './page.module.css';
 
 function XIcon({ size = 12 }: { size?: number }) {
@@ -137,48 +138,52 @@ function CardInner({ product, index }: { product: Product; index: number }) {
           aria-hidden
         />
       )}
-      {product.logo ? (
-        <img
-          className={styles.cardLogo}
-          src={product.logo}
-          alt={product.name}
-          data-logo-id={product.id}
-          aria-hidden
-        />
-      ) : (
-        <span className={styles.cardLogoPlaceholder} aria-hidden>
-          {product.name}
-        </span>
-      )}
       <span className={styles.cardArrow}>
         <ArrowUpRight size={16} />
       </span>
       <span className={styles.cardMeta}>0{index + 1}</span>
-      <span className={styles.cardBody}>
-        <span className={styles.cardName}>{product.name}</span>
-        <span className={styles.cardTagline}>{product.tagline}</span>
-        {(product.url || product.year || product.handle) && (
-          <span className={styles.cardStats}>
-            {product.url && (
-              <span className={styles.cardStat}>
-                <Link2 size={12} />
-                {product.url}
-              </span>
-            )}
-            {product.year && (
-              <span className={styles.cardStat}>
-                <Clock size={12} />
-                {product.year}
-              </span>
-            )}
-            {product.handle && (
-              <span className={styles.cardStat}>
-                <XIcon size={12} />
-                {product.handle}
-              </span>
-            )}
-          </span>
-        )}
+      <span className={styles.cardFooter}>
+        <span className={styles.cardBody}>
+          <span className={styles.cardName}>{product.name}</span>
+          <span className={styles.cardTagline}>{product.tagline}</span>
+          {(product.url || product.year || product.handle) && (
+            <span className={styles.cardStats}>
+              {product.url && (
+                <span className={styles.cardStat}>
+                  <Link2 size={12} />
+                  {product.url}
+                </span>
+              )}
+              {product.year && (
+                <span className={styles.cardStat}>
+                  <Clock size={12} />
+                  {product.year}
+                </span>
+              )}
+              {product.handle && (
+                <span className={styles.cardStat}>
+                  <XIcon size={12} />
+                  {product.handle}
+                </span>
+              )}
+            </span>
+          )}
+        </span>
+        <span className={styles.cardLogoSection}>
+          {product.logo ? (
+            <img
+              className={styles.cardLogo}
+              src={product.logo}
+              alt={product.name}
+              data-logo-id={product.id}
+              aria-hidden
+            />
+          ) : (
+            <span className={styles.cardLogoPlaceholder} aria-hidden>
+              {product.name}
+            </span>
+          )}
+        </span>
       </span>
     </>
   );
@@ -187,36 +192,39 @@ function CardInner({ product, index }: { product: Product; index: number }) {
 export default function Home() {
   return (
     <div className={styles.page}>
-      <div className={styles.grid}>
-        {products.map((product, index) => {
-          const className = `${styles.card} ${product.span ? styles[product.span] : ''}`;
-          const style = { animationDelay: `${120 + index * 70}ms` } as const;
+      <section className={styles.gridSection}>
+        <div className={styles.grid}>
+          {products.map((product, index) => {
+            const className = `${styles.card} ${product.span ? styles[product.span] : ''}`;
+            const style = { animationDelay: `${120 + index * 70}ms` } as const;
 
-          return product.external ? (
-            <a
-              key={product.id}
-              href={product.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={className}
-              data-accent={product.accent}
-              style={style}
-            >
-              <CardInner product={product} index={index} />
-            </a>
-          ) : (
-            <Link
-              key={product.id}
-              href={product.href}
-              className={className}
-              data-accent={product.accent}
-              style={style}
-            >
-              <CardInner product={product} index={index} />
-            </Link>
-          );
-        })}
-      </div>
+            return product.external ? (
+              <a
+                key={product.id}
+                href={product.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={className}
+                data-accent={product.accent}
+                style={style}
+              >
+                <CardInner product={product} index={index} />
+              </a>
+            ) : (
+              <Link
+                key={product.id}
+                href={product.href}
+                className={className}
+                data-accent={product.accent}
+                style={style}
+              >
+                <CardInner product={product} index={index} />
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+      <Facts />
     </div>
   );
 }

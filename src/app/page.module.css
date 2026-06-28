@@ -3,13 +3,18 @@
    ============================================================================ */
 
 .page {
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+}
+
+/* The bento grid occupies the first viewport; the Facts section scrolls in
+   below it. */
+.gridSection {
   height: 100vh;
   height: 100dvh;
   display: flex;
   flex-direction: column;
   padding: calc(72px + clamp(0.75rem, 2vh, 1.5rem)) clamp(0.75rem, 2vw, 1.5rem)
     clamp(0.75rem, 2vh, 1.5rem);
-  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
 }
 
 /* ----------------------------------------------------------------------------
@@ -65,7 +70,32 @@
   box-shadow: var(--shadow-lg);
 }
 
-/* Optional background image: hidden while idle, revealed on hover/focus */
+/* Bottom-up scrim keeping the footer text + logo legible over the background
+   image. Always on (the image now shows by default); deepens slightly on hover.
+   Sits above the image (-2) but below the content (0). Invisible on the
+   solid-black, image-less cards. */
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.85) 0%,
+    rgba(0, 0, 0, 0.45) 32%,
+    rgba(0, 0, 0, 0) 65%
+  );
+  opacity: 0.7;
+  pointer-events: none;
+  transition: opacity var(--transition-slow);
+}
+
+.card:hover::after,
+.card:focus-visible::after {
+  opacity: 1;
+}
+
+/* Background image: visible by default; a gentle zoom adds emphasis on hover. */
 .cardImage {
   position: absolute;
   inset: 0;
@@ -73,26 +103,23 @@
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  opacity: 0;
-  transition: opacity var(--transition-slow);
+  opacity: 1;
+  pointer-events: none;
+  transition: transform var(--transition-slow);
 }
 
 .card:hover .cardImage,
 .card:focus-visible .cardImage {
-  opacity: 1;
+  transform: scale(1.04);
 }
 
-/* Centered company logo shown while the card is idle; fades out on hover so
-   the background image (when present) can take over. */
+/* Company logo lives in its own dedicated section on the right of the footer
+   (see .cardLogoSection); it stays visible at all times. */
 .cardLogo,
 .cardLogoPlaceholder {
-  position: absolute;
-  inset: 0;
   z-index: 1;
-  margin: auto;
-  width: max-content;
-  height: max-content;
   opacity: 0.92;
+  pointer-events: none;
   transform: scale(var(--logo-scale, 1));
   transition:
     opacity var(--transition-normal),
@@ -104,9 +131,10 @@
    silhouette while preserving alpha, then invert() lifts it to off-white. */
 .cardLogo {
   width: auto;
-  height: clamp(2.75rem, 4.5vw, 4rem);
-  max-width: 88%;
+  height: clamp(1.75rem, 3vw, 2.75rem);
+  max-width: 100%;
   object-fit: contain;
+  object-position: right center;
   filter: brightness(0) invert(0.9);
 }
 
@@ -125,20 +153,12 @@
 .cardLogoPlaceholder {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   font-family: var(--font-sans), system-ui, sans-serif;
   font-style: italic;
-  font-size: clamp(1.05rem, 1.6vw, 1.4rem);
+  font-size: clamp(0.85rem, 1.2vw, 1.05rem);
   letter-spacing: -0.01em;
   color: var(--color-text-muted);
-}
-
-.card:hover .cardLogo,
-.card:focus-visible .cardLogo,
-.card:hover .cardLogoPlaceholder,
-.card:focus-visible .cardLogoPlaceholder {
-  opacity: 0;
-  transform: scale(calc(var(--logo-scale, 1) * 0.96));
 }
 
 /* On the light theme, drop the marks to a uniform off-black instead. */
@@ -179,10 +199,33 @@
   color: var(--color-text-muted);
 }
 
-.cardBody {
+/* Footer row pinned to the bottom of the card: text on the left, the logo in
+   its own dedicated section on the right. */
+.cardFooter {
   margin-top: auto;
   display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: clamp(0.75rem, 1.5vw, 1.25rem);
+}
+
+.cardBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
   flex-direction: column;
+}
+
+/* Dedicated right-hand section that holds the company logo, set off from the
+   text by a subtle divider. */
+.cardLogoSection {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  align-self: stretch;
+  padding-left: clamp(0.75rem, 1.5vw, 1.25rem);
+  border-left: 1px solid var(--color-border);
 }
 
 .cardName {
@@ -257,11 +300,15 @@
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
+  color: inherit;
+  transition: color var(--transition-fast);
 }
 
+/* Icon follows the stat's text color so they brighten together */
 .cardStat svg {
   flex-shrink: 0;
-  color: var(--color-text-secondary);
+  color: inherit;
+  transition: color var(--transition-fast);
 }
 
 .card:hover .cardStats,
@@ -269,7 +316,14 @@
   max-height: 2rem;
   margin-top: 0.5rem;
   opacity: 1;
+  /* Links read in a brighter gray once the card is active */
+  color: #d1d5db;
   transform: translateY(0);
+}
+
+/* The specific link under the cursor brightens further to near-white */
+.cardStat:hover {
+  color: #fff;
 }
 
 /* ----------------------------------------------------------------------------
@@ -277,7 +331,7 @@
    ---------------------------------------------------------------------------- */
 
 @media (max-width: 900px) {
-  .page {
+  .gridSection {
     height: auto;
     min-height: 100dvh;
   }
