@@ -1,0 +1,245 @@
+'use client';
+
+import { useRef, useState } from 'react';
+import { ArrowUpRight, Clock, Link2 } from 'lucide-react';
+import { ProductModal } from './ProductModal';
+import styles from '../page.module.css';
+
+export function XIcon({ size = 12 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden
+    >
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.66l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  );
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  tagline: string;
+  accent: 'cyan' | 'blue' | 'purple' | 'green' | 'orange' | 'rose';
+  /** bento placement class applied to the card */
+  span?: string;
+  /** optional background image src, revealed on hover */
+  image?: string;
+  /** optional CSS background-position for the image (defaults to center) */
+  imagePosition?: string;
+  /** optional centered company logo shown when the card is idle */
+  logo?: string;
+  /** website shown in the hover meta row, e.g. "zero.tech" */
+  url?: string;
+  /** founding year shown in the hover meta row, e.g. "2017" */
+  year?: string;
+  /** X (Twitter) handle shown in the hover meta row, e.g. "@zero_app" */
+  handle?: string;
+  /** one-line focus shown in the modal */
+  focus?: string;
+  /** longer blurb shown in the modal */
+  description: string;
+}
+
+const products: Product[] = [
+  {
+    id: 'aura',
+    name: 'AURA',
+    tagline: 'Autonomous engineering agents.',
+    accent: 'cyan',
+    span: 'tall',
+    image: '/images/aura/aura-bg.png',
+    logo: '/images/aura/aura-logo.png',
+    url: 'aura.ai',
+    year: '2024',
+    handle: '@aura_asi',
+    focus: 'Autonomous engineering agents',
+    description:
+      'AURA builds autonomous engineering agents that plan, write, and ship software end to end, operating as a sovereign workforce that compounds over time.',
+  },
+  {
+    id: 'zero',
+    name: 'ZERO',
+    tagline: 'A secure OS for an agentic world.',
+    accent: 'blue',
+    logo: '/images/zero/zero-logo.svg',
+    url: 'zero.tech',
+    year: '2017',
+    handle: '@zero_app',
+    focus: 'Secure operating system',
+    description:
+      'ZERO is a secure operating system for an agentic world, pairing private messaging and identity with the infrastructure people need to own their data.',
+  },
+  {
+    id: 'zns',
+    name: 'ZNS',
+    tagline: 'Naming for the network.',
+    accent: 'cyan',
+    logo: '/images/zns/zns-logo.png',
+    focus: 'Decentralized naming',
+    description:
+      'ZNS is a decentralized naming layer for the network, mapping human-readable identities to the addresses, agents, and services that run on it.',
+  },
+  {
+    id: 'z-chain',
+    name: 'Z Chain',
+    tagline: 'Trust layer for autonomous systems.',
+    accent: 'green',
+    logo: '/images/z-chain/z-chain-logo.svg',
+    url: 'zchain.org',
+    year: '2023',
+    handle: '@zchain_org',
+    focus: 'Trust layer for autonomous systems',
+    description:
+      'Z Chain is the trust layer for autonomous systems, providing verifiable settlement and coordination so agents can transact without a central authority.',
+  },
+  {
+    id: 'zode',
+    name: 'ZODE',
+    tagline: 'Agentic coding, end to end.',
+    accent: 'orange',
+    span: 'wide',
+    image: '/images/zode/zode-bg.png',
+    logo: '/images/zode/zode-logo.png',
+    url: 'thegrid.host',
+    year: '2026',
+    handle: '@zode_org',
+    focus: 'Agentic coding, end to end',
+    description:
+      'ZODE delivers agentic coding from idea to deployment, orchestrating agents across the full development lifecycle on open, distributed infrastructure.',
+  },
+  {
+    id: 'the-grid',
+    name: 'THE GRID',
+    tagline: 'Distributed compute fabric.',
+    accent: 'rose',
+    span: 'tall',
+    logo: '/images/the-grid/the-grid-logo.png',
+    focus: 'Distributed compute fabric',
+    description:
+      'THE GRID is a distributed compute fabric that pools resources across the network, giving sovereign agents and applications the power they need on demand.',
+  },
+  {
+    id: 'wilder-world',
+    name: 'Wilder World',
+    tagline: 'An immersive on-chain metaverse.',
+    accent: 'purple',
+    span: 'wide3',
+    image: '/images/wilder-world/wilder-world-bg.png',
+    imagePosition: 'center',
+    logo: '/images/wilder-world/wilder-world-logo.svg',
+    url: 'wilderworld.com',
+    year: '2021',
+    handle: '@wilderworld',
+    focus: 'Immersive on-chain metaverse',
+    description:
+      'Wilder World is an immersive on-chain metaverse, a photorealistic virtual world owned by its community and built on open, decentralized rails.',
+  },
+];
+
+function CardInner({ product, index }: { product: Product; index: number }) {
+  return (
+    <>
+      {product.image && (
+        <span
+          className={styles.cardImage}
+          style={{
+            backgroundImage: `url(${product.image})`,
+            ...(product.imagePosition ? { backgroundPosition: product.imagePosition } : {}),
+          }}
+          aria-hidden
+        />
+      )}
+      <span className={styles.cardArrow}>
+        <ArrowUpRight size={16} />
+      </span>
+      <span className={styles.cardMeta}>0{index + 1}</span>
+      <span className={styles.cardLogoSection}>
+        {product.logo ? (
+          <img
+            className={styles.cardLogo}
+            src={product.logo}
+            alt={product.name}
+            data-logo-id={product.id}
+            aria-hidden
+          />
+        ) : (
+          <span className={styles.cardLogoPlaceholder} aria-hidden>
+            {product.name}
+          </span>
+        )}
+      </span>
+      <span className={styles.cardFooter}>
+        <span className={styles.cardBody}>
+          <span className={styles.cardName}>{product.name}</span>
+          <span className={styles.cardTagline}>{product.tagline}</span>
+          {(product.url || product.year || product.handle) && (
+            <span className={styles.cardStats}>
+              {product.url && (
+                <span className={styles.cardStat}>
+                  <Link2 size={12} />
+                  {product.url}
+                </span>
+              )}
+              {product.year && (
+                <span className={styles.cardStat}>
+                  <Clock size={12} />
+                  {product.year}
+                </span>
+              )}
+              {product.handle && (
+                <span className={styles.cardStat}>
+                  <XIcon size={12} />
+                  {product.handle}
+                </span>
+              )}
+            </span>
+          )}
+        </span>
+      </span>
+    </>
+  );
+}
+
+export function ProductGrid() {
+  const gridRef = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState<Product | null>(null);
+  const [rect, setRect] = useState<DOMRect | null>(null);
+
+  const open = (product: Product) => {
+    if (gridRef.current) {
+      setRect(gridRef.current.getBoundingClientRect());
+    }
+    setActive(product);
+  };
+
+  return (
+    <>
+      <div className={styles.grid} ref={gridRef}>
+        {products.map((product, index) => {
+          const className = `${styles.card} ${product.span ? styles[product.span] : ''}`;
+          const style = { animationDelay: `${120 + index * 70}ms` } as const;
+
+          return (
+            <button
+              key={product.id}
+              type="button"
+              className={className}
+              data-accent={product.accent}
+              style={style}
+              onClick={() => open(product)}
+            >
+              <CardInner product={product} index={index} />
+            </button>
+          );
+        })}
+      </div>
+      {active && (
+        <ProductModal product={active} gridRect={rect} onClose={() => setActive(null)} />
+      )}
+    </>
+  );
+}

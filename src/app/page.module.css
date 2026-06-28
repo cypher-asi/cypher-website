@@ -119,7 +119,7 @@
   opacity: 0;
   pointer-events: none;
   transform: scale(var(--logo-scale, 1));
-  transform-origin: left center;
+  transform-origin: left top;
   transition:
     opacity var(--transition-normal),
     transform var(--transition-normal);
@@ -137,10 +137,10 @@
    silhouette while preserving alpha, then invert() lifts it to off-white. */
 .cardLogo {
   width: auto;
-  height: clamp(1.25rem, 1.9vw, 1.75rem);
+  height: clamp(1.5rem, 2.4vw, 2.25rem);
   max-width: 100%;
   object-fit: contain;
-  object-position: left bottom;
+  object-position: left top;
   filter: brightness(0) invert(0.9);
 }
 
@@ -218,25 +218,15 @@
   flex-direction: column;
 }
 
-/* Top line of the text block: the product name (at rest) and the logo (on
-   hover) share this slot, with the logo overlaid on the left so it replaces
-   the name. */
-.cardHeadline {
-  position: relative;
-  display: flex;
-  align-items: flex-end;
-  min-height: clamp(1.6rem, 2.4vw, 2.1rem);
-}
-
-/* Logo is anchored to the bottom of the name line and grows upward into the
-   image area, so it never overlaps the tagline below. */
+/* Logo sits high in the card's top-left (open image area, just below the index
+   number) and is revealed on hover, well clear of the bottom text block. */
 .cardLogoSection {
   position: absolute;
-  bottom: 0;
-  left: 0;
+  top: calc(clamp(1rem, 1.6vw, 1.5rem) + 1.5rem);
+  left: clamp(1rem, 1.6vw, 1.5rem);
   z-index: 1;
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: flex-start;
   pointer-events: none;
 }
