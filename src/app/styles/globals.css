@@ -363,9 +363,17 @@ body {
   line-height: var(--leading-normal);
   min-height: 100dvh;
   overflow-x: hidden;
+}
+
+/* Hide the native window scrollbar (root scroller) — replaced by the
+   floating CustomScrollbar overlay. Both html and body are suppressed
+   so the `* { scrollbar-width: thin }` rule below can't re-enable it. */
+html,
+body {
   scrollbar-width: none;
 }
 
+html::-webkit-scrollbar,
 body::-webkit-scrollbar {
   display: none;
 }
