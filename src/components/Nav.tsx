@@ -139,9 +139,18 @@ export function Nav({
   const [overLightBg, setOverLightBg] = useState<string | null>(null);
   const [brandKey, setBrandKey] = useState(0);
   const [brandTyped, setBrandTyped] = useState(false);
+  // Home link target. On a child site reached via the `?company=` dev override,
+  // keep the override so the logo returns to that site's home rather than the
+  // default (Cypher). On real domains there is no param, so this stays "/".
+  const [homeHref, setHomeHref] = useState('/');
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const unmountTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const megaContentRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const company = new URLSearchParams(window.location.search).get('company');
+    setHomeHref(company ? `/?company=${company}` : '/');
+  }, []);
 
   useEffect(() => {
     if (mobileOpen) {
@@ -350,7 +359,7 @@ export function Nav({
       >
         <div className={styles.topbarInner}>
           <div className={styles.topbarLeft} onMouseEnter={scheduleClose}>
-            <Link href="/" className={styles.titleLink} onClick={handleBrandClick}>
+            <Link href={homeHref} className={styles.titleLink} onClick={handleBrandClick}>
               {wordmarkLogo ? (
                 <img className={styles.brandLogo} src={wordmarkLogo.src} alt={wordmarkLogo.alt} />
               ) : (
@@ -573,7 +582,7 @@ export function Nav({
       />
       <div className={`${styles.drawer} ${mobileOpen ? styles.drawerOpen : ''}`}>
         <div className={styles.drawerHeader}>
-          <Link href="/" className={styles.drawerTitle} onClick={() => setMobileOpen(false)}>
+          <Link href={homeHref} className={styles.drawerTitle} onClick={() => setMobileOpen(false)}>
             {wordmarkLogo ? (
               <img className={styles.brandLogo} src={wordmarkLogo.src} alt={wordmarkLogo.alt} />
             ) : (
