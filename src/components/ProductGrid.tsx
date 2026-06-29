@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import Link from 'next/link';
 import { ArrowUpRight, Clock, Link2 } from 'lucide-react';
 import { ProductModal } from './ProductModal';
 import styles from '@/sites/cypher/Landing.module.css';
@@ -350,8 +349,10 @@ export function ProductGrid() {
           const shown = index < revealCount;
 
           if (product.siteHref) {
+            // Full navigation (not a Next <Link>) so the server re-resolves the
+            // company and the layout/header chrome updates for the target site.
             return (
-              <Link
+              <a
                 key={product.id}
                 href={product.siteHref}
                 className={className}
@@ -359,7 +360,7 @@ export function ProductGrid() {
                 data-shown={shown ? '' : undefined}
               >
                 <CardInner product={product} index={index} shown={shown} />
-              </Link>
+              </a>
             );
           }
 
