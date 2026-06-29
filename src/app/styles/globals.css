@@ -470,7 +470,7 @@ code {
   cursor: pointer;
   border: none;
   border-radius: 1px;
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 11px 100%, 0 calc(100% - 11px));
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 11px), calc(100% - 11px) 100%, 0 100%);
   transition:
     background var(--transition-normal),
     color var(--transition-normal),
