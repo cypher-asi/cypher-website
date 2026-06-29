@@ -1,9 +1,25 @@
 import { ImageResponse } from 'next/og';
+import type { NextRequest } from 'next/server';
+import { getCompanyConfig } from '@/lib/companies/resolve';
+import type { AccentColor } from '@/lib/companies/types';
 
-export const size = { width: 32, height: 32 };
-export const contentType = 'image/png';
+const SIZE = { width: 32, height: 32 };
 
-export default function Icon() {
+const ACCENT_HEX: Record<AccentColor, string> = {
+  cyan: '#01f4cb',
+  blue: '#3b82f6',
+  purple: '#a855f7',
+  green: '#22c55e',
+  orange: '#f97316',
+  rose: '#f43f5e',
+};
+
+export function GET(req: NextRequest) {
+  const key = req.nextUrl.searchParams.get('company') ?? req.headers.get('x-company');
+  const company = getCompanyConfig(key);
+  const accent = ACCENT_HEX[company.accent];
+  const initial = company.wordmark.charAt(0).toUpperCase() || 'C';
+
   return new ImageResponse(
     (
       <div
@@ -27,7 +43,7 @@ export default function Icon() {
         >
           <span
             style={{
-              color: '#888',
+              color: accent,
               fontSize: 20,
               fontFamily: 'monospace',
               fontWeight: 700,
@@ -44,11 +60,11 @@ export default function Icon() {
               marginLeft: -2,
             }}
           >
-            C
+            {initial}
           </span>
         </div>
       </div>
     ),
-    { ...size },
+    { ...SIZE },
   );
 }
