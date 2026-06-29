@@ -1,7 +1,7 @@
 import Image from 'next/image';
-import styles from './page.module.css';
-import { FAQ } from '../_components/FAQ';
-import type { FAQItem } from '../_components/FAQ';
+import styles from './Landing.module.css';
+import { FAQ } from '@/app/_components/FAQ';
+import type { FAQItem } from '@/app/_components/FAQ';
 import heroImg from './assets/brave_screenshot_linear.app.png';
 import zodeIcon from './assets/zode-icon.png';
 
@@ -61,7 +61,7 @@ const featureCards = [
   },
 ];
 
-export default function ZodePage() {
+export default function ZodeLanding() {
   return (
     <div className={styles.page}>
       <section id="hero" className={styles.heroSection}>

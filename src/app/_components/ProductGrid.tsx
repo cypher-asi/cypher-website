@@ -3,7 +3,7 @@
 import { useRef, useState, type CSSProperties } from 'react';
 import { ArrowUpRight, Clock, Link2 } from 'lucide-react';
 import { ProductModal } from './ProductModal';
-import styles from '../page.module.css';
+import styles from '@/content/companies/cypher/Landing.module.css';
 
 export function XIcon({ size = 12 }: { size?: number }) {
   return (

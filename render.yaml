@@ -1,0 +1,25 @@
+# Render Blueprint: one Next.js web service serving every Company domain.
+# Middleware resolves the Company from the request Host header, so all domains
+# below point at this single service.
+services:
+  - type: web
+    name: cypher-web
+    runtime: node
+    plan: starter
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+    domains:
+      - cypher.net
+      - www.cypher.net
+      - zode.org
+      - www.zode.org
+      - zero.tech
+      - www.zero.tech
+      - wilderworld.com
+      - www.wilderworld.com
+      - zchain.org
+      - www.zchain.org

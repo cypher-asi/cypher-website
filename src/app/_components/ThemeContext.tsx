@@ -9,10 +9,9 @@ import {
   useMemo,
   type ReactNode,
 } from 'react';
+import type { Theme, AccentColor } from '@/lib/companies/types';
 
-type Theme = 'dark' | 'light' | 'system';
 type ResolvedTheme = 'dark' | 'light';
-type AccentColor = 'cyan' | 'blue' | 'purple' | 'green' | 'orange' | 'rose';
 
 interface ThemeContextValue {
   theme: Theme;
@@ -23,14 +22,14 @@ interface ThemeContextValue {
   setAccent: (accent: AccentColor) => void;
 }
 
-const STORAGE_KEY = 'zui-theme';
+const DEFAULT_STORAGE_KEY = 'zui-theme';
 const VALID_THEMES: Theme[] = ['dark', 'light', 'system'];
 const VALID_ACCENTS: AccentColor[] = ['cyan', 'blue', 'purple', 'green', 'orange', 'rose'];
 
-function getStoredPrefs(): { theme: Theme; accent: AccentColor } | null {
+function getStoredPrefs(storageKey: string): { theme: Theme; accent: AccentColor } | null {
   if (typeof window === 'undefined') return null;
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(storageKey);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     if (
@@ -43,10 +42,10 @@ function getStoredPrefs(): { theme: Theme; accent: AccentColor } | null {
   return null;
 }
 
-function savePrefs(theme: Theme, accent: AccentColor) {
+function savePrefs(storageKey: string, theme: Theme, accent: AccentColor) {
   if (typeof window === 'undefined') return;
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ theme, accent }));
+    localStorage.setItem(storageKey, JSON.stringify({ theme, accent }));
   } catch { /* ignore */ }
 }
 
@@ -86,22 +85,25 @@ interface ThemeProviderProps {
   children: ReactNode;
   defaultTheme?: Theme;
   defaultAccent?: AccentColor;
+  /** localStorage key. Namespace per company so prefs don't bleed across domains. */
+  storageKey?: string;
 }
 
 export function ThemeProvider({
   children,
   defaultTheme = 'dark',
   defaultAccent = 'cyan',
+  storageKey = DEFAULT_STORAGE_KEY,
 }: ThemeProviderProps) {
   const systemTheme = useSystemTheme();
 
   const [theme, setThemeState] = useState<Theme>(() => {
-    const stored = getStoredPrefs();
+    const stored = getStoredPrefs(storageKey);
     return stored?.theme ?? defaultTheme;
   });
 
   const [accent, setAccentState] = useState<AccentColor>(() => {
-    const stored = getStoredPrefs();
+    const stored = getStoredPrefs(storageKey);
     return stored?.accent ?? defaultAccent;
   });
 
@@ -117,17 +119,17 @@ export function ThemeProvider({
   const setTheme = useCallback(
     (t: Theme) => {
       setThemeState(t);
-      savePrefs(t, accent);
+      savePrefs(storageKey, t, accent);
     },
-    [accent],
+    [accent, storageKey],
   );
 
   const setAccent = useCallback(
     (a: AccentColor) => {
       setAccentState(a);
-      savePrefs(theme, a);
+      savePrefs(storageKey, theme, a);
     },
-    [theme],
+    [theme, storageKey],
   );
 
   const value: ThemeContextValue = useMemo(

@@ -1,8 +1,8 @@
-import styles from './page.module.css';
-import { ImageCarousel } from '../_components/ImageCarousel';
-import type { CarouselSlide } from '../_components/ImageCarousel';
-import { FAQ } from '../_components/FAQ';
-import type { FAQItem } from '../_components/FAQ';
+import styles from './Landing.module.css';
+import { ImageCarousel } from '@/app/_components/ImageCarousel';
+import type { CarouselSlide } from '@/app/_components/ImageCarousel';
+import { FAQ } from '@/app/_components/FAQ';
+import type { FAQItem } from '@/app/_components/FAQ';
 import zeroOs1 from './assets/zero-os-1.png';
 
 const heroSlides: CarouselSlide[] = [
@@ -86,7 +86,7 @@ const featureSlides: CarouselSlide[] = [
   },
 ];
 
-export default function ZeroPage() {
+export default function ZeroLanding() {
   return (
     <div className={styles.page}>
       <section id="hero" className={styles.section}>

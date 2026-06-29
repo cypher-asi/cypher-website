@@ -6,6 +6,8 @@ import { Footer } from './_components/Footer';
 import { ThemeWrapper } from './_components/ThemeWrapper';
 import { MusicProvider } from './_components/MusicContext';
 import { CustomScrollbar } from './_components/CustomScrollbar';
+import { getCurrentCompany } from '@/lib/companies/current';
+
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-sans',
@@ -18,26 +20,39 @@ const jetbrainsMono = JetBrains_Mono({
   display: 'swap',
 });
 
-export const metadata: Metadata = {
-  title: 'Cypher',
-  description: 'Cypher ecosystem site',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const company = await getCurrentCompany();
+  return {
+    title: company.metadata.title,
+    description: company.metadata.description,
+  };
+}
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const company = await getCurrentCompany();
+
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body>
-        <ThemeWrapper>
+        <ThemeWrapper
+          defaultTheme={company.defaultTheme}
+          defaultAccent={company.accent}
+          storageKey={`zui-theme-${company.key}`}
+        >
           <MusicProvider>
             <CustomScrollbar />
-            <Nav />
+            <Nav
+              wordmark={company.wordmark}
+              sections={company.nav}
+              pageSections={company.pageSections}
+            />
             <main id="page-main">
               {children}
-              <Footer />
+              <Footer footer={company.footer} />
             </main>
           </MusicProvider>
         </ThemeWrapper>

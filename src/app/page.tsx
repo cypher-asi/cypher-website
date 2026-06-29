@@ -1,14 +1,22 @@
-import { Facts } from './_components/Facts';
-import { ProductGrid } from './_components/ProductGrid';
-import styles from './page.module.css';
+import type { ComponentType } from 'react';
+import { getCurrentCompany } from '@/lib/companies/current';
+import type { CompanyKey } from '@/lib/companies/types';
+import CypherLanding from '@/content/companies/cypher/Landing';
+import ZodeLanding from '@/content/companies/zode/Landing';
+import ZeroLanding from '@/content/companies/zero/Landing';
+import WilderLanding from '@/content/companies/wilder/Landing';
+import ZLanding from '@/content/companies/z/Landing';
 
-export default function Home() {
-  return (
-    <div className={styles.page}>
-      <section className={styles.gridSection}>
-        <ProductGrid />
-      </section>
-      <Facts />
-    </div>
-  );
+const LANDINGS: Record<CompanyKey, ComponentType> = {
+  cypher: CypherLanding,
+  zode: ZodeLanding,
+  zero: ZeroLanding,
+  wilder: WilderLanding,
+  z: ZLanding,
+};
+
+export default async function Home() {
+  const company = await getCurrentCompany();
+  const Landing = LANDINGS[company.key] ?? CypherLanding;
+  return <Landing />;
 }

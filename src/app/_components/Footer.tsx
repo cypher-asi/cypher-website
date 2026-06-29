@@ -3,55 +3,8 @@
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { scrollToSection } from './scrollToSection';
+import type { FooterConfig } from '@/lib/companies/types';
 import styles from './Footer.module.css';
-
-interface FooterLink {
-  label: string;
-  href: string;
-  external?: boolean;
-  // When set, clicking smooth-scrolls to the element with this id on the
-  // current page instead of navigating to `href`.
-  scrollTo?: string;
-  // Optional year shown as a small date tick next to the label.
-  year?: string;
-}
-
-interface FooterColumn {
-  heading: string;
-  links: FooterLink[];
-}
-
-const columns: FooterColumn[] = [
-  {
-    heading: 'Companies',
-    links: [
-      { label: 'AURA', href: 'https://aura.ai', external: true },
-      { label: 'ZODE', href: 'https://zode.org', external: true },
-      { label: 'Wilder World', href: 'https://wilderworld.com', external: true },
-      { label: 'Z Chain', href: 'https://zchain.org', external: true },
-      { label: 'ZERO', href: 'https://zero.tech', external: true },
-    ],
-  },
-  {
-    heading: 'Research',
-    links: [
-      { label: 'THE GRID', href: '/research/the-grid', year: '2026' },
-      { label: 'AURA Harness', href: '/research/aura-harness', year: '2025' },
-      { label: 'ZNS', href: '/research/zns', year: '2022' },
-      { label: 'ZERO OS', href: '/research/zero-os', year: '2020' },
-    ],
-  },
-  {
-    heading: 'Company',
-    links: [
-      { label: 'Mission', href: '/vision', scrollTo: 'what-we-do' },
-      { label: 'News', href: 'https://zine.live', external: true },
-      { label: 'Privacy Policy', href: '/privacy' },
-      { label: 'Terms', href: '/terms' },
-      { label: 'Contact', href: '/contact' },
-    ],
-  },
-];
 
 function XIcon({ size = 18 }: { size?: number }) {
   return (
@@ -69,7 +22,8 @@ function GithubIcon({ size = 18 }: { size?: number }) {
   );
 }
 
-export function Footer() {
+export function Footer({ footer }: { footer: FooterConfig }) {
+  const { columns, social, copyrightName, wordmarkSrc, wordmarkAlt } = footer;
   return (
     <footer className={styles.footer} aria-label="Site footer">
       <div className={styles.inner}>
@@ -120,30 +74,35 @@ export function Footer() {
 
         <div className={styles.bottom}>
           <div className={styles.social}>
-            <a
-              className={styles.socialLink}
-              href="https://x.com/cypher_asi"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Cypher on X"
-            >
-              <XIcon size={18} />
-            </a>
-            <a
-              className={styles.socialLink}
-              href="https://github.com/cypher-asi"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Cypher on GitHub"
-            >
-              <GithubIcon size={18} />
-            </a>
+            {social.x && (
+              <a
+                className={styles.socialLink}
+                href={social.x}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${copyrightName} on X`}
+              >
+                <XIcon size={18} />
+              </a>
+            )}
+            {social.github && (
+              <a
+                className={styles.socialLink}
+                href={social.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${copyrightName} on GitHub`}
+              >
+                <GithubIcon size={18} />
+              </a>
+            )}
           </div>
-          <p className={styles.copyright}>Copyright &copy; 2026 Cypher, Inc.</p>
+          <p className={styles.copyright}>Copyright &copy; 2026 {copyrightName}.</p>
         </div>
 
         <div className={styles.brandWrap}>
-          <img className={styles.brandImage} src="/images/brand/cypher-wordmark.png" alt="/CYPHER" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className={styles.brandImage} src={wordmarkSrc} alt={wordmarkAlt} />
         </div>
       </div>
     </footer>

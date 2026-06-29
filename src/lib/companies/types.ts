@@ -1,0 +1,103 @@
+export type CompanyKey = 'cypher' | 'zode' | 'zero' | 'wilder' | 'z';
+
+export type Theme = 'dark' | 'light' | 'system';
+export type AccentColor = 'cyan' | 'blue' | 'purple' | 'green' | 'orange' | 'rose';
+
+/* ---------------------------------------------------------------------------
+   Navigation (top bar + mega-panel + mobile drawer)
+   --------------------------------------------------------------------------- */
+export interface NavSubItem {
+  id: string;
+  label: string;
+  description?: string;
+  href: string;
+  external?: boolean;
+  year?: string;
+}
+
+export interface NavRepo {
+  name: string;
+  description: string;
+}
+
+export interface NavRepoGroup {
+  project: string;
+  repos: NavRepo[];
+}
+
+export interface NavRepoSection {
+  heading: string;
+  allHref: string;
+  columns: NavRepoGroup[][];
+}
+
+export interface NavSection {
+  id: string;
+  label: string;
+  href: string;
+  external?: boolean;
+  blurb?: string;
+  subItems?: NavSubItem[];
+  repoSection?: NavRepoSection;
+  noPanel?: boolean;
+}
+
+/* ---------------------------------------------------------------------------
+   Footer
+   --------------------------------------------------------------------------- */
+export interface FooterLink {
+  label: string;
+  href: string;
+  external?: boolean;
+  scrollTo?: string;
+  year?: string;
+}
+
+export interface FooterColumn {
+  heading: string;
+  links: FooterLink[];
+}
+
+export interface FooterSocial {
+  x?: string;
+  github?: string;
+}
+
+export interface FooterConfig {
+  columns: FooterColumn[];
+  social: FooterSocial;
+  copyrightName: string;
+  wordmarkSrc: string;
+  wordmarkAlt: string;
+}
+
+/* ---------------------------------------------------------------------------
+   In-page section navigation (the floating scroll-spy nav)
+   --------------------------------------------------------------------------- */
+export interface PageSection {
+  id: string;
+  label: string;
+}
+
+/* ---------------------------------------------------------------------------
+   Company (one per domain)
+   --------------------------------------------------------------------------- */
+export interface CompanyConfig {
+  key: CompanyKey;
+  /** Display name, e.g. "Cypher". */
+  name: string;
+  /** Nav wordmark text, e.g. "CYPHER". */
+  wordmark: string;
+  /** Canonical production domain. */
+  domain: string;
+  accent: AccentColor;
+  defaultTheme: Theme;
+  metadata: {
+    title: string;
+    description: string;
+  };
+  nav: NavSection[];
+  footer: FooterConfig;
+  /** Sections for the in-page scroll-spy nav on this company's landing. */
+  pageSections: PageSection[];
+}

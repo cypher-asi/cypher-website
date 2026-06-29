@@ -1,13 +1,10 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { usePathname } from 'next/navigation';
-import { pageSections } from './pageSections';
+import type { PageSection } from '@/lib/companies/types';
 import styles from './SectionNav.module.css';
 
-export function SectionNav() {
-  const pathname = usePathname();
-  const sections = pageSections[pathname];
+export function SectionNav({ sections }: { sections: PageSection[] }) {
   const [activeId, setActiveId] = useState<string | null>(null);
 
   useEffect(() => {

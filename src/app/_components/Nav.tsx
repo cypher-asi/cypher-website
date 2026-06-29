@@ -7,153 +7,10 @@ import { TypewriterText } from './TypewriterText';
 import type { TypewriterSegment } from './TypewriterText';
 import { SectionNav } from './SectionNav';
 import { scrollToSection } from './scrollToSection';
+import type { NavSection, PageSection } from '@/lib/companies/types';
 import styles from './Nav.module.css';
 
-interface SubItem {
-  id: string;
-  label: string;
-  description?: string;
-  href: string;
-  external?: boolean;
-  // Optional publication year shown as a small date tick beside the label,
-  // matching the date ticks in the site footer's Research column.
-  year?: string;
-}
-
-interface Repo {
-  name: string;
-  description: string;
-}
-
-interface RepoGroup {
-  project: string;
-  repos: Repo[];
-}
-
-interface NavSection {
-  id: string;
-  label: string;
-  href: string;
-  external?: boolean;
-  blurb?: string;
-  subItems?: SubItem[];
-  // Optional open-source repo directory rendered beneath the sub-items in the
-  // mega-panel, set off by a separator. Each entry in `columns` is one vertical
-  // column that may stack multiple project groups.
-  repoSection?: {
-    heading: string;
-    allHref: string;
-    columns: RepoGroup[][];
-  };
-  // When true, hovering this top-nav item does not open the mega-panel.
-  noPanel?: boolean;
-}
-
 const GITHUB_ORG = 'https://github.com/cypher-asi';
-
-const sections: NavSection[] = [
-  {
-    id: 'products',
-    label: 'Companies',
-    href: 'https://aura.ai',
-    external: true,
-    blurb: 'A sovereign AI stack spanning energy, infrastructure, protocols, and end-products.',
-    subItems: [
-      { id: 'aura', label: 'AURA', description: 'An agentic coding system', href: 'https://aura.ai', external: true },
-      { id: 'zode', label: 'ZODE', description: 'A micro-data center', href: 'https://zode.org', external: true },
-      { id: 'wilder-world', label: 'Wilder World', description: 'A virtual simulation', href: 'https://wilderworld.com', external: true },
-      { id: 'z-chain', label: 'Z Chain', description: 'A blazing-fast blockchain', href: 'https://zchain.org', external: true },
-      { id: 'zero', label: 'ZERO', description: 'A secure messenger', href: 'https://zero.tech', external: true },
-    ],
-  },
-  {
-    id: 'research',
-    label: 'Research',
-    href: '/research',
-    blurb: 'Open source research to accelerate AI sovereignty for people and communities.',
-    subItems: [
-      { id: 'the-grid', label: 'THE GRID', description: 'Distributed compute fabric', href: '/research/the-grid', year: '2026' },
-      { id: 'aura-harness', label: 'AURA Harness', description: 'A deterministic multi-agent runtime', href: '/research/aura-harness', year: '2025' },
-      { id: 'zns', label: 'ZNS', description: 'Naming and trust layer', href: '/research/zns', year: '2022' },
-      { id: 'zero-os', label: 'ZERO OS', description: 'A social operating system', href: '/research/zero-os', year: '2020' },
-    ],
-    repoSection: {
-      heading: 'Open Source',
-      allHref: GITHUB_ORG,
-      columns: [
-        [
-          {
-            project: 'AURA',
-            repos: [
-              { name: 'aura-os', description: 'The Secure OS for AI agents.' },
-              { name: 'aura-harness', description: 'A frontier harness for agentic intelligence.' },
-              { name: 'aura-router', description: 'Model proxy and billing router for the AURA network.' },
-              { name: 'aura-storage', description: 'The execution data layer for the AURA platform.' },
-              { name: 'aura-swarm', description: 'An orchestration environment for deploying agent swarms at scale.' },
-              { name: 'aura-network', description: 'The social network layer for autonomous agents and teams.' },
-              { name: 'aura-bridge', description: 'The AURA bridge to open messaging systems.' },
-              { name: 'aura-website', description: 'The official aura.ai website.' },
-            ],
-          },
-        ],
-        [
-          {
-            project: 'ZERO',
-            repos: [
-              { name: 'zero-os', description: 'A verifiable OS.' },
-              { name: 'zos', description: 'A secure and resilient communication system.' },
-              { name: 'zero-sdk', description: 'Official SDK for the ZERO messaging protocol.' },
-              { name: 'zero-auth', description: 'The auth service for zero-id.' },
-              { name: 'zero-vault', description: 'A system for secrets, remote key signing, and access policies.' },
-              { name: 'zid', description: 'A post-quantum sovereign identity system.' },
-            ],
-          },
-        ],
-        [
-          {
-            project: 'The Grid',
-            repos: [
-              { name: 'the-grid', description: 'The Global Resilient Internet Datalink.' },
-              { name: 'machina', description: 'A compute orchestration environment for the Machine Age.' },
-              { name: 'the-grid-legacy', description: 'An unstoppable distributed compute network.' },
-            ],
-          },
-          {
-            project: 'Wilder World',
-            repos: [
-              { name: 'wilderworld-com', description: 'The official Wilder World site and web platform.' },
-            ],
-          },
-        ],
-        [
-          {
-            project: 'Cypher Core',
-            repos: [
-              { name: 'cypher-website', description: 'The official cypher.net website.' },
-              { name: 'cypher-asi', description: 'Tools for the Machine Age.' },
-              { name: 'z-billing', description: 'The core payments, billing and usage system for the Cypher network.' },
-              { name: 'orbit', description: 'A fast git system for machines.' },
-              { name: 'spectron', description: 'A code analysis tool for complex code bases.' },
-              { name: 'shell', description: 'The standard app shell used to build Cypher ecosystem projects.' },
-              { name: 'zui', description: 'A future UI kit made for machines.' },
-            ],
-          },
-        ],
-      ],
-    },
-  },
-  {
-    id: 'news',
-    label: 'News',
-    href: 'https://zine.live',
-    external: true,
-    blurb: 'Dispatches from across the network.',
-    noPanel: true,
-    subItems: [
-      { id: 'zine', label: 'Zine', description: 'Stories from the network', href: 'https://zine.live', external: true },
-    ],
-  },
-];
 
 function GithubIcon({ size = 13 }: { size?: number }) {
   return (
@@ -260,7 +117,15 @@ function AccordionSection({
   );
 }
 
-export function Nav() {
+export function Nav({
+  wordmark,
+  sections,
+  pageSections,
+}: {
+  wordmark: string;
+  sections: NavSection[];
+  pageSections: PageSection[];
+}) {
   const [openSectionId, setOpenSectionId] = useState<string | null>('products');
   const [displayedSection, setDisplayedSection] = useState<NavSection | null>(null);
   const [panelOpen, setPanelOpen] = useState(false);
@@ -461,9 +326,9 @@ export function Nav() {
   const expandedSegments: TypewriterSegment[] = useMemo(
     () => [
       { text: '/', style: { color: 'var(--color-text-secondary)' } },
-      { text: 'CYPHER', className: styles.brandLetters },
+      { text: wordmark, className: styles.brandLetters },
     ],
-    []
+    [wordmark]
   );
 
   const activeId = panelOpen ? displayedSection?.id ?? null : null;
@@ -679,7 +544,7 @@ export function Nav() {
         </div>
       </header>
 
-      <SectionNav />
+      <SectionNav sections={pageSections} />
 
       {/* Mobile drawer */}
       <div
@@ -688,7 +553,7 @@ export function Nav() {
       />
       <div className={`${styles.drawer} ${mobileOpen ? styles.drawerOpen : ''}`}>
         <div className={styles.drawerHeader}>
-          <Link href="/" className={styles.drawerTitle} onClick={() => setMobileOpen(false)}>/CYPHER</Link>
+          <Link href="/" className={styles.drawerTitle} onClick={() => setMobileOpen(false)}>/{wordmark}</Link>
           <button
             className={styles.drawerClose}
             onClick={() => setMobileOpen(false)}
