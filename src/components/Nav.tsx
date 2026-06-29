@@ -420,15 +420,17 @@ export function Nav({
           </nav>
 
           <div className={styles.topbarRight} onMouseEnter={scheduleClose}>
-            <a
-              href="https://github.com/cypher-asi"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.topbarGithub}
-              aria-label="GitHub"
-            >
-              <GithubIcon size={16} />
-            </a>
+            {!cta && (
+              <a
+                href="https://github.com/cypher-asi"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.topbarGithub}
+                aria-label="GitHub"
+              >
+                <GithubIcon size={16} />
+              </a>
+            )}
             {cta ? (
               <a
                 href={cta.href}
