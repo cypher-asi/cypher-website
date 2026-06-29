@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { ArrowUpRight, Clock, Link2 } from 'lucide-react';
 import { ProductModal } from './ProductModal';
 import styles from '@/content/companies/cypher/Landing.module.css';
@@ -162,13 +162,22 @@ function imageStyle(product: Product, src: string): CSSProperties {
   } as CSSProperties;
 }
 
-function CardInner({ product, index }: { product: Product; index: number }) {
+function CardInner({
+  product,
+  index,
+  shown,
+}: {
+  product: Product;
+  index: number;
+  shown: boolean;
+}) {
   return (
     <>
       {product.image && (
         <span
           className={styles.cardImage}
           style={imageStyle(product, product.image)}
+          data-shown={shown ? '' : undefined}
           aria-hidden
         />
       )}
@@ -230,10 +239,64 @@ function CardInner({ product, index }: { product: Product; index: number }) {
   );
 }
 
+/** ms between revealing one card's image and starting the next */
+const REVEAL_CADENCE = 80;
+
 export function ProductGrid() {
   const gridRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState<Product | null>(null);
   const [rect, setRect] = useState<DOMRect | null>(null);
+  const [loaded, setLoaded] = useState<boolean[]>(() =>
+    products.map(() => false),
+  );
+  const [revealCount, setRevealCount] = useState(0);
+
+  // Preload each card's background image so the fade triggers off the real
+  // load (no popping), warming the cache so the painted background appears
+  // instantly once revealed. Errored/cached images resolve too so the
+  // sequence never stalls. Reduced motion skips straight to fully revealed.
+  useEffect(() => {
+    const reduceMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
+    if (reduceMotion) {
+      setLoaded(products.map(() => true));
+      setRevealCount(products.length);
+      return;
+    }
+
+    const markLoaded = (index: number) =>
+      setLoaded((prev) => {
+        if (prev[index]) return prev;
+        const next = [...prev];
+        next[index] = true;
+        return next;
+      });
+
+    products.forEach((product, index) => {
+      if (!product.image) {
+        markLoaded(index);
+        return;
+      }
+      const img = new Image();
+      img.onload = () => markLoaded(index);
+      img.onerror = () => markLoaded(index);
+      img.src = product.image;
+      if (img.complete) markLoaded(index);
+    });
+  }, []);
+
+  // Walk a reveal cursor through the cards in order: advance past card N only
+  // once its image has loaded, pacing each step by REVEAL_CADENCE.
+  useEffect(() => {
+    if (revealCount >= products.length) return;
+    if (!loaded[revealCount]) return;
+    const timer = setTimeout(
+      () => setRevealCount((c) => c + 1),
+      REVEAL_CADENCE,
+    );
+    return () => clearTimeout(timer);
+  }, [loaded, revealCount]);
 
   const open = (product: Product) => {
     if (gridRef.current) {
@@ -263,7 +326,7 @@ export function ProductGrid() {
               style={style}
               onClick={() => open(product)}
             >
-              <CardInner product={product} index={index} />
+              <CardInner product={product} index={index} shown={index < revealCount} />
             </button>
           );
         })}

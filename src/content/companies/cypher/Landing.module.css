@@ -139,10 +139,17 @@
   background-position: var(--img-pos, center);
   background-size: cover;
   background-repeat: no-repeat;
-  opacity: 1;
+  opacity: 0;
   pointer-events: none;
   filter: brightness(0.82);
-  transition: filter var(--transition-slow);
+  transition:
+    opacity var(--transition-slow),
+    filter var(--transition-slow);
+}
+
+/* Sequential reveal: fades in once the image has loaded (set by ProductGrid). */
+.cardImage[data-shown] {
+  opacity: 1;
 }
 
 .card:hover .cardImage,
@@ -492,5 +499,11 @@
 
   .card:hover {
     transform: none;
+  }
+
+  /* Show images instantly with no fade, regardless of JS reveal state. */
+  .cardImage {
+    opacity: 1;
+    transition: none;
   }
 }
