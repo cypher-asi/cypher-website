@@ -41,3 +41,13 @@
   /* Even out line lengths so multi-line copy reads as a balanced block. */
   text-wrap: balance;
 }
+
+/* Optional CTA row rendered under the description. */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: clamp(0.5rem, 1.5vh, 1rem);
+}

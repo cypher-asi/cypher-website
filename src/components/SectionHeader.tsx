@@ -8,6 +8,8 @@ export type SectionHeaderProps = {
   subtitle?: ReactNode;
   /** Heading level for the title. Defaults to h2. */
   as?: 'h1' | 'h2';
+  /** Optional content (e.g. a CTA button) rendered under the description. */
+  children?: ReactNode;
 };
 
 /**
@@ -19,12 +21,14 @@ export function SectionHeader({
   title,
   subtitle,
   as: Heading = 'h2',
+  children,
 }: SectionHeaderProps) {
   return (
     <header className={styles.header}>
       {eyebrow ? <p className={styles.eyebrow}>{eyebrow}</p> : null}
       <Heading className={styles.title}>{title}</Heading>
       {subtitle ? <p className={styles.subtitle}>{subtitle}</p> : null}
+      {children ? <div className={styles.actions}>{children}</div> : null}
     </header>
   );
 }
