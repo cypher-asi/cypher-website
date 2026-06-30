@@ -20,6 +20,7 @@ const FACTION_GROUPS: FactionGroup[] = [
     factions: [
       { name: 'Wape', image: '/images/wilder-world/wape.jpeg' },
       { name: 'Spartan', image: '/images/wilder-world/spartan.png' },
+      { name: 'Auric', image: '/images/wilder-world/auric.png' },
     ],
   },
 ];
