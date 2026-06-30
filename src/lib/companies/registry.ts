@@ -3,6 +3,7 @@ import type {
   CompanyKey,
   FooterColumn,
   FooterConfig,
+  FooterParentCompany,
   FooterSocial,
   NavSection,
   PageSection,
@@ -177,6 +178,75 @@ function footer(copyrightName: string): FooterConfig {
   };
 }
 
+const CYPHER_PARENT: FooterParentCompany = {
+  label: 'A Cypher Company',
+  href: 'https://cypher.net',
+  external: true,
+};
+
+/* Minimal per-site footer for child brands that don't yet have a full footer:
+   just their wordmark + the Cypher colophon (no ecosystem columns). */
+function minimalFooter(copyrightName: string, wordmarkText: string): FooterConfig {
+  return {
+    columns: [],
+    social: {},
+    copyrightName,
+    wordmarkText,
+    parentCompany: CYPHER_PARENT,
+  };
+}
+
+/* Wilder World runs its own product-site footer (not the ecosystem chrome). */
+const WILDER_EARLY_ACCESS_URL =
+  'https://store.epicgames.com/p/wilder-world-wilder-world-alpha-b4ccf8?lang=en-US';
+
+const wilderFooter: FooterConfig = {
+  copyrightName: 'Wilder World',
+  wordmarkSrc: '/images/wilder-world/wilder-world-wordmark.png',
+  wordmarkAlt: 'Wilder World',
+  social: {},
+  cta: {
+    heading: 'A New Dimension of Reality',
+    button: { label: 'Early Access', href: WILDER_EARLY_ACCESS_URL, external: true },
+  },
+  parentCompany: CYPHER_PARENT,
+  columns: [
+    {
+      heading: 'Game',
+      links: [
+        { label: 'Universe', href: '/universe' },
+        { label: 'Gameplay', href: '/#gameplay' },
+        { label: 'City', href: '/#city' },
+      ],
+    },
+    {
+      heading: 'Industries',
+      links: [
+        { label: 'Land', href: 'https://www.wilderworld.com/land', external: true },
+        { label: 'Wheels', href: 'https://www.wilderworld.com/wheels', external: true },
+        { label: 'Beasts', href: 'https://www.wilderworld.com/beasts', external: true },
+        { label: 'Moto', href: 'https://www.wilderworld.com/moto', external: true },
+        { label: 'PALs', href: 'https://www.wilderworld.com/pals', external: true },
+        { label: 'Crafts', href: 'https://www.wilderworld.com/crafts', external: true },
+        { label: 'Cribs', href: 'https://www.wilderworld.com/cribs', external: true },
+        { label: 'AIRWILD', href: 'https://www.wilderworld.com/airwild', external: true },
+      ],
+    },
+    {
+      heading: 'Community',
+      links: [
+        { label: 'News', href: 'https://www.wilderworld.com/news', external: true },
+        { label: 'X', href: 'https://x.com/WilderWorld', external: true },
+        { label: 'Instagram', href: 'https://www.instagram.com/wilderworld', external: true },
+        { label: 'Telegram', href: 'https://t.me/wilderworld', external: true },
+        { label: 'ZERO', href: 'https://zero.tech', external: true },
+        { label: 'YouTube', href: 'https://www.youtube.com/@WilderWorld', external: true },
+        { label: 'Discord', href: 'https://discord.gg/wilderworld', external: true },
+      ],
+    },
+  ],
+};
+
 /* ---------------------------------------------------------------------------
    Per-company landing scroll sections
    --------------------------------------------------------------------------- */
@@ -231,7 +301,7 @@ export const COMPANIES: Record<CompanyKey, CompanyConfig> = {
       description: 'Autonomous AI agents that triage, code, test, and ship inside your infrastructure.',
     },
     nav: sharedNav,
-    footer: footer('Zode'),
+    footer: minimalFooter('Zode', 'ZODE'),
     pageSections: zodeSections,
   },
   zero: {
@@ -246,7 +316,7 @@ export const COMPANIES: Record<CompanyKey, CompanyConfig> = {
       description: 'A secure operating system for an agentic world.',
     },
     nav: sharedNav,
-    footer: footer('Zero'),
+    footer: minimalFooter('Zero', 'ZERO'),
     pageSections: zeroSections,
   },
   wilderworld: {
@@ -271,7 +341,7 @@ export const COMPANIES: Record<CompanyKey, CompanyConfig> = {
     },
     nav: wilderNav,
     navStyle: 'buttons',
-    footer: footer('Wilder World'),
+    footer: wilderFooter,
     pageSections: [],
     fonts: {
       sans: 'var(--font-ddin)',
@@ -290,7 +360,7 @@ export const COMPANIES: Record<CompanyKey, CompanyConfig> = {
       description: 'A blazing-fast blockchain for the Machine Age.',
     },
     nav: sharedNav,
-    footer: footer('Z Chain'),
+    footer: minimalFooter('Z Chain', 'Z'),
     pageSections: [],
   },
 };

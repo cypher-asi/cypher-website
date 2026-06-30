@@ -23,10 +23,36 @@ function GithubIcon({ size = 18 }: { size?: number }) {
 }
 
 export function Footer({ footer }: { footer: FooterConfig }) {
-  const { columns, social, copyrightName, wordmarkSrc, wordmarkAlt } = footer;
+  const {
+    columns,
+    social,
+    copyrightName,
+    wordmarkSrc,
+    wordmarkAlt,
+    wordmarkText,
+    cta,
+    parentCompany,
+  } = footer;
+  const hasSocial = Boolean(social.x || social.github);
   return (
     <footer className={styles.footer} aria-label="Site footer">
       <div className={styles.inner}>
+        {cta && (
+          <div className={styles.cta}>
+            <h2 className={styles.ctaHeading}>{cta.heading}</h2>
+            <a
+              className="sci-btn sci-btn-primary"
+              href={cta.button.href}
+              target={cta.button.external ? '_blank' : undefined}
+              rel={cta.button.external ? 'noopener noreferrer' : undefined}
+            >
+              {cta.button.label}
+              <ArrowUpRight size={16} />
+            </a>
+          </div>
+        )}
+
+        {columns.length > 0 && (
         <nav className={styles.columns} aria-label="Footer navigation">
           {columns.map((column) => (
             <div key={column.heading} className={styles.column}>
@@ -71,7 +97,9 @@ export function Footer({ footer }: { footer: FooterConfig }) {
             </div>
           ))}
         </nav>
+        )}
 
+        {hasSocial && (
         <div className={styles.bottom}>
           <div className={styles.social}>
             {social.x && (
@@ -99,11 +127,32 @@ export function Footer({ footer }: { footer: FooterConfig }) {
           </div>
           <p className={styles.copyright}>Copyright &copy; 2026 {copyrightName}.</p>
         </div>
+        )}
 
         <div className={styles.brandWrap}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className={styles.brandImage} src={wordmarkSrc} alt={wordmarkAlt} />
+          {wordmarkSrc ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img className={styles.brandImage} src={wordmarkSrc} alt={wordmarkAlt} />
+          ) : wordmarkText ? (
+            <span className={styles.wordmarkText}>{wordmarkText}</span>
+          ) : null}
         </div>
+
+        {parentCompany && (
+          <p className={styles.parentCompany}>
+            {parentCompany.external ? (
+              <a
+                href={parentCompany.href}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {parentCompany.label}
+              </a>
+            ) : (
+              <Link href={parentCompany.href}>{parentCompany.label}</Link>
+            )}
+          </p>
+        )}
       </div>
     </footer>
   );

@@ -19,6 +19,29 @@
   margin: 0 auto;
 }
 
+/* ============================================================================
+   Pre-footer CTA band
+   ============================================================================ */
+.cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: clamp(20px, 3vw, 32px);
+  padding-block: clamp(48px, 9vw, 120px);
+}
+
+.ctaHeading {
+  margin: 0;
+  font-family: var(--font-display), system-ui, -apple-system, sans-serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.05;
+  text-transform: uppercase;
+  color: var(--color-text-primary);
+}
+
 .columns {
   display: grid;
   grid-template-columns: repeat(3, max-content);
@@ -148,6 +171,41 @@
   max-width: 1240px;
   height: auto;
   user-select: none;
+}
+
+/* Text wordmark fallback (sites without an image wordmark). */
+.wordmarkText {
+  font-family: var(--font-display), system-ui, -apple-system, sans-serif;
+  font-size: clamp(2.5rem, 9vw, 7rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--color-text-primary);
+  user-select: none;
+}
+
+/* ============================================================================
+   Parent-company colophon (e.g. "A Cypher Company")
+   ============================================================================ */
+.parentCompany {
+  margin: 0;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.parentCompany a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 150ms ease, text-shadow 150ms ease;
+}
+
+.parentCompany a:hover {
+  color: var(--color-link-hover, #fff);
+  text-shadow: var(--link-hover-glow, none);
 }
 
 @media (max-width: 900px) {

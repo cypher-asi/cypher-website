@@ -63,12 +63,30 @@ export interface FooterSocial {
   github?: string;
 }
 
+export interface FooterCta {
+  heading: string;
+  button: { label: string; href: string; external?: boolean };
+}
+
+export interface FooterParentCompany {
+  label: string;
+  href: string;
+  external?: boolean;
+}
+
 export interface FooterConfig {
   columns: FooterColumn[];
   social: FooterSocial;
   copyrightName: string;
-  wordmarkSrc: string;
-  wordmarkAlt: string;
+  /** Image wordmark shown large at the bottom. */
+  wordmarkSrc?: string;
+  wordmarkAlt?: string;
+  /** Text wordmark fallback when there is no image wordmark. */
+  wordmarkText?: string;
+  /** Optional pre-footer call-to-action band. */
+  cta?: FooterCta;
+  /** Optional parent-company colophon (e.g. "A Cypher Company"). */
+  parentCompany?: FooterParentCompany;
 }
 
 /* ---------------------------------------------------------------------------
@@ -114,6 +132,9 @@ export interface CompanyConfig {
     description: string;
   };
   nav: NavSection[];
+  /** Top-nav item presentation. 'buttons' renders uppercase, button-styled
+   *  items (e.g. Wilder World); defaults to plain text links. */
+  navStyle?: 'links' | 'buttons';
   footer: FooterConfig;
   /** Sections for the in-page scroll-spy nav on this company's landing. */
   pageSections: PageSection[];
