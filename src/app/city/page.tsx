@@ -1,5 +1,6 @@
 import { SectionHeader } from '@/components/SectionHeader';
 import CityShowcase from '@/sites/wilderworld/CityShowcase';
+import RegionSelector from '@/sites/wilderworld/RegionSelector';
 import styles from './page.module.css';
 
 export default function CityPage() {
@@ -12,6 +13,15 @@ export default function CityPage() {
         subtitle="Wiami is a massive virtual metropolis with residential areas, commercial hubs, industrial zones and legendary landmarks. Watch the city shift from day to night."
       />
       <CityShowcase />
+
+      <SectionHeader
+        eyebrow="The Map"
+        title="Three Territories"
+        subtitle={
+          'Beyond the city, Wiami\u2019s world spans three distinct landmasses \u2014 each with its own terrain, resources, and role in the simulation.'
+        }
+      />
+      <RegionSelector />
     </div>
   );
 }
