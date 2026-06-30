@@ -2,13 +2,14 @@ import { SectionHeader } from '@/components/SectionHeader';
 import GameplayPillars from '@/sites/wilderworld/GameplayPillars';
 import styles from './page.module.css';
 
-type Feature = { title: string; description: string };
+type Feature = { title: string; description: string; image?: string };
 
 const FIGHT_FEATURES: Feature[] = [
   {
     title: 'Extract or Lose It',
     description:
       'Clear Breaches and fight your way back to extraction. The longer you stay, the more you can earn and the more you stand to lose.',
+    image: '/images/wilder-world/fight_corner.png',
   },
   {
     title: 'Own Your Arsenal',
@@ -102,6 +103,17 @@ export default function GameplayPage() {
         <div className={styles.featureGrid}>
           {FIGHT_FEATURES.map((feature) => (
             <article key={feature.title} className={styles.featureCard}>
+              {feature.image ? (
+                <>
+                  <img
+                    className={styles.featureBg}
+                    src={feature.image}
+                    alt=""
+                    aria-hidden
+                  />
+                  <div className={styles.featureScrim} aria-hidden />
+                </>
+              ) : null}
               <h4 className={styles.featureTitle}>{feature.title}</h4>
               <div className={styles.featureDescWrap}>
                 <p className={styles.featureDesc}>{feature.description}</p>
