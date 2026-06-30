@@ -27,7 +27,7 @@ const PILLARS: Pillar[] = [
     title: 'Race',
     description:
       "Tear through Wiami's streets in high-speed, high-stakes races.",
-    image: '/images/wilder-world/race.png',
+    image: '/images/wilder-world/race_gameplay.png',
     href: '#race',
   },
   {
