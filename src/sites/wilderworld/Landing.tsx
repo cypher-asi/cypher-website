@@ -1,6 +1,7 @@
 'use client';
 
-import { ArrowUpRight, Play } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowUpRight, Moon, Play, Sun, Sunset } from 'lucide-react';
 import { SectionHeader } from '@/components/SectionHeader';
 import GameplayCard, { type GameplayCardProps } from './GameplayCard';
 import FactionSelector from './FactionSelector';
@@ -9,6 +10,14 @@ import styles from './Landing.module.css';
 const EARLY_ACCESS_URL =
   'https://store.epicgames.com/p/wilder-world-wilder-world-alpha-b4ccf8?lang=en-US';
 const TRAILER_URL = 'https://www.youtube.com/watch?v=7G8SwYp6gPo';
+
+const BACKDROPS = [
+  { id: 'day', label: 'Day', Icon: Sun, src: '/videos/midday.mp4' },
+  { id: 'sunset', label: 'Sunset', Icon: Sunset, src: '/videos/sunset.mp4' },
+  { id: 'night', label: 'Night', Icon: Moon, src: '/videos/night.mp4' },
+] as const;
+
+type BackdropId = (typeof BACKDROPS)[number]['id'];
 
 const GAMEPLAY_MODES: GameplayCardProps[] = [
   {
@@ -32,13 +41,18 @@ const GAMEPLAY_MODES: GameplayCardProps[] = [
 ];
 
 export default function WilderworldLanding() {
+  const [active, setActive] = useState<BackdropId>('sunset');
+  const activeBackdrop =
+    BACKDROPS.find((b) => b.id === active) ?? BACKDROPS[1];
+
   return (
     <div className={styles.page}>
       <section className={styles.hero}>
         <div className={styles.frame}>
           <video
+            key={activeBackdrop.id}
             className={styles.video}
-            src="/videos/wiami-main.mp4"
+            src={activeBackdrop.src}
             autoPlay
             muted
             loop
@@ -46,6 +60,23 @@ export default function WilderworldLanding() {
             aria-hidden
           />
           <div className={styles.scrim} aria-hidden />
+          <div className={styles.timeControls}>
+            {BACKDROPS.map(({ id, label, Icon }) => (
+              <button
+                key={id}
+                type="button"
+                className={`${styles.timeButton} ${
+                  id === active ? styles.timeButtonActive : ''
+                }`}
+                onClick={() => setActive(id)}
+                aria-label={label}
+                aria-pressed={id === active}
+                title={label}
+              >
+                <Icon size={20} />
+              </button>
+            ))}
+          </div>
           <div className={styles.overlay}>
             <h1 className={styles.heading}>The Simulation.</h1>
             <div className={styles.actions}>
