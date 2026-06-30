@@ -122,6 +122,7 @@ const sharedNav: NavSection[] = [
 
 /* Wilder World runs its own product-site nav (not the ecosystem chrome). */
 const wilderNav: NavSection[] = [
+  { id: 'universe', label: 'Universe', href: '/universe', noPanel: true },
   { id: 'gameplay', label: 'Gameplay', href: '#gameplay', noPanel: true },
   { id: 'city', label: 'City', href: '#city', noPanel: true },
   { id: 'industries', label: 'Industries', href: '#industries', noPanel: true },
@@ -269,6 +270,7 @@ export const COMPANIES: Record<CompanyKey, CompanyConfig> = {
       description: 'A photorealistic, immersive virtual simulation.',
     },
     nav: wilderNav,
+    navStyle: 'buttons',
     footer: footer('Wilder World'),
     pageSections: [],
     fonts: {
