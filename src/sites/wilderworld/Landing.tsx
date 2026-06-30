@@ -158,6 +158,30 @@ export default function WilderworldLanding() {
       <section className={styles.gameplaySection}>
         <div className={styles.gameplayInner}>
           <SectionHeader
+            eyebrow="The Breach"
+            title="A City Under Attack"
+            subtitle={
+              <>
+                The FORUM has breached The GATE and poured its forces into Wiami.
+                Its mission: crush the rebellion before it can rise and seize
+                control of the simulation.
+              </>
+            }
+          />
+          <div className={styles.cityMap}>
+            <img
+              className={styles.cityMapVideo}
+              src="/images/wilder-world/spartan_attack.png"
+              alt=""
+              aria-hidden
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.gameplaySection}>
+        <div className={styles.gameplayInner}>
+          <SectionHeader
             eyebrow="Universe"
             title="Fight For Freedom"
             subtitle={
