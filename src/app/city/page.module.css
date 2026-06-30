@@ -1,0 +1,13 @@
+/* ============================================================================
+   City – "Welcome to Wiami" with a horizontal time-of-day video showcase.
+   Container width and padding mirror the Universe / Gameplay pages so the page
+   reads consistently with the rest of the site.
+   ============================================================================ */
+
+.page {
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  padding-inline: clamp(0.75rem, 2vw, 1.5rem);
+  padding-bottom: clamp(4rem, 10vh, 8rem);
+  display: flex;
+  flex-direction: column;
+}

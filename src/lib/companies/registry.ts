@@ -125,7 +125,7 @@ const sharedNav: NavSection[] = [
 const wilderNav: NavSection[] = [
   { id: 'universe', label: 'Universe', href: '/universe', noPanel: true },
   { id: 'gameplay', label: 'Gameplay', href: '/gameplay', noPanel: true },
-  { id: 'city', label: 'City', href: '#city', noPanel: true },
+  { id: 'city', label: 'City', href: '/city', noPanel: true },
   { id: 'industries', label: 'Industries', href: '#industries', noPanel: true },
   { id: 'economy', label: 'Economy', href: '#economy', noPanel: true },
   { id: 'news', label: 'News', href: 'https://zine.live', external: true, noPanel: true },
@@ -217,7 +217,7 @@ const wilderFooter: FooterConfig = {
         { label: 'Overview', href: '/' },
         { label: 'Universe', href: '/universe' },
         { label: 'Gameplay', href: '/gameplay' },
-        { label: 'City', href: '/#city' },
+        { label: 'City', href: '/city' },
         { label: 'Economy', href: '/#economy' },
       ],
     },
