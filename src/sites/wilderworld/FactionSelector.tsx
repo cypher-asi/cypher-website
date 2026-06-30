@@ -16,11 +16,11 @@ const FACTION_GROUPS: FactionGroup[] = [
     ],
   },
   {
-    side: 'Agent',
+    side: 'Forum',
     factions: [
-      { name: 'Wape', image: '/images/wilder-world/wape.jpeg' },
       { name: 'Agent', image: '/images/wilder-world/agents.png' },
       { name: 'Spartan', image: '/images/wilder-world/spartan.png' },
+      { name: 'Wape', image: '/images/wilder-world/wape.jpeg' },
     ],
   },
 ];
