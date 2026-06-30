@@ -6,12 +6,6 @@ import styles from './RegionSelector.module.css';
 type Status = 'LIVE' | 'PLANNING' | 'FUTURE';
 type Region = { name: string; image: string; status: Status; blurb: string };
 
-const STATUS_COLORS: Record<Status, string> = {
-  LIVE: '#22c55e',
-  PLANNING: '#f59e0b',
-  FUTURE: '#9ca3af',
-};
-
 const REGIONS: Region[] = [
   {
     name: 'The Island',
@@ -41,14 +35,7 @@ export default function RegionSelector() {
 
   return (
     <div className={styles.mapFrame}>
-      <div className={styles.tag}>
-        <span
-          className={styles.tagDot}
-          style={{ background: STATUS_COLORS[selected.status] }}
-          aria-hidden
-        />
-        {selected.status}
-      </div>
+      <div className={styles.tag}>{selected.status}</div>
       {/* Dim base map of the whole world. Fixed in place; only the highlighted
           territory changes when a different region is selected. */}
       <img
