@@ -28,9 +28,7 @@ export default function CityPage() {
       <SectionHeader
         eyebrow="The Map"
         title="Three Territories"
-        subtitle={
-          'Beyond the city, Wiami\u2019s world spans three distinct landmasses \u2014 each with its own terrain, resources, and role in the simulation.'
-        }
+        subtitle="Beyond the city, Wiami's world spans three distinct landmasses, each with its own terrain, resources, and role in the simulation."
       />
       <RegionSelector />
     </div>

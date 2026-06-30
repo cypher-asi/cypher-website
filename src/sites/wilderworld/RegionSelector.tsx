@@ -3,40 +3,46 @@
 import { useState } from 'react';
 import styles from './RegionSelector.module.css';
 
-type Region = { name: string; image: string; blurb: string };
+type Region = { name: string; image: string; pos: number; blurb: string };
 
 const REGIONS: Region[] = [
   {
     name: 'The Island',
     image: '/images/wilder-world/map-island.webp',
+    pos: 57,
     blurb:
-      'The dense, circular heart of Wiami \u2014 neighborhoods, landmarks, and 27 bridges spanning its rivers.',
+      'The dense, circular heart of Wiami, where neighborhoods, landmarks, and 27 bridges span its rivers and streams.',
   },
   {
     name: 'The Mainland',
     image: '/images/wilder-world/map-mainland.webp',
+    pos: 43,
     blurb:
-      'A resource-rich frontier of 40,000 Land parcels, fueling the mining that powers the economy.',
+      'A resource-rich frontier of 40,000 onchain Land parcels, fueling the mining that powers the $WILD economy.',
   },
   {
     name: "No Man's Land",
     image: '/images/wilder-world/map-no-mans-land.webp',
+    pos: 28,
     blurb:
-      'A wild, untamed edge of volcanic regions and towering mountains \u2014 still to be revealed.',
+      'A wild, untamed frontier of volcanic regions and towering mountains, reserved for stories still to be revealed.',
   },
 ];
 
 export default function RegionSelector() {
   const [selected, setSelected] = useState<Region>(REGIONS[0]);
+  const objectPosition = `${selected.pos}% 50%`;
 
   return (
     <div className={styles.mapFrame}>
-      {/* Dim base map of the whole world, always visible. */}
+      {/* Dim base map of the whole world, always visible. Pans with the
+          selection so the active territory stays centered in the tall frame. */}
       <img
         className={styles.base}
         src="/images/wilder-world/map-base.webp"
         alt=""
         aria-hidden
+        style={{ objectPosition }}
       />
       {/* Selected territory lights up on top of the base. */}
       <img
@@ -45,6 +51,7 @@ export default function RegionSelector() {
         src={selected.image}
         alt=""
         aria-hidden
+        style={{ objectPosition }}
       />
       <div className={styles.scrim} aria-hidden />
       <div className={styles.overlay}>
