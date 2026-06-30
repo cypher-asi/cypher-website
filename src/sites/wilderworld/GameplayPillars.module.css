@@ -123,7 +123,10 @@
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.78);
   margin: 0;
-  max-width: 38rem;
+  /* Constrain the measure so the copy wraps to ~2 lines, and balance them so
+     both lines are roughly equal length. */
+  max-width: 22rem;
+  text-wrap: balance;
 }
 
 .contentButton {
