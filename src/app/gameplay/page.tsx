@@ -15,6 +15,7 @@ const FIGHT_FEATURES: Feature[] = [
     title: 'Own Your Arsenal',
     description:
       'Weapons, armor, vehicles, and cosmetics become permanent, player-owned assets once extracted and secured onchain.',
+    image: '/images/wilder-world/trinity_boot.png',
   },
   {
     title: 'Customize Every Weapon',
