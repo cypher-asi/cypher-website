@@ -35,7 +35,13 @@
   object-fit: cover;
   /* Collapsed panels are dimmed; the active panel reveals the full image. */
   filter: saturate(0.85) brightness(0.65);
-  transition: filter 0.45s ease, transform 0.45s ease;
+  /* Hidden until the image finishes loading, then fades in. */
+  opacity: 0;
+  transition: filter 0.45s ease, transform 0.45s ease, opacity 0.6s ease;
+}
+
+.bgLoaded {
+  opacity: 1;
 }
 
 .panelActive .bg {
@@ -166,5 +172,19 @@
     opacity: 1;
     transform: none;
     pointer-events: auto;
+  }
+}
+
+/* Respect reduced-motion: drop the expand/fade transitions and show images
+   immediately rather than fading them in. */
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .bg,
+  .content {
+    transition: none;
+  }
+
+  .bg {
+    opacity: 1;
   }
 }

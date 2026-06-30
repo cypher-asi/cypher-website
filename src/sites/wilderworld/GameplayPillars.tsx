@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import styles from './GameplayPillars.module.css';
@@ -47,41 +47,66 @@ const PILLARS: Pillar[] = [
   },
 ];
 
+function PillarPanel({
+  pillar,
+  isActive,
+  onActivate,
+}: {
+  pillar: Pillar;
+  isActive: boolean;
+  onActivate: () => void;
+}) {
+  const [loaded, setLoaded] = useState(false);
+
+  // Mark as loaded if the image is already cached when the node mounts,
+  // otherwise the onLoad handler covers the network case.
+  const imgRef = useCallback((node: HTMLImageElement | null) => {
+    if (node?.complete && node.naturalWidth > 0) setLoaded(true);
+  }, []);
+
+  return (
+    <div
+      className={`${styles.panel} ${isActive ? styles.panelActive : ''}`}
+      onMouseEnter={onActivate}
+      onFocus={onActivate}
+    >
+      <img
+        ref={imgRef}
+        className={`${styles.bg} ${loaded ? styles.bgLoaded : ''}`}
+        src={pillar.image}
+        alt=""
+        aria-hidden
+        onLoad={() => setLoaded(true)}
+      />
+      <div className={styles.scrim} aria-hidden />
+
+      <span className={styles.label}>{pillar.title}</span>
+
+      <div className={styles.content}>
+        <h3 className={styles.contentTitle}>{pillar.title}</h3>
+        <p className={styles.contentDesc}>{pillar.description}</p>
+        <Link href={pillar.href} className={`sci-btn sci-btn-primary ${styles.contentButton}`}>
+          Enter {pillar.title}
+          <ArrowRight size={15} />
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 export default function GameplayPillars() {
   const [activeId, setActiveId] = useState<string>(PILLARS[0].id);
 
   return (
     <div className={styles.row}>
-      {PILLARS.map((pillar) => {
-        const isActive = pillar.id === activeId;
-        return (
-          <div
-            key={pillar.id}
-            className={`${styles.panel} ${isActive ? styles.panelActive : ''}`}
-            onMouseEnter={() => setActiveId(pillar.id)}
-            onFocus={() => setActiveId(pillar.id)}
-          >
-            <img
-              className={styles.bg}
-              src={pillar.image}
-              alt=""
-              aria-hidden
-            />
-            <div className={styles.scrim} aria-hidden />
-
-            <span className={styles.label}>{pillar.title}</span>
-
-            <div className={styles.content}>
-              <h3 className={styles.contentTitle}>{pillar.title}</h3>
-              <p className={styles.contentDesc}>{pillar.description}</p>
-              <Link href={pillar.href} className={`sci-btn sci-btn-primary ${styles.contentButton}`}>
-                Enter {pillar.title}
-                <ArrowRight size={15} />
-              </Link>
-            </div>
-          </div>
-        );
-      })}
+      {PILLARS.map((pillar) => (
+        <PillarPanel
+          key={pillar.id}
+          pillar={pillar}
+          isActive={pillar.id === activeId}
+          onActivate={() => setActiveId(pillar.id)}
+        />
+      ))}
     </div>
   );
 }
