@@ -82,7 +82,13 @@ const RACE_FEATURES: Feature[] = [
   },
 ];
 
-type Placeholder = { id: string; eyebrow: string; title: string; subtitle: string };
+type Placeholder = {
+  id: string;
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  image?: string;
+};
 
 const PLACEHOLDERS: Placeholder[] = [
   {
@@ -91,6 +97,7 @@ const PLACEHOLDERS: Placeholder[] = [
     title: 'A Living Open World',
     subtitle:
       'Roam a massive open world driven by RPG missions and discovery. Full details coming soon.',
+    image: '/images/wilder-world/open_world_city.jpg',
   },
   {
     id: 'build',
@@ -98,6 +105,7 @@ const PLACEHOLDERS: Placeholder[] = [
     title: 'Own and Build Everything',
     subtitle:
       'Own and build everything from land to vehicles. Full details coming soon.',
+    image: '/images/wilder-world/build_construction.png',
   },
 ];
 
@@ -197,6 +205,16 @@ export default function GameplayPage() {
             title={mode.title}
             subtitle={mode.subtitle}
           />
+          {mode.image ? (
+            <div className={styles.media}>
+              <img
+                className={styles.mediaVideo}
+                src={mode.image}
+                alt=""
+                aria-hidden
+              />
+            </div>
+          ) : null}
           <div className={styles.comingSoon}>
             <span className={styles.comingSoonLabel}>Coming Soon</span>
           </div>
