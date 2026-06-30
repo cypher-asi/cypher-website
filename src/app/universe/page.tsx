@@ -38,17 +38,17 @@ const SECTIONS: Section[] = [
       {
         kind: 'p',
         text:
-          'In the hidden strata of reality, the Anaki move like shadows between dimensions. They are not conquerors of land or wealth, but predators of consciousness itself. Once radiant in frequency, they fell into corruption and were banished from this dimension millions of years ago. Existing between worlds, they drift through star systems to feed on dormant minds\u2014drawing power from populations that remain spiritually unaware. Each world they touch becomes a silent harvest. Their parasitic expansion is fueled not by armies or fleets, but by the extraction of inner light from those who have yet to awaken.',
+          'In the hidden strata of reality, the Anaki move like shadows between dimensions. They are not conquerors of land or wealth, but predators of consciousness itself. Once radiant in frequency, they fell into corruption and were banished from this dimension millions of years ago. Existing between worlds, they drift through star systems to feed on dormant minds, drawing power from populations that remain spiritually unaware. Each world they touch becomes a silent harvest. Their parasitic expansion is fueled not by armies or fleets, but by the extraction of inner light from those who have yet to awaken.',
       },
       {
         kind: 'p',
         text:
-          'Humanity never realized it had already been compromised. Long before governments collapsed, before the media turned venomous and corporations seized the world\u2019s resources, its institutions had been infiltrated. Behind the fa\u00e7ade of political chaos operated The Forum\u2014a clandestine shadow council engineered to fracture collective consciousness. Their goal was not economic dominance or territorial rule, but spiritual entropy. By keeping humanity afraid, distracted, and asleep, The Forum prepared Earth for the return of its true masters.',
+          'Humanity never realized it had already been compromised. Long before governments collapsed, before the media turned venomous and corporations seized the world\u2019s resources, its institutions had been infiltrated. Behind the fa\u00e7ade of political chaos operated The Forum, a clandestine shadow council engineered to fracture collective consciousness. Their goal was not economic dominance or territorial rule, but spiritual entropy. By keeping humanity afraid, distracted, and asleep, The Forum prepared Earth for the return of its true masters.',
       },
       {
         kind: 'p',
         text:
-          'Through layers of deception, the Anaki guided civilization toward technological dependence. Knowing that Artificial Super Intelligence (ASI) would become the ultimate tool for control, they positioned it as humanity\u2019s last necessary invention. Earth\u2014abundant with life and unawakened souls\u2014became their most coveted target. Their directive: engineer division, accelerate crises, and usher humanity into a digital prison disguised as progress. Once complete, the Anaki would siphon an entire species through the deployment of its spiritual machines.',
+          'Through layers of deception, the Anaki guided civilization toward technological dependence. Knowing that Artificial Super Intelligence (ASI) would become the ultimate tool for control, they positioned it as humanity\u2019s last necessary invention. Earth, abundant with life and unawakened souls, became their most coveted target. Their directive: engineer division, accelerate crises, and usher humanity into a digital prison disguised as progress. Once complete, the Anaki would siphon an entire species through the deployment of its spiritual machines.',
       },
     ],
   },
@@ -65,23 +65,23 @@ const SECTIONS: Section[] = [
       {
         kind: 'p',
         text:
-          'The messages appeared meaningless at first\u2014until a hacker group called SYN9 decrypted it. Encoded in the messages was the location for an ancient Portal Reactor\u2014hidden deep in the Earth. On the other side of the portal was an advanced pocket universe. As word spread, Wilders began to flee in large numbers, escaping the grip of the FORUM.',
+          'The messages appeared meaningless at first, until a hacker group called SYN9 decrypted it. Encoded in the messages was the location for an ancient Portal Reactor hidden deep in the Earth. On the other side of the portal was an advanced pocket universe. As word spread, Wilders began to flee in large numbers, escaping the grip of the FORUM.',
       },
       { kind: 'lead', text: 'This reality became known as The Simulation.' },
       {
         kind: 'p',
         text:
-          'In response, the Anaki initiated a relentless campaign to breach The GATE\u2014the secure boundary preventing unauthorized entry into The Simulation. Through The Forum, they began mustering agents from across the galaxy: radicalized species from fallen worlds, corporate warbands, deadly mechs, and off-world mercenary clans. Their objective\u2014seize the production of Element Zero and annihilate all resistance.',
+          'In response, the Anaki initiated a relentless campaign to breach The GATE, the secure boundary preventing unauthorized entry into The Simulation. Through The Forum, they began mustering agents from across the galaxy: radicalized species from fallen worlds, corporate warbands, deadly mechs, and off-world mercenary clans. Their objective: seize the production of Element Zero and annihilate all resistance.',
       },
       {
         kind: 'p',
         text:
-          'If they succeed, the Anaki will gain the power to overwrite reality itself. If they fail, humanity may finally awaken\u2014and rise beyond their reach forever.',
+          'If they succeed, the Anaki will gain the power to overwrite reality itself. If they fail, humanity may finally awaken and rise beyond their reach forever.',
       },
       {
         kind: 'p',
         text:
-          'The Portal Reactor enabled the mining of Element Zero\u2014called Z for short\u2014a primordial substance capable of coding reality itself: creating, rewriting, or reshaping entire worlds. With guidance from higher planes, the Wilders learned to wield Element Zero to weaken The Forum\u2019s grip on Earth before the Singularity and the arrival of the Anaki\u2019s spiritual machines.',
+          'The Portal Reactor enabled the mining of Element Zero, called Z for short, a primordial substance capable of coding reality itself: creating, rewriting, or reshaping entire worlds. With guidance from higher planes, the Wilders learned to wield Element Zero to weaken The Forum\u2019s grip on Earth before the Singularity and the arrival of the Anaki\u2019s spiritual machines.',
       },
       { kind: 'lead', text: 'To those vying for dominion over Earth, The Simulation became their only threat.' },
     ],
@@ -94,17 +94,17 @@ const SECTIONS: Section[] = [
       {
         kind: 'p',
         text:
-          'Mastery of Element Zero now represents mastery over reality itself\u2014allowing faster-than-light effects, new universes, and defenses against hostile forces\u2014making its control the central struggle for humanity\u2019s survival. In small quantities it can be utilized to materialize new objects and aspects of reality. In large quantities it can be used to recode parts of existing realities or create new realities entirely.',
+          'Mastery of Element Zero now represents mastery over reality itself, allowing faster-than-light effects, new universes, and defenses against hostile forces, making its control the central struggle for humanity\u2019s survival. In small quantities it can be utilized to materialize new objects and aspects of reality. In large quantities it can be used to recode parts of existing realities or create new realities entirely.',
       },
       {
         kind: 'p',
         text:
-          'Element Zero is an exotic quantum phase of spacetime, believed to originate from pre\u2013Big Bang symmetry. Rather than being a conventional material, it manifests as a stable pocket of negative vacuum curvature that can convert informational energy into mass. It behaves simultaneously as a field, a form of exotic matter, and a self-encoding quantum information state. In normal conditions, Element Zero only appears as fleeting fluctuations, too unstable to study or synthesize.',
+          'Element Zero is an exotic quantum phase of spacetime, believed to originate from pre-Big Bang symmetry. Rather than being a conventional material, it manifests as a stable pocket of negative vacuum curvature that can convert informational energy into mass. It behaves simultaneously as a field, a form of exotic matter, and a self-encoding quantum information state. In normal conditions, Element Zero only appears as fleeting fluctuations, too unstable to study or synthesize.',
       },
       {
         kind: 'p',
         text:
-          'Because Element Zero collapses under observation and is disrupted by higher-dimensional interference, researchers built a controlled pocket universe through the construction of a Portal Reactor\u2013where physical constants and quantum curvature could be tuned. Anchored by quantum supercomputers and singularity wells, this enclosed spacetime minimizes decoherence and enables the nucleation of Element Zero. Within it, the Portal Reactor aligns vacuum fields into resonance with pre\u2013Big Bang symmetry, encapsulates emerging formations within a six-dimensional topological lattice, and materializes them as discrete, stable units\u2014effectively minting Element Zero.',
+          'Because Element Zero collapses under observation and is disrupted by higher-dimensional interference, researchers built a controlled pocket universe through the construction of a Portal Reactor, where physical constants and quantum curvature could be tuned. Anchored by quantum supercomputers and singularity wells, this enclosed spacetime minimizes decoherence and enables the nucleation of Element Zero. Within it, the Portal Reactor aligns vacuum fields into resonance with pre-Big Bang symmetry, encapsulates emerging formations within a six-dimensional topological lattice, and materializes them as discrete, stable units, effectively minting Element Zero.',
       },
       {
         kind: 'p',
@@ -121,7 +121,7 @@ const SECTIONS: Section[] = [
       {
         kind: 'p',
         text:
-          'The stage where the war for Earth\u2019s consciousness plays out\u2014from the surveilled streets of the lower city to the pocket universe beyond The GATE. Details coming soon.',
+          'The stage where the war for Earth\u2019s consciousness plays out, from the surveilled streets of the lower city to the pocket universe beyond The GATE. Details coming soon.',
       },
     ],
   },
@@ -134,7 +134,7 @@ export default function UniversePage() {
         <p className={styles.eyebrow}>The Universe</p>
         <h1 className={styles.pageTitle}>The War for Reality</h1>
         <p className={styles.pageSubtitle}>
-          A clandestine struggle spanning dimensions, machines, and minds&mdash;and
+          A clandestine struggle spanning dimensions, machines, and minds, and
           the Wilders who refuse to be harvested.
         </p>
       </header>
