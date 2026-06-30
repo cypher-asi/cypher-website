@@ -60,6 +60,7 @@ const RACE_FEATURES: Feature[] = [
     title: 'Deep Customization',
     description:
       'Tune performance and style \u2014 engines, drivetrain, liveries, rims, and more.',
+    image: '/images/wilder-world/race_deep_customization.png',
   },
   {
     title: 'NOS',
