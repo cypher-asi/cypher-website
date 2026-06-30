@@ -70,6 +70,7 @@ const RACE_FEATURES: Feature[] = [
     title: 'Maintenance',
     description:
       'Manage damage, repairs, fuel, and wear \u2014 keep your machine race-ready.',
+    image: '/images/wilder-world/race_maintenance.png',
   },
   {
     title: '100+ Vehicles',
