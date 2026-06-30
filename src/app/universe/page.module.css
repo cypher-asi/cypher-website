@@ -84,6 +84,10 @@
   flex-direction: column;
   gap: 1rem;
   padding-block: clamp(0.5rem, 2vh, 1.5rem);
+  /* Constrain the copy to a tight, novel-like measure (~34rem ≈ 65 chars)
+     and center it within its column. */
+  max-width: 34rem;
+  margin-inline: auto;
 }
 
 .sectionTitle {

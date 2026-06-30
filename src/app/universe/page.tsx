@@ -144,7 +144,7 @@ export default function UniversePage() {
           key={section.id}
           id={section.id}
           className={
-            index % 2 === 1 ? `${styles.section} ${styles.reverse}` : styles.section
+            index % 2 === 0 ? `${styles.section} ${styles.reverse}` : styles.section
           }
         >
           <div className={styles.photo}>
