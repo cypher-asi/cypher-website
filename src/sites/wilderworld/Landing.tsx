@@ -74,6 +74,7 @@ export default function WilderworldLanding() {
       <section id="gameplay" className={styles.gameplaySection}>
         <div className={styles.gameplayInner}>
           <SectionHeader
+            eyebrow="Gameplay"
             title="Step Into Wiami"
             subtitle={
               <>
