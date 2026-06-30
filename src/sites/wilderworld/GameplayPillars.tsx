@@ -58,11 +58,23 @@ function PillarPanel({
 }) {
   const [loaded, setLoaded] = useState(false);
 
-  // Mark as loaded if the image is already cached when the node mounts,
-  // otherwise the onLoad handler covers the network case.
-  const imgRef = useCallback((node: HTMLImageElement | null) => {
-    if (node?.complete && node.naturalWidth > 0) setLoaded(true);
+  // Defer flipping to "loaded" until the next frame so the browser first paints
+  // the opacity:0 state -- otherwise cached images would snap in with no fade.
+  const markLoaded = useCallback(() => {
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => setLoaded(true)),
+    );
   }, []);
+
+  // Cover images already cached/complete when the node mounts (onLoad may have
+  // fired before React attached its handler); the handler covers the network
+  // case.
+  const imgRef = useCallback(
+    (node: HTMLImageElement | null) => {
+      if (node?.complete && node.naturalWidth > 0) markLoaded();
+    },
+    [markLoaded],
+  );
 
   return (
     <div
@@ -76,7 +88,7 @@ function PillarPanel({
         src={pillar.image}
         alt=""
         aria-hidden
-        onLoad={() => setLoaded(true)}
+        onLoad={markLoaded}
       />
       <div className={styles.scrim} aria-hidden />
 
