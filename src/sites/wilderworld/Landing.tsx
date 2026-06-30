@@ -3,6 +3,7 @@
 import { ArrowUpRight, Play } from 'lucide-react';
 import { SectionHeader } from '@/components/SectionHeader';
 import GameplayCard, { type GameplayCardProps } from './GameplayCard';
+import FactionSelector from './FactionSelector';
 import styles from './Landing.module.css';
 
 const EARLY_ACCESS_URL =
@@ -110,29 +111,12 @@ export default function WilderworldLanding() {
         />
       </section>
 
-      <section id="universe" className={styles.section}>
-        <div className={styles.frame}>
-          <img
-            className={styles.bg}
-            src="/images/wilder-world/wiami-forum.png"
-            alt=""
-            aria-hidden
-          />
-          <div className={styles.scrimDiagonal} aria-hidden />
-          <div className={styles.overlay}>
-            <h2 className={styles.heading}>Enter Wiami.</h2>
-            <p className={styles.bodyText}>
-              You start as nobody in the lower levels of Wiami, with no money, no
-              weapons, and no allies. The FORUM, a rogue AI, rules the city
-              through surveillance and calculation.
-            </p>
-            <p className={styles.bodyText}>
-              To survive, you build your skills, form alliances, and learn to
-              turn the city&rsquo;s systems against it. What begins as survival
-              becomes the spark of a rebellion to take Wiami back.
-            </p>
-          </div>
-        </div>
+      <section className={styles.gameplaySection}>
+        <SectionHeader eyebrow="Factions" title="Choose Your Mission" />
+      </section>
+
+      <section id="factions" className={styles.section}>
+        <FactionSelector />
       </section>
 
       <section id="forum" className={styles.section}>

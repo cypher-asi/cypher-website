@@ -115,6 +115,66 @@
 }
 
 /* ============================================================================
+   Faction selector – grouped, selectable faction names over a framed image
+   that swaps as the active faction changes.
+   ============================================================================ */
+
+.factionGroups {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.25rem, 3vh, 2.25rem);
+}
+
+.factionGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.factionSide {
+  font-family: var(--font-mono), 'Fira Code', monospace;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+}
+
+.factionList {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+}
+
+.factionItem {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-display), system-ui, -apple-system, sans-serif;
+  font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.12;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  transition: color 0.2s ease;
+}
+
+.factionItem:hover {
+  color: #fff;
+}
+
+.factionItemActive,
+.factionItemActive:hover {
+  color: #f97316;
+}
+
+/* ============================================================================
    Step Into Wiami – gameplay overview with a 2x2 grid of square mode cards.
    ============================================================================ */
 
