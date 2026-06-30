@@ -1,4 +1,5 @@
 import { SectionHeader } from '@/components/SectionHeader';
+import GameplayPillars from '@/sites/wilderworld/GameplayPillars';
 import styles from './page.module.css';
 
 type Feature = { title: string; description: string };
@@ -7,42 +8,32 @@ const FIGHT_FEATURES: Feature[] = [
   {
     title: 'Extract or Lose It',
     description:
-      'Enter Wiami, clear Breaches, collect loot, and fight your way back to extraction. Anything in your backpack is at risk until it is banked, crafted, or stored. Go in, get rich, get out alive.',
+      'Clear Breaches and fight your way back to extraction. The longer you stay, the more you can earn and the more you stand to lose.',
   },
   {
     title: 'Own Your Arsenal',
     description:
-      'Weapons, armor, vehicles, and cosmetics become permanent, player-owned assets once extracted and stored. At-risk backpack cargo stays separate from gear secured in storage or owned onchain.',
+      'Weapons, armor, vehicles, and cosmetics become permanent, player-owned assets once extracted and secured onchain.',
   },
   {
     title: 'Customize Every Weapon',
     description:
-      'Weapons are a major progression system, not just stat sticks. Modify barrels, optics, magazines, ammo types, grips, skins, energy cores, recoil systems, silencers, and rare exotic parts. Build a weapon that feels personally yours.',
+      'Weapons are a major progression system. Modify barrels, optics, magazines, ammo, grips, skins, energy cores, and rare exotic parts.',
   },
   {
     title: 'Build Rare Loadouts',
     description:
-      'Convert Shards, components, salvage, and rare drops into weapons, armor, attachments, consumables, and upgrade materials. Every run becomes progression, even when you do not find a perfect item directly.',
+      'Convert Shards, salvage, and rare drops into weapons, armor, and upgrades. Every run becomes progression, even without a perfect drop.',
   },
   {
-    title: 'Risk It All',
+    title: 'Trade & Earn',
     description:
-      'The longer you stay in the city, the more you can earn, but the more you stand to lose. High-value loot, rare Shards, and dangerous Breaches create real tension between greed and survival. The best rewards require real risk.',
-  },
-  {
-    title: 'Trade in a Player Economy',
-    description:
-      'Trade, sell, buy, or rent gear, weapons, cosmetics, vehicles, and rare resources in an open marketplace. Loot has market value because other players want it.',
-  },
-  {
-    title: 'Earn Real Value',
-    description:
-      'Own, trade, and potentially monetize what you earn in-game through rare drops, crafted gear, marketplace sales, tournaments, and seasonal rewards.',
+      'Trade, sell, buy, and rent gear, cosmetics, vehicles, and rare resources in an open, player-driven marketplace.',
   },
   {
     title: 'Climb the Season Ranks',
     description:
-      'Every season is a new race for status, loot, and economic upside. Gain ranks, XP, achievements, limited-time gear, faction rewards, and leaderboard prizes.',
+      'Every season is a new race for status and loot. Gain ranks, XP, limited-time gear, faction rewards, and leaderboard prizes.',
   },
 ];
 
@@ -81,6 +72,8 @@ export default function GameplayPage() {
         title="Choose How You Play"
         subtitle="Wilder World is an extraction-based open-world economy where players fight, loot, customize, trade, and own what they earn."
       />
+
+      <GameplayPillars />
 
       <section id="fight" className={styles.modeSection}>
         <SectionHeader
