@@ -222,6 +222,22 @@
   text-shadow: var(--link-hover-glow, none);
 }
 
+/* ----------------------------------------------------------------------------
+   Button-style top nav (e.g. Wilder World): uppercase, boxed items with the
+   same clipped bottom-left corner as the sci-fi CTA so they read as buttons.
+   ---------------------------------------------------------------------------- */
+.topNavButtons {
+  gap: 8px;
+}
+
+.topNavButton {
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 /* ============================================================================
    Hover mega-panel (animates down)
    ============================================================================ */

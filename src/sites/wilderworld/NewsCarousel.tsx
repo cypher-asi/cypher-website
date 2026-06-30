@@ -52,7 +52,6 @@ export default function NewsCarousel() {
               loading="lazy"
             />
           ) : null}
-          <span className={styles.newsChip}>News</span>
           <div className={styles.newsBody}>
             <h3 className={styles.newsTitle}>{item.title}</h3>
             {formatDate(item.date) ? (

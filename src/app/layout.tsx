@@ -42,7 +42,7 @@ export default async function RootLayout({
       className={fontVariables}
       style={fontStyle}
     >
-      <body>
+      <body data-company={company.key}>
         <ThemeWrapper
           defaultTheme={company.defaultTheme}
           defaultAccent={company.accent}
@@ -55,6 +55,7 @@ export default async function RootLayout({
               wordmarkLogo={company.wordmarkLogo}
               cta={company.cta}
               sections={company.nav}
+              navStyle={company.navStyle}
               pageSections={company.pageSections}
             />
             <main id="page-main">

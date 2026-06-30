@@ -159,7 +159,8 @@
 .brandWrap {
   display: flex;
   justify-content: center;
-  margin-top: clamp(16px, 3vw, 40px);
+  margin-top: clamp(64px, 9vw, 140px);
+  margin-bottom: clamp(48px, 7vw, 112px);
 }
 
 /* Image wordmark, sized to roughly match the previous text wordmark: fills the

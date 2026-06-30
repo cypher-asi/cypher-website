@@ -27,8 +27,9 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: clamp(0.75rem, 1.5vw, 1.25rem);
-  /* Stretch so the photo matches the story column height (no black gaps). */
-  align-items: stretch;
+  /* Center the photo against the story so every row's image is the same fixed
+     height regardless of how much copy the story column holds. */
+  align-items: center;
 }
 
 /* Odd sections swap the columns so the photo sits on the right. */
@@ -38,8 +39,10 @@
 
 .photo {
   position: relative;
-  /* No fixed aspect ratio on desktop: the photo stretches to the row height
-     so its top aligns with the story (the image covers via .photoImg). */
+  /* Fixed portrait ratio so every section's image is the same height (matching
+     the Conflict row) and carries the same framed border as other image
+     sections across the site. */
+  aspect-ratio: 4 / 5;
   background: #000;
   border: 1px solid var(--color-border);
   overflow: hidden;
@@ -51,6 +54,16 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* Center the cover crop both vertically and horizontally. */
+  object-position: center;
+}
+
+/* A landscape photo exactly fills the portrait frame's height (cover crops the
+   sides), so a dark/empty top band in the source stays visible. Zoom slightly
+   toward the bottom to crop that band out while keeping the subject framed. */
+.photoImgFocusLower {
+  transform: scale(1.16);
+  transform-origin: 50% 100%;
 }
 
 .story {

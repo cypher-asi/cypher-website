@@ -365,12 +365,15 @@
 
 .newsRow {
   display: flex;
-  gap: clamp(0.75rem, 1.5vw, 1.25rem);
+  gap: clamp(1rem, 1.75vw, 1.5rem);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   padding-bottom: 0.5rem;
+  /* Left gap so the row starts indented, matching the reference layout. */
+  padding-left: clamp(1.5rem, 8vw, 8rem);
+  padding-right: clamp(0.75rem, 2vw, 1.5rem);
 }
 
 .newsRow::-webkit-scrollbar {
@@ -380,8 +383,8 @@
 .newsCard {
   position: relative;
   flex: 0 0 auto;
-  width: clamp(18rem, 32vw, 26rem);
-  aspect-ratio: 16 / 10;
+  width: clamp(22rem, 42vw, 36rem);
+  aspect-ratio: 16 / 11;
   scroll-snap-align: start;
   display: flex;
   flex-direction: column;
@@ -426,24 +429,6 @@
   );
 }
 
-.newsChip {
-  position: absolute;
-  top: clamp(0.75rem, 1.5vw, 1rem);
-  left: clamp(0.75rem, 1.5vw, 1rem);
-  z-index: 2;
-  font-family: var(--font-mono), 'Fira Code', monospace;
-  font-size: 0.625rem;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #fff;
-  padding: 0.3rem 0.6rem;
-  background: rgba(0, 0, 0, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 999px;
-  backdrop-filter: blur(4px);
-}
-
 .newsBody {
   position: relative;
   z-index: 2;
@@ -454,7 +439,7 @@
 
 .newsTitle {
   font-family: var(--font-display), system-ui, -apple-system, sans-serif;
-  font-size: clamp(1.1rem, 1.6vw, 1.4rem);
+  font-size: clamp(1.3rem, 2vw, 1.75rem);
   font-weight: 700;
   letter-spacing: 0.01em;
   line-height: 1.15;
