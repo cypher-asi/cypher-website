@@ -28,7 +28,7 @@
   align-items: center;
   text-align: center;
   gap: clamp(20px, 3vw, 32px);
-  padding-block: clamp(48px, 9vw, 120px);
+  padding-block: clamp(96px, 18vw, 240px);
 }
 
 .ctaHeading {
