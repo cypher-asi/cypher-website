@@ -13,7 +13,7 @@ const FACTION_GROUPS: FactionGroup[] = [
       { name: 'Auric', image: '/images/wilder-world/auric.png' },
       { name: 'Gharic', image: '/images/wilder-world/trinity-program.png' },
       { name: 'Nova', image: '/images/wilder-world/nova_switch.png' },
-      { name: 'Trinity', image: '/images/wilder-world/wiami-forum.png' },
+      { name: 'Trinity', image: '/images/wilder-world/trinity.png' },
     ],
   },
   {
