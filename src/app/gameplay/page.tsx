@@ -15,7 +15,6 @@ const FIGHT_FEATURES: Feature[] = [
     title: 'Own Your Arsenal',
     description:
       'Weapons, armor, vehicles, and cosmetics become permanent, player-owned assets once extracted and secured onchain.',
-    image: '/images/wilder-world/Consumables_RPG_Warheads_01.jpg',
   },
   {
     title: 'Customize Every Weapon',
@@ -27,6 +26,7 @@ const FIGHT_FEATURES: Feature[] = [
     title: 'Build Rare Loadouts',
     description:
       'Convert Shards, salvage, and rare drops into weapons, armor, and upgrades. Every run becomes progression, even without a perfect drop.',
+    image: '/images/wilder-world/Consumables_RPG_Warheads_01.jpg',
   },
   {
     title: 'Trade & Earn',
