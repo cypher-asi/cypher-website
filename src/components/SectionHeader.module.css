@@ -1,0 +1,42 @@
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: clamp(0.75rem, 2vh, 1.25rem);
+  max-width: 44rem;
+  margin-inline: auto;
+  /* Standardized top/bottom breathing room shared across sections. */
+  padding-block: clamp(9rem, 27vh, 18rem);
+}
+
+.eyebrow {
+  font-family: var(--font-mono), 'Fira Code', monospace;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.title {
+  font-family: var(--font-display), system-ui, -apple-system, sans-serif;
+  font-size: clamp(2rem, 5.5vw, 4rem);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.05;
+  text-transform: uppercase;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.subtitle {
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  font-size: clamp(0.95rem, 1.2vw, 1.125rem);
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  margin: 0;
+  /* Greedy fill keeps the first line a bit longer than the last. */
+  text-wrap: pretty;
+}

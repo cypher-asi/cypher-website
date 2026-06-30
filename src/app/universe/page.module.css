@@ -6,52 +6,18 @@
 
 .page {
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
-  padding: calc(72px + clamp(2rem, 6vh, 4rem)) clamp(0.75rem, 2vw, 1.5rem)
-    clamp(4rem, 10vh, 8rem);
+  padding-inline: clamp(0.75rem, 2vw, 1.5rem);
+  padding-bottom: clamp(4rem, 10vh, 8rem);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Lore rows. The shared SectionHeader's bottom padding separates it from the
+   first row, so the gap here only applies between rows. */
+.sections {
   display: flex;
   flex-direction: column;
   gap: clamp(3rem, 8vh, 6rem);
-}
-
-.intro {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 1rem;
-  max-width: 44rem;
-  margin-inline: auto;
-}
-
-.eyebrow {
-  font-family: var(--font-mono), 'Fira Code', monospace;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--color-text-secondary);
-  margin: 0;
-}
-
-.pageTitle {
-  font-family: var(--font-display), system-ui, -apple-system, sans-serif;
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  line-height: 1.05;
-  text-transform: uppercase;
-  color: var(--color-text-primary);
-  margin: 0;
-}
-
-.pageSubtitle {
-  font-size: clamp(0.95rem, 1.2vw, 1.125rem);
-  line-height: 1.6;
-  color: var(--color-text-secondary);
-  margin: 0;
-  /* Greedy fill (with orphan avoidance) keeps the first line a bit longer
-     than the second rather than perfectly even like `balance`. */
-  text-wrap: pretty;
 }
 
 /* ----------------------------------------------------------------------------

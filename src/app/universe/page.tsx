@@ -1,3 +1,4 @@
+import { SectionHeader } from '@/components/SectionHeader';
 import styles from './page.module.css';
 
 type Block = { kind: 'p' | 'lead'; text: string };
@@ -130,46 +131,47 @@ const SECTIONS: Section[] = [
 export default function UniversePage() {
   return (
     <div className={styles.page}>
-      <header className={styles.intro}>
-        <p className={styles.eyebrow}>The Universe</p>
-        <h1 className={styles.pageTitle}>The War for Reality</h1>
-        <p className={styles.pageSubtitle}>
-          A clandestine struggle spanning dimensions, machines, and minds.
-        </p>
-      </header>
+      <SectionHeader
+        as="h1"
+        eyebrow="The Universe"
+        title="The War for Reality"
+        subtitle="A clandestine struggle spanning dimensions, machines, and minds."
+      />
 
-      {SECTIONS.map((section, index) => (
-        <section
-          key={section.id}
-          id={section.id}
-          className={
-            index % 2 === 0 ? `${styles.section} ${styles.reverse}` : styles.section
-          }
-        >
-          <div className={styles.photo}>
-            <img
-              className={styles.photoImg}
-              src={section.image}
-              alt=""
-              aria-hidden
-            />
-          </div>
-          <div className={styles.story}>
-            <h2 className={styles.sectionTitle}>{section.title}</h2>
-            {section.blocks.map((block, i) =>
-              block.kind === 'lead' ? (
-                <p key={i} className={styles.lead}>
-                  {block.text}
-                </p>
-              ) : (
-                <p key={i} className={styles.bodyText}>
-                  {block.text}
-                </p>
-              ),
-            )}
-          </div>
-        </section>
-      ))}
+      <div className={styles.sections}>
+        {SECTIONS.map((section, index) => (
+          <section
+            key={section.id}
+            id={section.id}
+            className={
+              index % 2 === 0 ? `${styles.section} ${styles.reverse}` : styles.section
+            }
+          >
+            <div className={styles.photo}>
+              <img
+                className={styles.photoImg}
+                src={section.image}
+                alt=""
+                aria-hidden
+              />
+            </div>
+            <div className={styles.story}>
+              <h2 className={styles.sectionTitle}>{section.title}</h2>
+              {section.blocks.map((block, i) =>
+                block.kind === 'lead' ? (
+                  <p key={i} className={styles.lead}>
+                    {block.text}
+                  </p>
+                ) : (
+                  <p key={i} className={styles.bodyText}>
+                    {block.text}
+                  </p>
+                ),
+              )}
+            </div>
+          </section>
+        ))}
+      </div>
     </div>
   );
 }
