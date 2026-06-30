@@ -48,12 +48,12 @@ const RACE_FEATURES: Feature[] = [
     title: 'Open World',
     description:
       'Race anywhere across Wiami\u2019s streets, highways, and hidden routes in a fully open world.',
-    image: '/images/wilder-world/race_open_world.png',
   },
   {
     title: 'Race Modes',
     description:
       'Compete across circuits, sprints, time trials, and high-stakes street events.',
+    image: '/images/wilder-world/race_modes.png',
   },
   {
     title: 'Deep Customization',
