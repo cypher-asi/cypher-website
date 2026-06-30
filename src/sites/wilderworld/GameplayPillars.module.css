@@ -175,16 +175,11 @@
   }
 }
 
-/* Respect reduced-motion: drop the expand/fade transitions and show images
-   immediately rather than fading them in. */
+/* Respect reduced-motion: keep the functional expand and gentle opacity fades
+   (low-motion), but drop the positional slide on the revealed content. */
 @media (prefers-reduced-motion: reduce) {
-  .panel,
-  .bg,
   .content {
-    transition: none;
-  }
-
-  .bg {
-    opacity: 1;
+    transition: opacity 0.35s ease;
+    transform: none;
   }
 }
