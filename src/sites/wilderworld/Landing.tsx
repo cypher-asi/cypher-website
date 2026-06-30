@@ -221,56 +221,6 @@ export default function WilderworldLanding() {
         <FactionSelector />
       </section>
 
-      <section id="forum" className={styles.section}>
-        <div className={styles.frame}>
-          <img
-            className={styles.bg}
-            src="/images/wilder-world/the-forum.png"
-            alt=""
-            aria-hidden
-          />
-          <div className={styles.scrimDiagonal} aria-hidden />
-          <div className={styles.overlay}>
-            <h2 className={styles.heading}>The Forum.</h2>
-            <p className={styles.bodyText}>
-              Once built to keep Wiami safe, The FORUM now governs every street,
-              transaction, and citizen through automated enforcement and
-              predictive control.
-            </p>
-            <p className={styles.bodyText}>
-              Its enforcers patrol the districts below and its sensors never
-              sleep. Nothing moves through the city without its permission, and
-              nothing is forgotten.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section id="trinity" className={styles.section}>
-        <div className={styles.frame}>
-          <img
-            className={styles.bg}
-            src="/images/wilder-world/trinity-program.png"
-            alt=""
-            aria-hidden
-          />
-          <div className={styles.scrimDiagonal} aria-hidden />
-          <div className={styles.overlay}>
-            <h2 className={styles.heading}>Trinity Program.</h2>
-            <p className={styles.bodyText}>
-              The Trinity Program forges raw recruits into something The FORUM
-              never accounted for. Three disciplines &mdash; combat, code, and
-              conviction &mdash; trained until they move as one.
-            </p>
-            <p className={styles.bodyText}>
-              Master all three and you stop running from the city&rsquo;s
-              systems and start turning them into weapons. This is where survivors
-              become the spark of the rebellion.
-            </p>
-          </div>
-        </div>
-      </section>
-
       <section id="economy" className={styles.gameplaySection}>
         <div className={styles.gameplayInner}>
           <SectionHeader
