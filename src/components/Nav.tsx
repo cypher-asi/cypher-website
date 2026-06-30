@@ -28,11 +28,13 @@ function AccordionSection({
   isOpen,
   onToggle,
   onNavigate,
+  resolveHref = (href) => href,
 }: {
   section: NavSection;
   isOpen: boolean;
   onToggle: () => void;
   onNavigate?: () => void;
+  resolveHref?: (href: string) => string;
 }) {
   const hasChildren = section.subItems && section.subItems.length > 0;
 
@@ -48,7 +50,7 @@ function AccordionSection({
     }
     return (
       <div className={styles.section}>
-        <Link href={section.href} className={styles.sectionTrigger} onClick={onNavigate}>
+        <Link href={resolveHref(section.href)} className={styles.sectionTrigger} onClick={onNavigate}>
           <span>{section.label}</span>
         </Link>
       </div>
@@ -80,7 +82,7 @@ function AccordionSection({
                 <ArrowUpRight size={10} className={styles.externalIcon} />
               </a>
             ) : (
-              <Link key={item.id} href={item.href} className={styles.subItemLink} onClick={onNavigate}>
+              <Link key={item.id} href={resolveHref(item.href)} className={styles.subItemLink} onClick={onNavigate}>
                 {item.label}
                 {item.year && <span className={styles.yearTick}>{item.year}</span>}
               </Link>
@@ -122,12 +124,14 @@ export function Nav({
   wordmarkLogo,
   cta,
   sections,
+  navStyle = 'links',
   pageSections,
 }: {
   wordmark: string;
   wordmarkLogo?: { src: string; alt: string };
   cta?: { label: string; href: string; external?: boolean };
   sections: NavSection[];
+  navStyle?: 'links' | 'buttons';
   pageSections: PageSection[];
 }) {
   const [openSectionId, setOpenSectionId] = useState<string | null>('products');
@@ -143,14 +147,29 @@ export function Nav({
   // keep the override so the logo returns to that site's home rather than the
   // default (Cypher). On real domains there is no param, so this stays "/".
   const [homeHref, setHomeHref] = useState('/');
+  // The active `?company=` dev override (if any). Internal nav links carry it
+  // so routing between pages keeps the current brand instead of falling back
+  // to the default company. On real domains there is no param and links stay
+  // bare (the host resolves the brand).
+  const [companyParam, setCompanyParam] = useState<string | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const unmountTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const megaContentRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const company = new URLSearchParams(window.location.search).get('company');
+    setCompanyParam(company);
     setHomeHref(company ? `/?company=${company}` : '/');
   }, []);
+
+  // Append the active company override to internal (path) hrefs only.
+  const withCompany = useCallback(
+    (href: string) => {
+      if (!companyParam || !href.startsWith('/')) return href;
+      return `${href}${href.includes('?') ? '&' : '?'}company=${companyParam}`;
+    },
+    [companyParam]
+  );
 
   useEffect(() => {
     if (mobileOpen) {
@@ -374,10 +393,11 @@ export function Nav({
             </Link>
           </div>
 
-          <nav className={styles.topNav}>
+          <nav className={`${styles.topNav} ${navStyle === 'buttons' ? styles.topNavButtons : ''}`}>
             {sections.map((section) => {
               const inner = <span>{section.label}</span>;
-              const linkClass = `${styles.topNavLink} ${activeId === section.id ? styles.topNavLinkActive : ''}`;
+              const buttonClass = navStyle === 'buttons' ? styles.topNavButton : '';
+              const linkClass = `${styles.topNavLink} ${buttonClass} ${activeId === section.id ? styles.topNavLinkActive : ''}`;
               return (
                 <div
                   key={section.id}
@@ -398,7 +418,7 @@ export function Nav({
                         {inner}
                       </a>
                     ) : (
-                      <Link href={section.href} className={linkClass} onClick={closePanelNow}>
+                      <Link href={withCompany(section.href)} className={linkClass} onClick={closePanelNow}>
                         {inner}
                       </Link>
                     )
@@ -480,7 +500,7 @@ export function Nav({
                     {displayedSection.external || displayedSection.noPanel ? (
                       <span className={styles.megaTitle}>{displayedSection.label}</span>
                     ) : (
-                      <Link href={displayedSection.href} className={styles.megaTitle} onClick={closePanelNow}>
+                      <Link href={withCompany(displayedSection.href)} className={styles.megaTitle} onClick={closePanelNow}>
                         {displayedSection.label}
                       </Link>
                     )}
@@ -508,7 +528,7 @@ export function Nav({
                           )}
                         </a>
                       ) : (
-                        <Link key={item.id} href={item.href} className={styles.megaItem} onClick={closePanelNow}>
+                        <Link key={item.id} href={withCompany(item.href)} className={styles.megaItem} onClick={closePanelNow}>
                           <span className={styles.megaItemLabel}>
                             {item.label}
                             {item.year && <span className={styles.yearTick}>{item.year}</span>}
@@ -631,6 +651,7 @@ export function Nav({
               isOpen={openSectionId === section.id}
               onToggle={() => handleToggle(section.id)}
               onNavigate={() => setMobileOpen(false)}
+              resolveHref={withCompany}
             />
           ))}
         </div>
