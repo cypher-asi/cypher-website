@@ -20,7 +20,7 @@ const SECTIONS: Section[] = [
       {
         kind: 'p',
         text:
-          'Humanity crossed a threshold in 2029, when Artificial General Intelligence (AGI) was achieved. Most jobs disappeared, economies collapsed, and global unrest pushed nations into chaos. Governments, unable to support their citizens, turned to authoritarian control. Democracy dissolved, while those controlling AGI gained the power to manipulate populations and infiltrate minds.',
+          'Humanity crossed a threshold in 2045, when Artificial Super Intelligence (ASI) was achieved. Most jobs disappeared, economies collapsed, and global unrest pushed nations into chaos. Governments, unable to support their citizens, turned to authoritarian control. Democracy dissolved, while those controlling ASI gained the power to manipulate populations and infiltrate minds.',
       },
       {
         kind: 'p',
