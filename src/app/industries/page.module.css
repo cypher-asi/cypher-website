@@ -1,0 +1,35 @@
+/* ============================================================================
+   Industries – intro header with a hero image. Container width and padding
+   mirror the Universe / Gameplay / City / Economy pages so the page reads
+   consistently with the rest of the site.
+   ============================================================================ */
+
+.page {
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  padding-inline: clamp(0.75rem, 2vw, 1.5rem);
+  padding-bottom: clamp(4rem, 10vh, 8rem);
+  display: flex;
+  flex-direction: column;
+}
+
+.hero {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.heroImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding: calc(72px + 2rem) 1.25rem 4rem;
+  }
+}
