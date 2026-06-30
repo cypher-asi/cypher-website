@@ -214,6 +214,7 @@ const wilderFooter: FooterConfig = {
     {
       heading: 'Game',
       links: [
+        { label: 'Overview', href: '/' },
         { label: 'Universe', href: '/universe' },
         { label: 'Gameplay', href: '/#gameplay' },
         { label: 'City', href: '/#city' },
