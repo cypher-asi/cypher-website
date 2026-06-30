@@ -43,16 +43,42 @@ const FIGHT_FEATURES: Feature[] = [
   },
 ];
 
+const RACE_FEATURES: Feature[] = [
+  {
+    title: 'Open World',
+    description:
+      'Race anywhere across Wiami\u2019s streets, highways, and hidden routes in a fully open world.',
+  },
+  {
+    title: 'Race Modes',
+    description:
+      'Compete across circuits, sprints, time trials, and high-stakes street events.',
+  },
+  {
+    title: 'Deep Customization',
+    description:
+      'Tune performance and style \u2014 engines, drivetrain, liveries, rims, and more.',
+  },
+  {
+    title: 'NOS',
+    description:
+      'Trigger nitrous boosts for explosive bursts of speed when it matters most.',
+  },
+  {
+    title: 'Maintenance',
+    description:
+      'Manage damage, repairs, fuel, and wear \u2014 keep your machine race-ready.',
+  },
+  {
+    title: '100+ Vehicles',
+    description:
+      'Collect and drive a roster of 100+ vehicles, each with its own feel.',
+  },
+];
+
 type Placeholder = { id: string; eyebrow: string; title: string; subtitle: string };
 
 const PLACEHOLDERS: Placeholder[] = [
-  {
-    id: 'race',
-    eyebrow: 'Race',
-    title: 'High-Speed Street Racing',
-    subtitle:
-      'Tear through the streets of Wiami in high-speed races. Full details coming soon.',
-  },
   {
     id: 'explore',
     eyebrow: 'Explore',
@@ -68,6 +94,32 @@ const PLACEHOLDERS: Placeholder[] = [
       'Own and build everything from land to vehicles. Full details coming soon.',
   },
 ];
+
+function FeatureGrid({ features }: { features: Feature[] }) {
+  return (
+    <div className={styles.featureGrid}>
+      {features.map((feature) => (
+        <article key={feature.title} className={styles.featureCard}>
+          {feature.image ? (
+            <>
+              <img
+                className={styles.featureBg}
+                src={feature.image}
+                alt=""
+                aria-hidden
+              />
+              <div className={styles.featureScrim} aria-hidden />
+            </>
+          ) : null}
+          <h4 className={styles.featureTitle}>{feature.title}</h4>
+          <div className={styles.featureDescWrap}>
+            <p className={styles.featureDesc}>{feature.description}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+  );
+}
 
 export default function GameplayPage() {
   return (
@@ -105,27 +157,31 @@ export default function GameplayPage() {
           <h3 className={styles.featuresTitle}>Survive the Breaches</h3>
         </header>
 
-        <div className={styles.featureGrid}>
-          {FIGHT_FEATURES.map((feature) => (
-            <article key={feature.title} className={styles.featureCard}>
-              {feature.image ? (
-                <>
-                  <img
-                    className={styles.featureBg}
-                    src={feature.image}
-                    alt=""
-                    aria-hidden
-                  />
-                  <div className={styles.featureScrim} aria-hidden />
-                </>
-              ) : null}
-              <h4 className={styles.featureTitle}>{feature.title}</h4>
-              <div className={styles.featureDescWrap}>
-                <p className={styles.featureDesc}>{feature.description}</p>
-              </div>
-            </article>
-          ))}
+        <FeatureGrid features={FIGHT_FEATURES} />
+      </section>
+
+      <section id="race" className={styles.modeSection}>
+        <SectionHeader
+          eyebrow="Race"
+          title="High-Speed Street Racing"
+          subtitle="Tear through the streets of Wiami in high-speed, high-stakes street races."
+        />
+
+        <div className={styles.media}>
+          <img
+            className={styles.mediaVideo}
+            src="/images/wilder-world/race_burnout.png"
+            alt=""
+            aria-hidden
+          />
         </div>
+
+        <header className={styles.featuresHead}>
+          <p className={styles.featuresEyebrow}>Features</p>
+          <h3 className={styles.featuresTitle}>Rule the Streets</h3>
+        </header>
+
+        <FeatureGrid features={RACE_FEATURES} />
       </section>
 
       {PLACEHOLDERS.map((mode) => (
