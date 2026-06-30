@@ -15,6 +15,8 @@ type Neighborhood = {
   full?: boolean;
   /* Optional dedicated thumbnail image; falls back to the zoomed map. */
   thumb?: string;
+  /* Optional dedicated large (right-side) image; falls back to the zoomed map. */
+  shot?: string;
   blurb: string;
 };
 
@@ -52,6 +54,7 @@ const NEIGHBORHOODS: Neighborhood[] = [
     x: 45,
     y: 45,
     thumb: '/images/wilder-world/island_neighborhood_outline_LittleMeow.jpg',
+    shot: '/images/wilder-world/island_shot_little_meow.png',
     blurb:
       'Rebellious, loud, and alive: the home of the Wilders. Entertainment-driven and fiercely independent, this is where culture is made and the spirit of the resistance burns brightest.',
   },
@@ -145,11 +148,12 @@ export default function Neighborhoods() {
       </div>
       <div className={styles.stage}>
         <img
+          key={current.name}
           className={styles.stageImg}
-          src={MAP}
+          src={current.shot ?? MAP}
           alt=""
           aria-hidden
-          style={zoomStyle(current)}
+          style={current.shot ? undefined : zoomStyle(current)}
         />
         <span className={styles.stageTag}>{current.name}</span>
       </div>
