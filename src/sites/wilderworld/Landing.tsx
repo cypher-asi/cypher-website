@@ -45,7 +45,7 @@ export default function WilderworldLanding() {
         <div className={styles.frame}>
           <video
             className={styles.video}
-            src="/videos/sunset.mp4"
+            src="/videos/sunset_hero.mp4"
             autoPlay
             muted
             loop

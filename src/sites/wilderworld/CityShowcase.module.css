@@ -1,0 +1,61 @@
+/* ============================================================================
+   City showcase – a background video whose framed container matches the
+   video's own aspect ratio (no cropping), with a vertical time-of-day
+   selector pinned to the right edge.
+   ============================================================================ */
+
+.showcase {
+  position: relative;
+  margin-top: clamp(1.5rem, 4vh, 3rem);
+  overflow: hidden;
+  background: #000;
+  border: 1px solid var(--color-border);
+  line-height: 0;
+}
+
+/* The video drives the container height, so the frame is always the same
+   aspect ratio as the footage. */
+.video {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.timeControls {
+  position: absolute;
+  top: 50%;
+  right: clamp(0.75rem, 2vw, 1.5rem);
+  transform: translateY(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  line-height: normal;
+}
+
+.timeButton {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.timeButton:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.timeButtonActive,
+.timeButtonActive:hover {
+  color: #f97316;
+  border-color: #f97316;
+}

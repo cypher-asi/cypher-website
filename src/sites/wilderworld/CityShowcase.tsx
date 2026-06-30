@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Moon, Sun, Sunset } from 'lucide-react';
-import styles from './Landing.module.css';
+import styles from './CityShowcase.module.css';
 
 const BACKDROPS = [
   { id: 'day', label: 'Day', Icon: Sun, src: '/videos/midday.mp4' },
@@ -13,14 +13,14 @@ const BACKDROPS = [
 type BackdropId = (typeof BACKDROPS)[number]['id'];
 
 export default function CityShowcase() {
-  const [active, setActive] = useState<BackdropId>('sunset');
-  const activeBackdrop = BACKDROPS.find((b) => b.id === active) ?? BACKDROPS[1];
+  const [active, setActive] = useState<BackdropId>('day');
+  const activeBackdrop = BACKDROPS.find((b) => b.id === active) ?? BACKDROPS[0];
 
   return (
-    <div className={styles.cityMap}>
+    <div className={styles.showcase}>
       <video
         key={activeBackdrop.id}
-        className={styles.cityMapVideo}
+        className={styles.video}
         src={activeBackdrop.src}
         autoPlay
         muted
