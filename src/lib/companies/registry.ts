@@ -245,6 +245,13 @@ const wilderFooter: FooterConfig = {
         { label: 'Discord', href: 'https://discord.gg/wilderworld', external: true },
       ],
     },
+    {
+      heading: 'Legal',
+      links: [
+        { label: 'Privacy Policy', href: '/privacy' },
+        { label: 'Terms', href: '/terms' },
+      ],
+    },
   ],
 };
 

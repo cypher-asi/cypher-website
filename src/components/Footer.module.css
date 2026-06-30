@@ -43,10 +43,10 @@
 }
 
 .columns {
-  display: grid;
-  grid-template-columns: repeat(3, max-content);
+  display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  gap: clamp(32px, 4vw, 56px) clamp(72px, 10vw, 180px);
+  gap: clamp(32px, 4vw, 56px) clamp(48px, 6vw, 120px);
 }
 
 .column {
@@ -210,14 +210,13 @@
 
 @media (max-width: 900px) {
   .columns {
-    grid-template-columns: repeat(2, max-content);
     justify-content: flex-start;
   }
 }
 
 @media (max-width: 560px) {
   .columns {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
 
   .bottom {
