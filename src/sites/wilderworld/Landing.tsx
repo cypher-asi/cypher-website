@@ -10,6 +10,26 @@ import styles from './Landing.module.css';
 const EARLY_ACCESS_URL =
   'https://store.epicgames.com/p/wilder-world-wilder-world-alpha-b4ccf8?lang=en-US';
 const TRAILER_URL = 'https://www.youtube.com/watch?v=7G8SwYp6gPo';
+const BUY_WILD_URL = 'https://www.wilderworld.com';
+
+const ECONOMY_PILLARS = [
+  {
+    title: 'Earn',
+    description: 'Complete quests and challenges and level-up to earn $WILD.',
+  },
+  {
+    title: 'Trade',
+    description: 'Exchange $WILD for digital assets with in-game utility.',
+  },
+  {
+    title: 'Resource',
+    description: 'Harness in-world resources to generate $WILD.',
+  },
+  {
+    title: 'Vote',
+    description: 'Propose and vote with $WILD to influence the future of Wiami.',
+  },
+];
 
 const BACKDROPS = [
   { id: 'day', label: 'Day', Icon: Sun, src: '/videos/midday.mp4' },
@@ -139,8 +159,18 @@ export default function WilderworldLanding() {
         />
       </section>
 
+      <section className={styles.section}>
+        <div className={styles.frame}>
+          <img
+            className={styles.bg}
+            src="/images/wilder-world/city_on_fire.png"
+            alt="Wiami under siege as the city burns"
+          />
+        </div>
+      </section>
+
       <section className={styles.gameplaySection}>
-        <SectionHeader eyebrow="Factions" title="Choose Your Mission" />
+        <SectionHeader eyebrow="Factions" title="Choose Your Allegiance" />
       </section>
 
       <section id="factions" className={styles.section}>
@@ -193,6 +223,50 @@ export default function WilderworldLanding() {
               systems and start turning them into weapons. This is where survivors
               become the spark of the rebellion.
             </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="economy" className={styles.section}>
+        <div className={styles.frame}>
+          <video
+            className={styles.video}
+            src="/videos/wiami-token.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            aria-hidden
+          />
+          <div className={styles.scrimDiagonal} aria-hidden />
+          <div className={styles.overlay}>
+            <h2 className={styles.heading}>Economy.</h2>
+            <p className={styles.bodyText}>
+              $WILD is the currency that powers Wilder World&rsquo;s economy. Use
+              it to trade in-game assets, and earn it through mining, quests and
+              challenges to shape Wiami&rsquo;s future.
+            </p>
+            <div className={styles.economyPillars}>
+              {ECONOMY_PILLARS.map((pillar) => (
+                <div key={pillar.title} className={styles.economyPillar}>
+                  <h3 className={styles.economyPillarTitle}>{pillar.title}</h3>
+                  <p className={styles.economyPillarDesc}>
+                    {pillar.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <div className={styles.actions}>
+              <a
+                className="sci-btn sci-btn-primary"
+                href={BUY_WILD_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Buy $WILD
+                <ArrowUpRight size={16} />
+              </a>
+            </div>
           </div>
         </div>
       </section>

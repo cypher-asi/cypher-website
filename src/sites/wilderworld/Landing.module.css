@@ -215,6 +215,48 @@
 }
 
 /* ============================================================================
+   Economy – $WILD onchain economy pillars over the token video background.
+   ============================================================================ */
+
+.economyPillars {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+}
+
+.economyPillar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.18);
+  padding-left: clamp(0.75rem, 1.5vw, 1rem);
+}
+
+.economyPillarTitle {
+  font-family: var(--font-display), system-ui, -apple-system, sans-serif;
+  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #f97316;
+  margin: 0;
+}
+
+.economyPillarDesc {
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  font-size: clamp(0.85rem, 1vw, 0.95rem);
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.72);
+  margin: 0;
+}
+
+@media (max-width: 540px) {
+  .economyPillars {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================================
    Step Into Wiami – gameplay overview with a 2x2 grid of square mode cards.
    ============================================================================ */
 
