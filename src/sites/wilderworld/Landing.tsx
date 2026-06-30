@@ -33,6 +33,7 @@ const GAMEPLAY_MODES: GameplayCardProps[] = [
   {
     title: 'Explore',
     description: 'Roam a massive open world driven by RPG missions.',
+    image: '/images/wilder-world/explore.png',
   },
   {
     title: 'Build',
