@@ -14,12 +14,14 @@ type BackdropId = (typeof BACKDROPS)[number]['id'];
 
 export default function CityShowcase() {
   const [active, setActive] = useState<BackdropId>('day');
+  // Hold the frame at the footage's real aspect ratio so it never collapses
+  // (and flashes the footer) while a newly selected clip is loading.
+  const [aspectRatio, setAspectRatio] = useState('16 / 9');
   const activeBackdrop = BACKDROPS.find((b) => b.id === active) ?? BACKDROPS[0];
 
   return (
-    <div className={styles.showcase}>
+    <div className={styles.showcase} style={{ aspectRatio }}>
       <video
-        key={activeBackdrop.id}
         className={styles.video}
         src={activeBackdrop.src}
         autoPlay
@@ -27,6 +29,12 @@ export default function CityShowcase() {
         loop
         playsInline
         aria-hidden
+        onLoadedMetadata={(e) => {
+          const v = e.currentTarget;
+          if (v.videoWidth && v.videoHeight) {
+            setAspectRatio(`${v.videoWidth} / ${v.videoHeight}`);
+          }
+        }}
       />
       <div className={styles.timeControls}>
         {BACKDROPS.map(({ id, label, Icon }) => (

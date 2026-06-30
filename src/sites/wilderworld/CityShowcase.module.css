@@ -10,15 +10,16 @@
   overflow: hidden;
   background: #000;
   border: 1px solid var(--color-border);
-  line-height: 0;
 }
 
-/* The video drives the container height, so the frame is always the same
-   aspect ratio as the footage. */
+/* The container holds a fixed aspect ratio (measured from the footage) so the
+   frame never collapses while a new clip loads. The video fills it. */
 .video {
-  display: block;
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
 }
 
 .timeControls {
