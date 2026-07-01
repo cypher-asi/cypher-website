@@ -89,7 +89,7 @@ export default function WilderworldLanding() {
                 A massive open-world simulation where you can race, fight,
                 explore and build. Engage in high-speed street races, intense
                 FPS battles, RPG-driven missions and own everything from land to
-                vehicles&mdash;all within Wilder World.
+                vehicles, all within Wilder World.
               </>
             }
           />
