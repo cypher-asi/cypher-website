@@ -1,11 +1,20 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowUpRight, ChevronDown, Grid2x2, Grid3x3, LayoutGrid, List } from 'lucide-react';
+import {
+  ArrowUpRight,
+  ChevronDown,
+  Grid2x2,
+  Grid3x3,
+  LayoutGrid,
+  List,
+  SlidersHorizontal,
+  X,
+} from 'lucide-react';
 import type { WilderIndustry } from '@/lib/wilderCollections';
 import type { MarketNft } from '@/lib/opensea';
 import type { MarketCollection } from '@/app/api/market/collections/route';
-import type { TraitCategory } from '@/app/api/market/traits/route';
+import { getStaticTraits } from '@/lib/wilderTraits';
 import { formatUsd, formatEth } from '@/lib/price';
 import { FadeInImage } from '@/components/FadeInImage';
 import { AnimatedPanel } from '@/components/AnimatedPanel';
@@ -17,15 +26,13 @@ type Props = { industries: WilderIndustry[] };
 
 type SelectedTraits = Record<string, Set<string>>;
 type Availability = 'listed' | 'unlisted';
-type FilterView = {
-  slug: string;
-  cats: TraitCategory[];
-  state: 'loading' | 'ready';
-};
-
-const FILTER_LOADING_MIN_MS = 420;
 
 const itemKey = (nft: MarketNft) => `${nft.contract}-${nft.identifier}`;
+
+// Wilder token IDs are full uint256 values, far too long to fit a table cell.
+// Collapse the middle so the column stays aligned; the full value is kept in a
+// tooltip.
+const shortId = (id: string) => (id.length > 11 ? `${id.slice(0, 6)}…${id.slice(-4)}` : id);
 
 /**
  * Keep the first occurrence of each token. OpenSea can surface the same token
@@ -43,6 +50,23 @@ function dedupeItems(list: MarketNft[]): MarketNft[] {
     out.push(nft);
   }
   return out;
+}
+
+/**
+ * SSR-safe media-query hook. Defaults to `false` on the server and the first
+ * client render (desktop path), then syncs to the real match after mount so
+ * hydration stays consistent.
+ */
+function useMediaQuery(query: string): boolean {
+  const [matches, setMatches] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const sync = () => setMatches(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, [query]);
+  return matches;
 }
 
 export default function MarketBrowser({ industries }: Props) {
@@ -71,17 +95,20 @@ export default function MarketBrowser({ industries }: Props) {
   // toggles to unlisted tokens.
   const [availability, setAvailability] = useState<Availability>('listed');
 
-  // The filter panel has an explicit loading state so collection switches have
-  // real height states to animate through: previous traits -> loading -> traits.
-  const [filterView, setFilterView] = useState<FilterView>({
-    slug: firstSlug,
-    cats: [],
-    state: firstSlug ? 'loading' : 'ready',
-  });
+  // Collection traits are static (immutable minted attributes), so they're
+  // embedded at build time and resolved synchronously — no fetch, no loading
+  // state, instant on collection switch.
+  const traitCats = useMemo(() => getStaticTraits(activeSlug), [activeSlug]);
 
   const [openNav, setOpenNav] = useState<string | null>(null);
   const navRef = useRef<HTMLDivElement | null>(null);
   const railRef = useRef<HTMLElement | null>(null);
+
+  // Mobile-only UI: the filters drawer and the flat collection dropdown.
+  const isMobile = useMediaQuery('(max-width: 820px)');
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [collOpen, setCollOpen] = useState(false);
+  const collRef = useRef<HTMLDivElement | null>(null);
   // Guards against a single close triggering more than one history.back()
   // (history.back is async, so re-entrant calls would overshoot the grid).
   const closingRef = useRef(false);
@@ -164,11 +191,7 @@ export default function MarketBrowser({ industries }: Props) {
       const p = new URLSearchParams(window.location.search);
       const c = p.get('c');
       const token = p.get('token');
-      if (c && allEntries.some((e) => e.slug === c) && c !== activeSlug) {
-        setOpenTraitGroups({});
-        setFilterView({ slug: c, cats: [], state: 'loading' });
-        setActiveSlug(c);
-      } else if (c && allEntries.some((e) => e.slug === c)) {
+      if (c && allEntries.some((e) => e.slug === c)) {
         setActiveSlug(c);
       }
       setModalId(token);
@@ -179,9 +202,10 @@ export default function MarketBrowser({ industries }: Props) {
     return () => window.removeEventListener('popstate', apply);
   }, [allEntries, activeSlug]);
 
-  /* ----- Reset trait selection when the collection changes ---------------- */
+  /* ----- Reset trait selection + open groups on collection change --------- */
   useEffect(() => {
     setSelected({});
+    setOpenTraitGroups({});
   }, [activeSlug]);
 
   /* ----- Load first page on collection or availability change ------------- */
@@ -221,36 +245,6 @@ export default function MarketBrowser({ industries }: Props) {
       alive = false;
     };
   }, [activeSlug, availability]);
-
-  /* ----- Load trait categories for the filter panel ----------------------- */
-  useEffect(() => {
-    if (!activeSlug) return;
-    let alive = true;
-    let readyTimer: ReturnType<typeof setTimeout> | null = null;
-    const startedAt = performance.now();
-    const showReady = (cats: TraitCategory[]) => {
-      const remaining = Math.max(0, FILTER_LOADING_MIN_MS - (performance.now() - startedAt));
-      readyTimer = setTimeout(() => {
-        if (alive) setFilterView({ slug: activeSlug, cats, state: 'ready' });
-      }, remaining);
-    };
-
-    setOpenTraitGroups({});
-    setFilterView({ slug: activeSlug, cats: [], state: 'loading' });
-    fetch(`/api/market/traits?slug=${encodeURIComponent(activeSlug)}`)
-      .then((r) => r.json())
-      .then((d: { categories?: TraitCategory[] }) => {
-        if (!alive) return;
-        showReady(d.categories ?? []);
-      })
-      .catch(() => {
-        if (alive) showReady([]);
-      });
-    return () => {
-      alive = false;
-      if (readyTimer) clearTimeout(readyTimer);
-    };
-  }, [activeSlug]);
 
   const loadMore = useCallback(() => {
     const key = `${activeSlug}|${availability}`;
@@ -328,25 +322,55 @@ export default function MarketBrowser({ industries }: Props) {
     };
   }, [openNav]);
 
-  /* ----- Collection switching: update URL + scroll to top ----------------- */
-  const beginCollectionSwitch = useCallback((slug: string) => {
-    setOpenTraitGroups({});
-    setFilterView({ slug, cats: [], state: 'loading' });
-    setActiveSlug(slug);
-  }, []);
+  /* ----- Mobile collection dropdown: close on outside click / Escape ------ */
+  useEffect(() => {
+    if (!collOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (collRef.current && !collRef.current.contains(e.target as Node)) setCollOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setCollOpen(false);
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [collOpen]);
 
+  /* ----- Mobile filters drawer: close on Escape --------------------------- */
+  useEffect(() => {
+    if (!filtersOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setFiltersOpen(false);
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [filtersOpen]);
+
+  /* ----- Tidy up the mobile-only overlays when leaving the mobile layout -- */
+  useEffect(() => {
+    if (!isMobile) {
+      setFiltersOpen(false);
+      setCollOpen(false);
+    }
+  }, [isMobile]);
+
+  /* ----- Collection switching: update URL + scroll to top ----------------- */
   const selectCollection = useCallback(
     (slug: string) => {
       setOpenNav(null);
+      setCollOpen(false);
       if (slug === activeSlug) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
       }
-      beginCollectionSwitch(slug);
+      setActiveSlug(slug);
       window.history.replaceState({}, '', `?c=${slug}`);
       window.scrollTo({ top: 0, behavior: 'auto' });
     },
-    [activeSlug, beginCollectionSwitch]
+    [activeSlug]
   );
 
   /* ----- Client-side trait filtering over loaded items -------------------- */
@@ -426,11 +450,129 @@ export default function MarketBrowser({ industries }: Props) {
     }
   }, [modalIndex, filtered, openModal, next, loadMore]);
 
+  /* ----- Filters body, shared between the desktop rail + mobile drawer ---- */
+  const renderFilters = () => (
+    <>
+      <div className={styles.filtersHead}>
+        <p className={styles.railHeading}>Filters</p>
+        {selectedCount > 0 && (
+          <button className={styles.clearBtn} onClick={() => setSelected({})}>
+            Clear ({selectedCount})
+          </button>
+        )}
+      </div>
+      <div className={styles.statusFilter} role="group" aria-label="Availability">
+        <button
+          type="button"
+          className={`${styles.statusBtn} ${
+            availability === 'listed' ? styles.statusBtnActive : ''
+          }`}
+          onClick={() => changeAvailability('listed')}
+          aria-pressed={availability === 'listed'}
+        >
+          Listed
+        </button>
+        <button
+          type="button"
+          className={`${styles.statusBtn} ${
+            availability === 'unlisted' ? styles.statusBtnActive : ''
+          }`}
+          onClick={() => changeAvailability('unlisted')}
+          aria-pressed={availability === 'unlisted'}
+        >
+          Unlisted
+        </button>
+      </div>
+      <div key={activeSlug} className={styles.filterSwap}>
+        {!activeSlug ? null : traitCats.length === 0 ? (
+          <p className={styles.filtersEmpty}>No trait filters available.</p>
+        ) : (
+          <div className={styles.traitGroups}>
+            {traitCats.map((cat) => {
+              const open = openTraitGroups[cat.type] ?? false;
+              return (
+                <div key={cat.type} className={styles.traitGroup}>
+                  <button
+                    className={styles.traitGroupHead}
+                    onClick={() =>
+                      setOpenTraitGroups((p) => ({ ...p, [cat.type]: !open }))
+                    }
+                  >
+                    <span>{cat.type}</span>
+                    <ChevronDown
+                      size={14}
+                      className={open ? styles.chevOpen : styles.chev}
+                    />
+                  </button>
+                  {open && (
+                    <div className={styles.traitValues}>
+                      {cat.values.map((v) => {
+                        const checked = selected[cat.type]?.has(v.value) ?? false;
+                        return (
+                          <label key={v.value} className={styles.traitValue}>
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              onChange={() => toggleTrait(cat.type, v.value)}
+                            />
+                            <span className={styles.traitValueLabel}>{v.value}</span>
+                            <span className={styles.traitValueCount}>{v.count}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </>
+  );
+
   return (
     <>
       {/* ---- Top bar: title + horizontal collection navigation ---- */}
       <div className={styles.topbar}>
-        <h1 className={styles.headerTitle}>Wilder Market</h1>
+        <div className={styles.titleRow}>
+          <h1 className={styles.headerTitle}>Wilder Market</h1>
+          {/* Mobile-only: flat collection dropdown to the right of the title. */}
+          <div className={styles.mobileColl} ref={collRef}>
+            <button
+              type="button"
+              className={styles.mobileCollBtn}
+              onClick={() => setCollOpen((o) => !o)}
+              aria-expanded={collOpen}
+            >
+              <span className={styles.mobileCollLabel}>
+                {activeMeta?.name ?? activeEntry?.label ?? activeIndustry?.name ?? 'Collection'}
+              </span>
+              <ChevronDown size={14} className={collOpen ? styles.chevOpen : styles.chev} />
+            </button>
+            {collOpen && (
+              <div className={styles.mobileCollMenu}>
+                {allEntries.map((c) => {
+                  const industry = industries.find((i) =>
+                    i.collections.some((x) => x.slug === c.slug)
+                  );
+                  return (
+                    <button
+                      key={c.slug}
+                      type="button"
+                      className={`${styles.navMenuItem} ${
+                        c.slug === activeSlug ? styles.navMenuItemActive : ''
+                      }`}
+                      onClick={() => selectCollection(c.slug)}
+                    >
+                      {c.label ?? industry?.name ?? c.slug}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
         <nav className={styles.nav} ref={navRef} aria-label="Collections">
           {industries.map((industry) => {
             const isActiveIndustry = industry.collections.some((c) => c.slug === activeSlug);
@@ -484,7 +626,21 @@ export default function MarketBrowser({ industries }: Props) {
           })}
         </nav>
 
-        <div className={styles.sizeToggle} role="group" aria-label="View mode">
+        <div className={styles.toolbar}>
+          {/* Mobile-only: opens the filters drawer. Sits at the far left of the
+              toolbar row, level with the grid-size toggle. */}
+          <button
+            type="button"
+            className={styles.filterIconBtn}
+            onClick={() => setFiltersOpen(true)}
+            aria-label="Filters"
+            aria-haspopup="dialog"
+            aria-expanded={filtersOpen}
+          >
+            <SlidersHorizontal size={16} />
+            {selectedCount > 0 && <span className={styles.filterBadge}>{selectedCount}</span>}
+          </button>
+          <div className={styles.sizeToggle} role="group" aria-label="View mode">
           <button
             type="button"
             className={`${styles.sizeBtn} ${
@@ -527,102 +683,24 @@ export default function MarketBrowser({ industries }: Props) {
           >
             <List size={16} />
           </button>
+          </div>
         </div>
       </div>
 
       <div className={styles.layout}>
         {/* ---- Left rail: filters + info ---- */}
         <aside className={styles.rail} ref={railRef}>
-          <AnimatedPanel
-            className={styles.panel}
-            bodyClassName={styles.panelBody}
-            measureDeps={[filterView.slug, filterView.state, openTraitGroups]}
-          >
-            <div className={styles.filtersHead}>
-              <p className={styles.railHeading}>Filters</p>
-              {selectedCount > 0 && (
-                <button className={styles.clearBtn} onClick={() => setSelected({})}>
-                  Clear ({selectedCount})
-                </button>
-              )}
-            </div>
-            <div className={styles.statusFilter} role="group" aria-label="Availability">
-              <button
-                type="button"
-                className={`${styles.statusBtn} ${
-                  availability === 'listed' ? styles.statusBtnActive : ''
-                }`}
-                onClick={() => changeAvailability('listed')}
-                aria-pressed={availability === 'listed'}
-              >
-                Listed
-              </button>
-              <button
-                type="button"
-                className={`${styles.statusBtn} ${
-                  availability === 'unlisted' ? styles.statusBtnActive : ''
-                }`}
-                onClick={() => changeAvailability('unlisted')}
-                aria-pressed={availability === 'unlisted'}
-              >
-                Unlisted
-              </button>
-            </div>
-            <div
-              key={`${filterView.slug}-${filterView.state}`}
-              className={styles.filterSwap}
+          {/* Filters live in the rail on desktop; on mobile they move into the
+              slide-in drawer below so this panel is dropped entirely. */}
+          {!isMobile && (
+            <AnimatedPanel
+              className={styles.panel}
+              bodyClassName={styles.panelBody}
+              measureDeps={[activeSlug, openTraitGroups]}
             >
-            {filterView.state === 'loading' ? (
-              <div className={styles.filtersLoading} aria-hidden="true">
-                <span className={styles.filterSkeleton} />
-                <span className={styles.filterSkeleton} />
-                <span className={styles.filterSkeleton} />
-              </div>
-            ) : filterView.slug === '' ? null : filterView.cats.length === 0 ? (
-              <p className={styles.filtersEmpty}>No trait filters available.</p>
-            ) : (
-              <div className={styles.traitGroups}>
-                {filterView.cats.map((cat) => {
-                  const open = openTraitGroups[cat.type] ?? false;
-                  return (
-                    <div key={cat.type} className={styles.traitGroup}>
-                      <button
-                        className={styles.traitGroupHead}
-                        onClick={() =>
-                          setOpenTraitGroups((p) => ({ ...p, [cat.type]: !open }))
-                        }
-                      >
-                        <span>{cat.type}</span>
-                        <ChevronDown
-                          size={14}
-                          className={open ? styles.chevOpen : styles.chev}
-                        />
-                      </button>
-                      {open && (
-                        <div className={styles.traitValues}>
-                          {cat.values.map((v) => {
-                            const checked = selected[cat.type]?.has(v.value) ?? false;
-                            return (
-                              <label key={v.value} className={styles.traitValue}>
-                                <input
-                                  type="checkbox"
-                                  checked={checked}
-                                  onChange={() => toggleTrait(cat.type, v.value)}
-                                />
-                                <span className={styles.traitValueLabel}>{v.value}</span>
-                                <span className={styles.traitValueCount}>{v.count}</span>
-                              </label>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-            </div>
-          </AnimatedPanel>
+              {renderFilters()}
+            </AnimatedPanel>
+          )}
 
           {/* Info panel */}
           <AnimatedPanel
@@ -799,8 +877,11 @@ export default function MarketBrowser({ industries }: Props) {
                         </div>
                         <span className={styles.rowName}>{nft.name}</span>
                       </div>
-                      <span className={`${styles.colToken} ${styles.rowMuted}`}>
-                        #{nft.identifier}
+                      <span
+                        className={`${styles.colToken} ${styles.rowMuted}`}
+                        title={`#${nft.identifier}`}
+                      >
+                        #{shortId(nft.identifier)}
                       </span>
                       <span className={`${styles.colTraits} ${styles.rowMuted}`}>
                         {nft.traits.length}
@@ -888,6 +969,26 @@ export default function MarketBrowser({ industries }: Props) {
           )}
         </div>
       </div>
+
+      {/* ---- Mobile-only: filters drawer ---- */}
+      {isMobile && filtersOpen && (
+        <div className={styles.drawer} role="dialog" aria-modal="true" aria-label="Filters">
+          <div className={styles.drawerBackdrop} onClick={() => setFiltersOpen(false)} />
+          <div className={styles.drawerPanel}>
+            <div className={styles.drawerHead}>
+              <button
+                type="button"
+                className={styles.drawerClose}
+                onClick={() => setFiltersOpen(false)}
+                aria-label="Close filters"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div className={styles.drawerBody}>{renderFilters()}</div>
+          </div>
+        </div>
+      )}
 
       {modalNft && (
         <ItemModal

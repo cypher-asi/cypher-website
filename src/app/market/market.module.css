@@ -318,10 +318,20 @@
 .row,
 .rowSkeleton {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 6rem 5rem 8rem 5.5rem;
+  grid-template-columns: minmax(0, 1fr) 8rem 4.5rem 8rem 5.5rem;
   align-items: center;
   gap: 0.75rem;
   padding: 0.55rem 0.85rem;
+}
+
+/* Clip every cell to its track so long values (notably the full uint256 token
+   IDs) ellipsize instead of overflowing and overlapping the next column. */
+.listHeader > *,
+.row > * {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .listHeader {
@@ -343,6 +353,10 @@
 .colTraits,
 .colPrice {
   text-align: right;
+}
+
+.colToken {
+  font-variant-numeric: tabular-nums;
 }
 
 .colAction {
@@ -684,30 +698,6 @@
   margin: 0;
 }
 
-.filtersLoading {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding-block: 0.15rem;
-}
-
-.filterSkeleton {
-  display: block;
-  height: 0.8rem;
-  width: 100%;
-  background: linear-gradient(100deg, #0e0e10 30%, #17171a 50%, #0e0e10 70%);
-  background-size: 200% 100%;
-  animation: shimmer 1.4s ease-in-out infinite;
-}
-
-.filterSkeleton:nth-child(3) {
-  width: 82%;
-}
-
-.filterSkeleton:nth-child(4) {
-  width: 64%;
-}
-
 .traitGroups {
   display: flex;
   flex-direction: column;
@@ -848,6 +838,35 @@
   .colToken,
   .colTraits {
     display: none;
+  }
+}
+
+@media (max-width: 460px) {
+  /* Tighten rows so name + price + Buy still fit on phones. */
+  .listHeader,
+  .row {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 0.5rem;
+    padding: 0.5rem 0.6rem;
+  }
+
+  .rowThumb {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .rowItem {
+    gap: 0.5rem;
+  }
+
+  .rowName,
+  .rowPrice {
+    font-size: 0.78rem;
+  }
+
+  .buyLink {
+    padding: 0.28rem 0.45rem;
+    font-size: 0.7rem;
   }
 }
 
