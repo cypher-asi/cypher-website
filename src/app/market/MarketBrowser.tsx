@@ -1,13 +1,15 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowUpRight, ChevronDown } from 'lucide-react';
+import { ArrowUpRight, ChevronDown, Grid2x2, Grid3x3, LayoutGrid } from 'lucide-react';
 import type { WilderIndustry } from '@/lib/wilderCollections';
 import type { MarketNft } from '@/lib/opensea';
 import type { MarketCollection } from '@/app/api/market/collections/route';
 import type { TraitCategory } from '@/app/api/market/traits/route';
 import { formatUsd, formatEth } from '@/lib/price';
 import { FadeInImage } from '@/components/FadeInImage';
+import { AnimatedHeight } from '@/components/AnimatedHeight';
+import { CustomScrollbar } from '@/components/CustomScrollbar';
 import ItemModal from './ItemModal';
 import styles from './market.module.css';
 
@@ -33,11 +35,19 @@ export default function MarketBrowser({ industries }: Props) {
   const [error, setError] = useState(false);
 
   const [traitCats, setTraitCats] = useState<TraitCategory[]>([]);
+  const [traitsLoading, setTraitsLoading] = useState(false);
   const [selected, setSelected] = useState<SelectedTraits>({});
   const [openTraitGroups, setOpenTraitGroups] = useState<Record<string, boolean>>({});
 
   const [openNav, setOpenNav] = useState<string | null>(null);
   const navRef = useRef<HTMLDivElement | null>(null);
+  const railRef = useRef<HTMLElement | null>(null);
+
+  const [gridSize, setGridSize] = useState<'lg' | 'md' | 'sm'>('md');
+
+  // Index at which the most recently loaded batch starts, so each page of
+  // results staggers in one-at-a-time relative to itself (not the whole list).
+  const batchBaseRef = useRef(0);
 
   const [modalId, setModalId] = useState<string | null>(null);
 
@@ -70,6 +80,21 @@ export default function MarketBrowser({ industries }: Props) {
     };
   }, []);
 
+  /* ----- Remember the preferred grid density ------------------------------ */
+  useEffect(() => {
+    const saved = localStorage.getItem('market-grid-size');
+    if (saved === 'lg' || saved === 'md' || saved === 'sm') setGridSize(saved);
+  }, []);
+
+  const changeGridSize = useCallback((size: 'lg' | 'md' | 'sm') => {
+    setGridSize(size);
+    try {
+      localStorage.setItem('market-grid-size', size);
+    } catch {
+      /* ignore quota / privacy-mode errors */
+    }
+  }, []);
+
   /* ----- Sync active collection + modal from the URL (back button) -------- */
   useEffect(() => {
     const apply = () => {
@@ -93,6 +118,7 @@ export default function MarketBrowser({ industries }: Props) {
     setItems([]);
     setNext(null);
     setSelected({});
+    batchBaseRef.current = 0;
     fetch(`/api/market/nfts?slug=${encodeURIComponent(activeSlug)}`)
       .then((r) => r.json())
       .then((d: { items?: MarketNft[]; next?: string | null }) => {
@@ -117,12 +143,16 @@ export default function MarketBrowser({ industries }: Props) {
     if (!activeSlug) return;
     let alive = true;
     setTraitCats([]);
+    setTraitsLoading(true);
     fetch(`/api/market/traits?slug=${encodeURIComponent(activeSlug)}`)
       .then((r) => r.json())
       .then((d: { categories?: TraitCategory[] }) => {
         if (alive) setTraitCats(d.categories ?? []);
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => {
+        if (alive) setTraitsLoading(false);
+      });
     return () => {
       alive = false;
     };
@@ -136,7 +166,10 @@ export default function MarketBrowser({ industries }: Props) {
     )
       .then((r) => r.json())
       .then((d: { items?: MarketNft[]; next?: string | null }) => {
-        setItems((prev) => [...prev, ...(d.items ?? [])]);
+        setItems((prev) => {
+          batchBaseRef.current = prev.length;
+          return [...prev, ...(d.items ?? [])];
+        });
         setNext(d.next ?? null);
       })
       .catch(() => {})
@@ -217,6 +250,10 @@ export default function MarketBrowser({ industries }: Props) {
   /* ----- Item modal navigation ------------------------------------------- */
   const modalIndex = modalId ? filtered.findIndex((n) => n.identifier === modalId) : -1;
   const modalNft = modalIndex >= 0 ? filtered[modalIndex] : null;
+
+  const gridClass = `${styles.grid} ${
+    gridSize === 'lg' ? styles.gridLg : gridSize === 'sm' ? styles.gridSm : ''
+  }`;
 
   const openModal = useCallback(
     (id: string) => {
@@ -303,67 +340,100 @@ export default function MarketBrowser({ industries }: Props) {
             );
           })}
         </nav>
+
+        <div className={styles.sizeToggle} role="group" aria-label="Grid size">
+          <button
+            type="button"
+            className={`${styles.sizeBtn} ${gridSize === 'lg' ? styles.sizeBtnActive : ''}`}
+            onClick={() => changeGridSize('lg')}
+            aria-label="Large grid"
+            aria-pressed={gridSize === 'lg'}
+          >
+            <Grid2x2 size={16} />
+          </button>
+          <button
+            type="button"
+            className={`${styles.sizeBtn} ${gridSize === 'md' ? styles.sizeBtnActive : ''}`}
+            onClick={() => changeGridSize('md')}
+            aria-label="Medium grid"
+            aria-pressed={gridSize === 'md'}
+          >
+            <LayoutGrid size={16} />
+          </button>
+          <button
+            type="button"
+            className={`${styles.sizeBtn} ${gridSize === 'sm' ? styles.sizeBtnActive : ''}`}
+            onClick={() => changeGridSize('sm')}
+            aria-label="Small grid"
+            aria-pressed={gridSize === 'sm'}
+          >
+            <Grid3x3 size={16} />
+          </button>
+        </div>
       </div>
 
       <div className={styles.layout}>
         {/* ---- Left rail: filters + info ---- */}
-        <aside className={styles.rail}>
+        <aside className={styles.rail} ref={railRef}>
           <div className={styles.panel}>
-            <div className={styles.filtersHead}>
-              <p className={styles.railHeading}>Filters</p>
-              {selectedCount > 0 && (
-                <button className={styles.clearBtn} onClick={() => setSelected({})}>
-                  Clear ({selectedCount})
-                </button>
-              )}
-            </div>
-            {traitCats.length === 0 ? (
-              <p className={styles.filtersEmpty}>No trait filters available.</p>
-            ) : (
-              <div className={styles.traitGroups}>
-                {traitCats.map((cat) => {
-                  const open = openTraitGroups[cat.type] ?? false;
-                  return (
-                    <div key={cat.type} className={styles.traitGroup}>
-                      <button
-                        className={styles.traitGroupHead}
-                        onClick={() =>
-                          setOpenTraitGroups((p) => ({ ...p, [cat.type]: !open }))
-                        }
-                      >
-                        <span>{cat.type}</span>
-                        <ChevronDown
-                          size={14}
-                          className={open ? styles.chevOpen : styles.chev}
-                        />
-                      </button>
-                      {open && (
-                        <div className={styles.traitValues}>
-                          {cat.values.map((v) => {
-                            const checked = selected[cat.type]?.has(v.value) ?? false;
-                            return (
-                              <label key={v.value} className={styles.traitValue}>
-                                <input
-                                  type="checkbox"
-                                  checked={checked}
-                                  onChange={() => toggleTrait(cat.type, v.value)}
-                                />
-                                <span className={styles.traitValueLabel}>{v.value}</span>
-                                <span className={styles.traitValueCount}>{v.count}</span>
-                              </label>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+            <AnimatedHeight innerClassName={styles.panelInner}>
+              <div className={styles.filtersHead}>
+                <p className={styles.railHeading}>Filters</p>
+                {selectedCount > 0 && (
+                  <button className={styles.clearBtn} onClick={() => setSelected({})}>
+                    Clear ({selectedCount})
+                  </button>
+                )}
               </div>
-            )}
+              {traitsLoading ? null : traitCats.length === 0 ? (
+                <p className={styles.filtersEmpty}>No trait filters available.</p>
+              ) : (
+                <div className={styles.traitGroups}>
+                  {traitCats.map((cat) => {
+                    const open = openTraitGroups[cat.type] ?? false;
+                    return (
+                      <div key={cat.type} className={styles.traitGroup}>
+                        <button
+                          className={styles.traitGroupHead}
+                          onClick={() =>
+                            setOpenTraitGroups((p) => ({ ...p, [cat.type]: !open }))
+                          }
+                        >
+                          <span>{cat.type}</span>
+                          <ChevronDown
+                            size={14}
+                            className={open ? styles.chevOpen : styles.chev}
+                          />
+                        </button>
+                        {open && (
+                          <div className={styles.traitValues}>
+                            {cat.values.map((v) => {
+                              const checked = selected[cat.type]?.has(v.value) ?? false;
+                              return (
+                                <label key={v.value} className={styles.traitValue}>
+                                  <input
+                                    type="checkbox"
+                                    checked={checked}
+                                    onChange={() => toggleTrait(cat.type, v.value)}
+                                  />
+                                  <span className={styles.traitValueLabel}>{v.value}</span>
+                                  <span className={styles.traitValueCount}>{v.count}</span>
+                                </label>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </AnimatedHeight>
           </div>
 
           {/* Info panel */}
           <div className={styles.panel}>
+            <AnimatedHeight innerClassName={styles.panelInner}>
             <p className={styles.railHeading}>
               {activeMeta?.name ?? activeEntry?.label ?? activeIndustry?.name ?? 'Collection'}
             </p>
@@ -413,13 +483,16 @@ export default function MarketBrowser({ industries }: Props) {
                 <ArrowUpRight size={12} />
               </a>
             )}
+            </AnimatedHeight>
           </div>
+
+          <CustomScrollbar targetRef={railRef} showOnHoverOnly />
         </aside>
 
         {/* ---- Center: NFT grid ---- */}
         <div className={styles.main}>
           {loading ? (
-            <div className={styles.grid}>
+            <div className={gridClass}>
               {Array.from({ length: 12 }).map((_, i) => (
                 <div key={i} className={styles.skeleton} aria-hidden />
               ))}
@@ -445,15 +518,19 @@ export default function MarketBrowser({ industries }: Props) {
             </div>
           ) : (
             <>
-              <div className={styles.grid}>
+              <div className={gridClass}>
                 {filtered.map((nft, i) => {
                   const priceUsd = formatUsd(nft.priceEth, ethUsd);
+                  // One-at-a-time reveal within the current batch; capped so a
+                  // large page never leaves off-screen cards waiting too long.
+                  const within = Math.max(0, i - batchBaseRef.current);
+                  const delayMs = Math.min(within, 40) * 45;
                   return (
                     <button
                       key={`${nft.contract}-${nft.identifier}`}
                       type="button"
                       className={styles.card}
-                      style={{ animationDelay: `${(i % 25) * 28}ms` }}
+                      style={{ animationDelay: `${delayMs}ms` }}
                       onClick={() => openModal(nft.identifier)}
                     >
                       <div className={styles.cardImageWrap}>
