@@ -32,7 +32,7 @@ const LOCATIONS: Location[] = [
   },
   {
     name: 'The Armory',
-    image: '/images/wilder-world/location_armory.png',
+    image: '/images/wilder-world/location_the_armory.png',
     blurb:
       'The place where weapons, armor, and gear are acquired, modded, and stored before heading out on a run.',
   },
