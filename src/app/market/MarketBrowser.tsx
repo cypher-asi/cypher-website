@@ -263,9 +263,14 @@ export default function MarketBrowser({ industries }: Props) {
   }`;
 
   const openModal = useCallback(
-    (id: string) => {
+    (id: string, { replace = false }: { replace?: boolean } = {}) => {
       setModalId(id);
-      window.history.pushState({ token: id }, '', `?c=${activeSlug}&token=${id}`);
+      const url = `?c=${activeSlug}&token=${id}`;
+      const state = { token: id };
+      // Opening from the grid pushes a single history entry; navigating the
+      // carousel replaces it so closing always returns straight to the grid.
+      if (replace) window.history.replaceState(state, '', url);
+      else window.history.pushState(state, '', url);
     },
     [activeSlug]
   );
@@ -279,12 +284,12 @@ export default function MarketBrowser({ industries }: Props) {
   }, [activeSlug]);
 
   const goPrev = useCallback(() => {
-    if (modalIndex > 0) openModal(filtered[modalIndex - 1].identifier);
+    if (modalIndex > 0) openModal(filtered[modalIndex - 1].identifier, { replace: true });
   }, [modalIndex, filtered, openModal]);
 
   const goNext = useCallback(() => {
     if (modalIndex >= 0 && modalIndex < filtered.length - 1) {
-      openModal(filtered[modalIndex + 1].identifier);
+      openModal(filtered[modalIndex + 1].identifier, { replace: true });
     } else if (next) {
       loadMore();
     }

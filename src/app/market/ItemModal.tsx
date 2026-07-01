@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ArrowUpRight, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import type { MarketItem } from '@/app/api/market/item/route';
@@ -34,6 +34,9 @@ export default function ItemModal({
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [mounted, setMounted] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
+  const [loaderVisible, setLoaderVisible] = useState(false);
+  const loaderStartRef = useRef(0);
 
   useEffect(() => setMounted(true), []);
 
@@ -44,6 +47,7 @@ export default function ItemModal({
     setStatus('loading');
     setItem(null);
     setVideoFailed(false);
+    setVideoReady(false);
     const params = new URLSearchParams({ slug, identifier: nft.identifier });
     if (nft.contract) params.set('contract', nft.contract);
     if (nft.chain) params.set('chain', nft.chain);
@@ -85,14 +89,36 @@ export default function ItemModal({
     };
   }, []);
 
+  const animationUrl = item?.animationUrl ?? null;
+  const showVideo = Boolean(animationUrl) && !videoFailed;
+
+  // Show the loading bar as soon as a video is available and keep the start
+  // time so we can enforce a minimum visible duration.
+  useEffect(() => {
+    if (showVideo) {
+      loaderStartRef.current = Date.now();
+      setLoaderVisible(true);
+    } else {
+      setLoaderVisible(false);
+    }
+  }, [showVideo, animationUrl]);
+
+  // Once the video can play, hide the bar — but not before it has been on
+  // screen long enough to actually be seen (fast/cached loads otherwise flash).
+  useEffect(() => {
+    if (!showVideo || !videoReady) return;
+    const MIN_VISIBLE_MS = 650;
+    const remaining = Math.max(0, MIN_VISIBLE_MS - (Date.now() - loaderStartRef.current));
+    const t = setTimeout(() => setLoaderVisible(false), remaining);
+    return () => clearTimeout(t);
+  }, [showVideo, videoReady]);
+
   if (!mounted) return null;
 
   const priceEth = item?.priceEth ?? nft.priceEth ?? null;
   const priceUsd = formatUsd(priceEth, ethUsd);
   const image = item?.image ?? nft.image;
   const name = item?.name ?? nft.name;
-  const animationUrl = item?.animationUrl ?? null;
-  const showVideo = Boolean(animationUrl) && !videoFailed;
 
   return createPortal(
     <div className={styles.overlay} onClick={onClose} role="dialog" aria-modal="true">
@@ -128,18 +154,30 @@ export default function ItemModal({
       <div className={styles.dialog} onClick={(e) => e.stopPropagation()}>
         <div className={styles.frame}>
           {showVideo ? (
-            <video
-              key={animationUrl ?? undefined}
-              className={styles.video}
-              src={animationUrl ?? undefined}
-              poster={image ?? undefined}
-              autoPlay
-              loop
-              muted
-              playsInline
-              controls
-              onError={() => setVideoFailed(true)}
-            />
+            <>
+              {image ? (
+                <FadeInImage className={styles.image} src={image} alt={name} />
+              ) : (
+                <div className={styles.imageFallback} aria-hidden />
+              )}
+              <video
+                key={animationUrl ?? undefined}
+                className={`${styles.video} ${videoReady ? styles.videoReady : ''}`}
+                src={animationUrl ?? undefined}
+                autoPlay
+                loop
+                muted
+                playsInline
+                onCanPlay={() => setVideoReady(true)}
+                onPlaying={() => setVideoReady(true)}
+                onError={() => setVideoFailed(true)}
+              />
+              {loaderVisible && (
+                <div className={styles.mediaProgress} aria-hidden>
+                  <div className={styles.mediaProgressFill} />
+                </div>
+              )}
+            </>
           ) : image ? (
             <FadeInImage className={styles.image} src={image} alt={name} />
           ) : (
