@@ -103,6 +103,7 @@ const OPEN_WORLD_FEATURES: Feature[] = [
     title: 'Shopping',
     description:
       'Browse storefronts and marketplaces for gear, fashion, and rare assets.',
+    image: '/images/wilder-world/Wiami_Shopping.png',
   },
   {
     title: 'Explorable Interiors',
