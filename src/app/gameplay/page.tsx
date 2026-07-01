@@ -112,9 +112,9 @@ const OPEN_WORLD_FEATURES: Feature[] = [
       'Step inside buildings, venues, and hidden spaces scattered across Wiami.',
   },
   {
-    title: 'Police Chases',
+    title: 'Police Encounters',
     description:
-      'Outrun the law in high-stakes pursuits tearing through the streets.',
+      'Outrun and outwit the law in high-stakes encounters across the streets.',
   },
 ];
 
