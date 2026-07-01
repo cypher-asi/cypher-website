@@ -1,7 +1,8 @@
 /* ============================================================================
-   Market – a live NFT marketplace. OpenSea-style three-column layout:
-   trait filters on the left, the NFT grid in the center, and the industry /
-   collection rail plus collection info on the right.
+   Market – a live NFT marketplace.
+   Top bar: WILDER MARKET title + horizontal collection navigation (dropdowns
+   for industries with multiple collections). Below: a left rail (trait filters
+   + collection info) and the NFT grid.
    ============================================================================ */
 
 .page {
@@ -13,11 +14,14 @@
   flex-direction: column;
 }
 
-/* Tight one-line page header (replaces the standard SectionHeader). */
-.header {
+/* ----------------------------------------------------------------------------
+   Top bar + collection navigation
+   --------------------------------------------------------------------------- */
+.topbar {
   display: flex;
-  align-items: baseline;
-  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
   border-bottom: 1px solid var(--color-border);
   padding-bottom: 0.75rem;
 }
@@ -30,17 +34,100 @@
   text-transform: uppercase;
   color: var(--color-text-primary);
   margin: 0;
+  white-space: nowrap;
 }
 
-.headerSub {
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
+}
+
+.navGroup {
+  position: relative;
+}
+
+.navItem {
+  appearance: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.55rem;
+  font-family: var(--font-display), system-ui, sans-serif;
   font-size: 0.8rem;
-  color: var(--color-text-secondary);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  transition: color 0.18s ease;
 }
 
-/* filters | grid | rail */
+.navItem:hover {
+  color: #fff;
+}
+
+.navItemActive,
+.navItemActive:hover {
+  color: #ff6434;
+}
+
+.navMenu {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  min-width: 9rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+}
+
+.navMenuItem {
+  appearance: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.navMenuItem:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.navMenuItemActive,
+.navMenuItemActive:hover {
+  color: #ff6434;
+}
+
+.chev {
+  transition: transform 0.18s ease;
+}
+
+.chevOpen {
+  transform: rotate(180deg);
+  transition: transform 0.18s ease;
+}
+
+/* ----------------------------------------------------------------------------
+   Body layout: left rail + grid
+   --------------------------------------------------------------------------- */
 .layout {
   display: grid;
-  grid-template-columns: 15rem 1fr 18rem;
+  grid-template-columns: 16rem 1fr;
   gap: clamp(1rem, 2.5vw, 2rem);
   margin-top: clamp(1rem, 3vh, 2rem);
   align-items: start;
@@ -66,7 +153,6 @@
   border: 1px solid var(--color-border);
   overflow: hidden;
   text-align: left;
-  text-decoration: none;
   color: inherit;
   cursor: pointer;
   appearance: none;
@@ -227,8 +313,27 @@
 }
 
 /* ----------------------------------------------------------------------------
-   Shared rail styling (filters + industries)
+   Left rail: stacked panels (filters + info)
    --------------------------------------------------------------------------- */
+.rail {
+  position: sticky;
+  top: 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: calc(100vh - 120px);
+  overflow: auto;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  padding: clamp(0.85rem, 1.5vw, 1.25rem);
+}
+
 .railHeading {
   font-family: var(--font-display), system-ui, sans-serif;
   font-size: 0.7rem;
@@ -239,23 +344,7 @@
   margin: 0;
 }
 
-.filters,
-.rail {
-  position: sticky;
-  top: 96px;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  padding: clamp(0.85rem, 1.5vw, 1.25rem);
-  max-height: calc(100vh - 120px);
-  overflow: auto;
-}
-
-/* ----------------------------------------------------------------------------
-   Filter panel (left)
-   --------------------------------------------------------------------------- */
+/* ----- Filter panel ----- */
 .filtersHead {
   display: flex;
   align-items: center;
@@ -303,15 +392,6 @@
   color: var(--color-text-primary);
 }
 
-.chev {
-  transition: transform 0.18s ease;
-}
-
-.chevOpen {
-  transform: rotate(180deg);
-  transition: transform 0.18s ease;
-}
-
 .traitValues {
   display: flex;
   flex-direction: column;
@@ -342,81 +422,11 @@
   opacity: 0.7;
 }
 
-/* ----------------------------------------------------------------------------
-   Industry rail (right)
-   --------------------------------------------------------------------------- */
-.industryList {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.industry {
-  display: flex;
-  flex-direction: column;
-}
-
-.industryName {
-  font-family: var(--font-display), system-ui, sans-serif;
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: var(--color-text-primary);
-  margin: 0.5rem 0 0.15rem;
-}
-
-.collectionList {
-  display: flex;
-  flex-direction: column;
-}
-
-.collectionItem {
-  appearance: none;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-align: left;
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.5rem;
-  padding: 0.3rem 0 0.3rem 0.75rem;
-  font-family: var(--font-sans), system-ui, sans-serif;
-  transition: color 0.18s ease;
-}
-
-.collectionLabel {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.55);
-  transition: color 0.18s ease;
-}
-
-.collectionFloor {
-  font-family: var(--font-sans), system-ui, sans-serif;
-  font-size: 0.72rem;
-  color: var(--color-text-secondary);
-  white-space: nowrap;
-}
-
-.collectionItem:hover .collectionLabel {
-  color: #fff;
-}
-
-.collectionItemActive .collectionLabel,
-.collectionItemActive:hover .collectionLabel {
-  color: #ff6434;
-}
-
-/* ----------------------------------------------------------------------------
-   Collection info panel
-   --------------------------------------------------------------------------- */
+/* ----- Info panel ----- */
 .info {
   display: flex;
   flex-direction: column;
   border: 1px solid var(--color-border);
-  margin-top: 0.5rem;
 }
 
 .infoRow {
@@ -448,26 +458,9 @@
   text-overflow: ellipsis;
 }
 
-.railBlurb {
-  font-size: 0.82rem;
-  line-height: 1.55;
-  color: var(--color-text-secondary);
-  margin: 0.25rem 0 0;
-}
-
 /* ----------------------------------------------------------------------------
    Responsive
    --------------------------------------------------------------------------- */
-@media (max-width: 1100px) {
-  .layout {
-    grid-template-columns: 1fr 16rem;
-  }
-
-  .filters {
-    display: none;
-  }
-}
-
 @media (max-width: 820px) {
   .layout {
     grid-template-columns: 1fr;
@@ -475,8 +468,13 @@
 
   .rail {
     position: static;
-    order: -1;
     max-height: none;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .panel {
+    flex: 1 1 14rem;
   }
 }
 

@@ -36,9 +36,15 @@ export default function MarketBrowser({ industries }: Props) {
   const [selected, setSelected] = useState<SelectedTraits>({});
   const [openTraitGroups, setOpenTraitGroups] = useState<Record<string, boolean>>({});
 
+  const [openNav, setOpenNav] = useState<string | null>(null);
+  const navRef = useRef<HTMLDivElement | null>(null);
+
   const [modalId, setModalId] = useState<string | null>(null);
 
   const activeEntry = allEntries.find((c) => c.slug === activeSlug);
+  const activeIndustry = industries.find((i) =>
+    i.collections.some((c) => c.slug === activeSlug)
+  );
   const activeMeta = meta[activeSlug];
 
   /* ----- One-time enrichment: collection stats + ETH price ---------------- */
@@ -151,9 +157,27 @@ export default function MarketBrowser({ industries }: Props) {
     return () => obs.disconnect();
   }, [next, loadMore]);
 
+  /* ----- Close the nav dropdown on outside click / Escape ----------------- */
+  useEffect(() => {
+    if (!openNav) return;
+    const onDown = (e: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) setOpenNav(null);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpenNav(null);
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [openNav]);
+
   /* ----- Collection switching: update URL + scroll to top ----------------- */
   const selectCollection = useCallback(
     (slug: string) => {
+      setOpenNav(null);
       if (slug === activeSlug) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
@@ -203,7 +227,6 @@ export default function MarketBrowser({ industries }: Props) {
   );
 
   const closeModal = useCallback(() => {
-    // Prefer going back so scroll position + collection are restored naturally.
     if (window.history.state?.token) window.history.back();
     else {
       setModalId(null);
@@ -224,221 +247,250 @@ export default function MarketBrowser({ industries }: Props) {
   }, [modalIndex, filtered, openModal, next, loadMore]);
 
   return (
-    <div className={styles.layout}>
-      {/* ---- Left: trait filters ---- */}
-      <aside className={styles.filters}>
-        <div className={styles.filtersHead}>
-          <p className={styles.railHeading}>Filters</p>
-          {selectedCount > 0 && (
-            <button className={styles.clearBtn} onClick={() => setSelected({})}>
-              Clear ({selectedCount})
-            </button>
-          )}
-        </div>
-        {traitCats.length === 0 ? (
-          <p className={styles.filtersEmpty}>No trait filters available.</p>
-        ) : (
-          <div className={styles.traitGroups}>
-            {traitCats.map((cat) => {
-              const open = openTraitGroups[cat.type] ?? false;
+    <>
+      {/* ---- Top bar: title + horizontal collection navigation ---- */}
+      <div className={styles.topbar}>
+        <h1 className={styles.headerTitle}>Wilder Market</h1>
+        <nav className={styles.nav} ref={navRef} aria-label="Collections">
+          {industries.map((industry) => {
+            const isActiveIndustry = industry.collections.some((c) => c.slug === activeSlug);
+            if (industry.collections.length === 1) {
+              const c = industry.collections[0];
               return (
-                <div key={cat.type} className={styles.traitGroup}>
-                  <button
-                    className={styles.traitGroupHead}
-                    onClick={() =>
-                      setOpenTraitGroups((p) => ({ ...p, [cat.type]: !open }))
-                    }
-                  >
-                    <span>{cat.type}</span>
-                    <ChevronDown
-                      size={14}
-                      className={open ? styles.chevOpen : styles.chev}
-                    />
-                  </button>
-                  {open && (
-                    <div className={styles.traitValues}>
-                      {cat.values.map((v) => {
-                        const checked = selected[cat.type]?.has(v.value) ?? false;
-                        return (
-                          <label key={v.value} className={styles.traitValue}>
-                            <input
-                              type="checkbox"
-                              checked={checked}
-                              onChange={() => toggleTrait(cat.type, v.value)}
-                            />
-                            <span className={styles.traitValueLabel}>{v.value}</span>
-                            <span className={styles.traitValueCount}>{v.count}</span>
-                          </label>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
+                <button
+                  key={industry.id}
+                  type="button"
+                  className={`${styles.navItem} ${
+                    isActiveIndustry ? styles.navItemActive : ''
+                  }`}
+                  onClick={() => selectCollection(c.slug)}
+                >
+                  {industry.name}
+                </button>
               );
-            })}
-          </div>
-        )}
-      </aside>
+            }
+            const open = openNav === industry.id;
+            return (
+              <div key={industry.id} className={styles.navGroup}>
+                <button
+                  type="button"
+                  className={`${styles.navItem} ${
+                    isActiveIndustry ? styles.navItemActive : ''
+                  }`}
+                  onClick={() => setOpenNav(open ? null : industry.id)}
+                  aria-expanded={open}
+                >
+                  {industry.name}
+                  <ChevronDown size={13} className={open ? styles.chevOpen : styles.chev} />
+                </button>
+                {open && (
+                  <div className={styles.navMenu}>
+                    {industry.collections.map((c) => (
+                      <button
+                        key={c.slug}
+                        type="button"
+                        className={`${styles.navMenuItem} ${
+                          c.slug === activeSlug ? styles.navMenuItemActive : ''
+                        }`}
+                        onClick={() => selectCollection(c.slug)}
+                      >
+                        {c.label ?? industry.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </nav>
+      </div>
 
-      {/* ---- Center: NFT grid ---- */}
-      <div className={styles.main}>
-        {loading ? (
-          <div className={styles.grid}>
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className={styles.skeleton} aria-hidden />
-            ))}
+      <div className={styles.layout}>
+        {/* ---- Left rail: filters + info ---- */}
+        <aside className={styles.rail}>
+          <div className={styles.panel}>
+            <div className={styles.filtersHead}>
+              <p className={styles.railHeading}>Filters</p>
+              {selectedCount > 0 && (
+                <button className={styles.clearBtn} onClick={() => setSelected({})}>
+                  Clear ({selectedCount})
+                </button>
+              )}
+            </div>
+            {traitCats.length === 0 ? (
+              <p className={styles.filtersEmpty}>No trait filters available.</p>
+            ) : (
+              <div className={styles.traitGroups}>
+                {traitCats.map((cat) => {
+                  const open = openTraitGroups[cat.type] ?? false;
+                  return (
+                    <div key={cat.type} className={styles.traitGroup}>
+                      <button
+                        className={styles.traitGroupHead}
+                        onClick={() =>
+                          setOpenTraitGroups((p) => ({ ...p, [cat.type]: !open }))
+                        }
+                      >
+                        <span>{cat.type}</span>
+                        <ChevronDown
+                          size={14}
+                          className={open ? styles.chevOpen : styles.chev}
+                        />
+                      </button>
+                      {open && (
+                        <div className={styles.traitValues}>
+                          {cat.values.map((v) => {
+                            const checked = selected[cat.type]?.has(v.value) ?? false;
+                            return (
+                              <label key={v.value} className={styles.traitValue}>
+                                <input
+                                  type="checkbox"
+                                  checked={checked}
+                                  onChange={() => toggleTrait(cat.type, v.value)}
+                                />
+                                <span className={styles.traitValueLabel}>{v.value}</span>
+                                <span className={styles.traitValueCount}>{v.count}</span>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
-        ) : error ? (
-          <div className={styles.empty}>
-            <p className={styles.emptyTitle}>No items to display</p>
-            <p className={styles.emptyBody}>
-              Live NFT data is unavailable right now. Check that the OpenSea API key is
-              configured, or view the collection directly on OpenSea.
+
+          {/* Info panel */}
+          <div className={styles.panel}>
+            <p className={styles.railHeading}>
+              {activeMeta?.name ?? activeEntry?.label ?? activeIndustry?.name ?? 'Collection'}
             </p>
+            <div className={styles.info}>
+              <InfoRow label="Launched" value={activeMeta?.launched ?? activeEntry?.launched ?? '—'} />
+              <InfoRow
+                label="Floor Price"
+                value={
+                  formatUsd(activeMeta?.floorPrice ?? null, ethUsd) ??
+                  formatEth(activeMeta?.floorPrice ?? null) ??
+                  '—'
+                }
+              />
+              <InfoRow
+                label="Top Offer"
+                value={
+                  formatUsd(activeMeta?.topOfferEth ?? null, ethUsd) ??
+                  formatEth(activeMeta?.topOfferEth ?? null) ??
+                  '—'
+                }
+              />
+              <InfoRow
+                label="Total Volume"
+                value={
+                  formatUsd(activeMeta?.totalVolume ?? null, ethUsd) ??
+                  formatEth(activeMeta?.totalVolume ?? null) ??
+                  '—'
+                }
+              />
+              <InfoRow
+                label="Listed"
+                value={activeMeta?.listedCount != null ? String(activeMeta.listedCount) : '—'}
+              />
+              <InfoRow
+                label="Owners (Unique)"
+                value={activeMeta?.owners != null ? activeMeta.owners.toLocaleString() : '—'}
+              />
+            </div>
             {activeEntry && (
               <a
-                className={styles.emptyLink}
+                className={styles.railOpensea}
                 href={`https://opensea.io/collection/${activeEntry.slug}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Open on OpenSea
-                <ArrowUpRight size={14} />
+                View on OpenSea
+                <ArrowUpRight size={12} />
               </a>
             )}
           </div>
-        ) : (
-          <>
-            <div className={styles.grid}>
-              {filtered.map((nft) => {
-                const priceUsd = formatUsd(nft.priceEth, ethUsd);
-                return (
-                  <button
-                    key={`${nft.contract}-${nft.identifier}`}
-                    type="button"
-                    className={styles.card}
-                    onClick={() => openModal(nft.identifier)}
-                  >
-                    <div className={styles.cardImageWrap}>
-                      {nft.image ? (
-                        <FadeInImage
-                          className={styles.cardImage}
-                          src={nft.image}
-                          alt={nft.name}
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div className={styles.cardImageFallback} aria-hidden />
-                      )}
-                    </div>
-                    <div className={styles.cardBody}>
-                      <span className={styles.cardName}>{nft.name}</span>
-                      {priceUsd && <span className={styles.cardPrice}>{priceUsd}</span>}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-            {next && (
-              <div ref={sentinelRef} className={styles.loadMoreRow}>
-                <button
-                  type="button"
-                  className={styles.loadMore}
-                  onClick={loadMore}
-                  disabled={loadingMore}
-                >
-                  {loadingMore ? 'Loading…' : 'Load more'}
-                </button>
-              </div>
-            )}
-          </>
-        )}
-      </div>
+        </aside>
 
-      {/* ---- Right: industries + collections + info ---- */}
-      <aside className={styles.rail}>
-        <p className={styles.railHeading}>Industries</p>
-        <div className={styles.industryList}>
-          {industries.map((industry) => (
-            <div key={industry.id} className={styles.industry}>
-              <p className={styles.industryName}>{industry.name}</p>
-              <div className={styles.collectionList}>
-                {industry.collections.map((c) => {
-                  const m = meta[c.slug];
-                  const floorUsd = formatUsd(m?.floorPrice ?? null, ethUsd);
-                  const isActive = c.slug === activeSlug;
+        {/* ---- Center: NFT grid ---- */}
+        <div className={styles.main}>
+          {loading ? (
+            <div className={styles.grid}>
+              {Array.from({ length: 12 }).map((_, i) => (
+                <div key={i} className={styles.skeleton} aria-hidden />
+              ))}
+            </div>
+          ) : error ? (
+            <div className={styles.empty}>
+              <p className={styles.emptyTitle}>No items to display</p>
+              <p className={styles.emptyBody}>
+                Live NFT data is unavailable right now. Check that the OpenSea API key is
+                configured, or view the collection directly on OpenSea.
+              </p>
+              {activeEntry && (
+                <a
+                  className={styles.emptyLink}
+                  href={`https://opensea.io/collection/${activeEntry.slug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Open on OpenSea
+                  <ArrowUpRight size={14} />
+                </a>
+              )}
+            </div>
+          ) : (
+            <>
+              <div className={styles.grid}>
+                {filtered.map((nft) => {
+                  const priceUsd = formatUsd(nft.priceEth, ethUsd);
                   return (
                     <button
-                      key={c.slug}
+                      key={`${nft.contract}-${nft.identifier}`}
                       type="button"
-                      className={`${styles.collectionItem} ${
-                        isActive ? styles.collectionItemActive : ''
-                      }`}
-                      onClick={() => selectCollection(c.slug)}
+                      className={styles.card}
+                      onClick={() => openModal(nft.identifier)}
                     >
-                      <span className={styles.collectionLabel}>
-                        {c.label ?? industry.name}
-                      </span>
-                      {floorUsd && <span className={styles.collectionFloor}>{floorUsd}</span>}
+                      <div className={styles.cardImageWrap}>
+                        {nft.image ? (
+                          <FadeInImage
+                            className={styles.cardImage}
+                            src={nft.image}
+                            alt={nft.name}
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className={styles.cardImageFallback} aria-hidden />
+                        )}
+                      </div>
+                      <div className={styles.cardBody}>
+                        <span className={styles.cardName}>{nft.name}</span>
+                        {priceUsd && <span className={styles.cardPrice}>{priceUsd}</span>}
+                      </div>
                     </button>
                   );
                 })}
               </div>
-            </div>
-          ))}
+              {next && (
+                <div ref={sentinelRef} className={styles.loadMoreRow}>
+                  <button
+                    type="button"
+                    className={styles.loadMore}
+                    onClick={loadMore}
+                    disabled={loadingMore}
+                  >
+                    {loadingMore ? 'Loading…' : 'Load more'}
+                  </button>
+                </div>
+              )}
+            </>
+          )}
         </div>
-
-        {/* Info panel for the active collection */}
-        <div className={styles.info}>
-          <InfoRow label="Name" value={activeMeta?.name ?? activeEntry?.label ?? '—'} />
-          <InfoRow label="Launched" value={activeMeta?.launched ?? activeEntry?.launched ?? '—'} />
-          <InfoRow
-            label="Floor Price"
-            value={
-              formatUsd(activeMeta?.floorPrice ?? null, ethUsd) ??
-              formatEth(activeMeta?.floorPrice ?? null) ??
-              '—'
-            }
-          />
-          <InfoRow
-            label="Top Offer"
-            value={
-              formatUsd(activeMeta?.topOfferEth ?? null, ethUsd) ??
-              formatEth(activeMeta?.topOfferEth ?? null) ??
-              '—'
-            }
-          />
-          <InfoRow
-            label="Total Volume"
-            value={
-              formatUsd(activeMeta?.totalVolume ?? null, ethUsd) ??
-              formatEth(activeMeta?.totalVolume ?? null) ??
-              '—'
-            }
-          />
-          <InfoRow
-            label="Listed"
-            value={activeMeta?.listedCount != null ? String(activeMeta.listedCount) : '—'}
-          />
-          <InfoRow
-            label="Owners (Unique)"
-            value={activeMeta?.owners != null ? activeMeta.owners.toLocaleString() : '—'}
-          />
-        </div>
-
-        {activeEntry?.blurb && <p className={styles.railBlurb}>{activeEntry.blurb}</p>}
-        {activeEntry && (
-          <a
-            className={styles.railOpensea}
-            href={`https://opensea.io/collection/${activeEntry.slug}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            View collection on OpenSea
-            <ArrowUpRight size={12} />
-          </a>
-        )}
-      </aside>
+      </div>
 
       {modalNft && (
         <ItemModal
@@ -452,7 +504,7 @@ export default function MarketBrowser({ industries }: Props) {
           onClose={closeModal}
         />
       )}
-    </div>
+    </>
   );
 }
 
