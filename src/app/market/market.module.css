@@ -637,12 +637,6 @@
   padding-block: 0.15rem;
 }
 
-.filtersLoadingText {
-  font-size: 0.8rem;
-  color: var(--color-text-secondary);
-  margin: 0 0 0.1rem;
-}
-
 .filterSkeleton {
   display: block;
   height: 0.8rem;

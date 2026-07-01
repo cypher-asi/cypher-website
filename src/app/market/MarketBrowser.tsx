@@ -454,8 +454,7 @@ export default function MarketBrowser({ industries }: Props) {
               motionKey={`${filterView.slug}:${filterView.state}`}
             >
               {filterView.state === 'loading' ? (
-                <div className={styles.filtersLoading} aria-live="polite">
-                  <p className={styles.filtersLoadingText}>Loading filters</p>
+                <div className={styles.filtersLoading} aria-hidden="true">
                   <span className={styles.filterSkeleton} />
                   <span className={styles.filterSkeleton} />
                   <span className={styles.filterSkeleton} />

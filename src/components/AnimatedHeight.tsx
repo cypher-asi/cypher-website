@@ -53,6 +53,7 @@ export function AnimatedHeight({ children, className, innerClassName, motionKey 
   const phaseRef = useRef(phase);
   phaseRef.current = phase;
   const fromHeightRef = useRef(0);
+  const heightAnimationRef = useRef<Animation | null>(null);
 
   const measureInner = () => innerRef.current?.scrollHeight ?? 0;
 
@@ -71,6 +72,8 @@ export function AnimatedHeight({ children, className, innerClassName, motionKey 
   const animateHeight = (from: number, to: number) => {
     const outer = outerRef.current;
     if (!outer) return;
+    heightAnimationRef.current?.cancel();
+    heightAnimationRef.current = null;
     if (prefersReducedMotion()) {
       setHeightInstantly(to);
       return;
@@ -79,8 +82,30 @@ export function AnimatedHeight({ children, className, innerClassName, motionKey 
       setHeightInstantly(to);
       return;
     }
+
     setHeightInstantly(from);
+    const animation = outer.animate(
+      [{ height: `${from}px` }, { height: `${to}px` }],
+      {
+        duration: HEIGHT_MS,
+        easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+      }
+    );
+    heightAnimationRef.current = animation;
+    // Keep the underlying style at the final value so the element does not snap
+    // back when the Web Animation finishes.
     outer.style.height = `${to}px`;
+    animation.onfinish = () => {
+      if (heightAnimationRef.current === animation) {
+        outer.style.height = `${to}px`;
+        heightAnimationRef.current = null;
+      }
+    };
+    animation.oncancel = () => {
+      if (heightAnimationRef.current === animation) {
+        heightAnimationRef.current = null;
+      }
+    };
   };
 
   // Pin the initial height before paint. If the initial render is empty, this

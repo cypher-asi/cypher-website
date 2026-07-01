@@ -1,6 +1,5 @@
 .outer {
   overflow: hidden;
-  transition: height 0.28s ease;
 }
 
 .inner {
@@ -14,7 +13,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .outer,
   .inner {
     transition: none;
   }
