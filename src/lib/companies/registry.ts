@@ -225,6 +225,7 @@ const wilderFooter: FooterConfig = {
       heading: 'Industries',
       links: [
         { label: 'Land', href: 'https://www.wilderworld.com/land', external: true },
+        { label: 'Avatars', href: 'https://www.wilderworld.com/avatars', external: true },
         { label: 'Wheels', href: 'https://www.wilderworld.com/wheels', external: true },
         { label: 'Weapons', href: 'https://www.wilderworld.com/weapons', external: true },
         { label: 'Beasts', href: 'https://www.wilderworld.com/beasts', external: true },

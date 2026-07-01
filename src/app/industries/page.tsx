@@ -11,6 +11,13 @@ const INDUSTRIES: AccordionItem[] = [
     image: '/images/wilder-world/industries_land.png',
   },
   {
+    id: 'avatars',
+    title: 'Avatars',
+    description:
+      'Create and own your onchain identity — customizable avatars that represent you across Wiami.',
+    image: '/images/wilder-world/industries_avatars.png',
+  },
+  {
     id: 'wheels',
     title: 'Wheels',
     description:
