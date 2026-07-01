@@ -57,8 +57,11 @@ export const WILDER_INDUSTRIES: WilderIndustry[] = [
     name: 'Wheels',
     collections: [
       {
+        // The Wheels genesis collection's OpenSea slug is literally
+        // `wilderworld` (verified). NFTs are still fetched by contract; the
+        // slug drives collection stats + the trait filter endpoint.
         id: 'wheels-genesis',
-        slug: 'wilder-wheels',
+        slug: 'wilderworld',
         chain: 'ethereum',
         contract: '0xc2e9678A71e50E5AeD036e00e9c5caeb1aC5987D',
         launched: '2021',
