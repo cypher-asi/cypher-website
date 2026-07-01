@@ -29,7 +29,7 @@ const INDUSTRIES: AccordionItem[] = [
     title: 'Beasts',
     description:
       'Hunt, tame, and trade the creatures that roam the wilds beyond the city limits.',
-    image: '/images/wilder-world/meow.png',
+    image: '/images/wilder-world/industries_beasts.png',
   },
   {
     id: 'moto',
