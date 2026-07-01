@@ -144,6 +144,10 @@ export function Nav({
   const [overLightBg, setOverLightBg] = useState<string | null>(null);
   const [brandKey, setBrandKey] = useState(0);
   const [brandTyped, setBrandTyped] = useState(false);
+  // One-shot glitch burst on the top-left logo, triggered on click. Removed once
+  // the animation finishes so it can retrigger on the next click. Hovering the
+  // logo runs its own looping glitch via CSS.
+  const [logoGlitch, setLogoGlitch] = useState(false);
   // Home link target. On a child site reached via the `?company=` dev override,
   // keep the override so the logo returns to that site's home rather than the
   // default (Cypher). On real domains there is no param, so this stays "/".
@@ -180,6 +184,19 @@ export function Nav({
     }
     return () => { document.body.style.overflow = ''; };
   }, [mobileOpen]);
+
+  // Publish the bar's current vertical offset so sticky page chrome (e.g. the
+  // market bar) can tuck under it when shown and slide up to the top when the
+  // bar hides on scroll-down. Matches NAV_HEIGHT used in the scroll handler.
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      '--site-nav-offset',
+      hidden ? '0px' : '84px'
+    );
+    return () => {
+      document.documentElement.style.removeProperty('--site-nav-offset');
+    };
+  }, [hidden]);
 
   // Hide the topbar when scrolling down, reveal it when scrolling up (and at the
   // very bottom). Also sample whatever background sits just beneath the bar so
@@ -279,6 +296,10 @@ export function Nav({
     setPanelOpen(false);
     setBrandTyped(false);
     setBrandKey((k) => k + 1);
+    // Fire the one-shot glitch burst. Restart even if it is somehow still
+    // flagged so rapid clicks always replay the animation.
+    setLogoGlitch(false);
+    requestAnimationFrame(() => setLogoGlitch(true));
   }, []);
 
   // Clicking a top-nav section closes the mega-panel immediately (which also
@@ -399,7 +420,12 @@ export function Nav({
           <div className={styles.topbarLeft} onMouseEnter={scheduleClose}>
             <Link href={homeHref} className={styles.titleLink} onClick={handleBrandClick}>
               {wordmarkLogo ? (
-                <img className={styles.brandLogo} src={wordmarkLogo.src} alt={wordmarkLogo.alt} />
+                <img
+                  className={`${styles.brandLogo} ${logoGlitch ? styles.brandLogoGlitch : ''}`}
+                  src={wordmarkLogo.src}
+                  alt={wordmarkLogo.alt}
+                  onAnimationEnd={() => setLogoGlitch(false)}
+                />
               ) : (
                 <TypewriterText
                   key={brandKey}
