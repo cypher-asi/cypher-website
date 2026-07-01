@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { resolveCompanyKey, normalizeCompany } from './lib/companies/resolve';
+import { resolveHostCompany, normalizeCompany } from './lib/companies/resolve';
 import { DEFAULT_COMPANY } from './lib/companies/registry';
 
 const COMPANY_COOKIE = 'company';
@@ -10,24 +10,25 @@ const COMPANY_COOKIE = 'company';
  * read the header to render the right company.
  *
  * Brand resolution precedence:
- *   1. `?company=` override (dev convenience) — also persisted to a cookie.
- *   2. The request host, when it maps to a non-default brand (real domains and
- *      `brand.localhost` subdomains).
+ *   1. The request host, when it explicitly maps to a brand (real domains and
+ *      `brand.localhost` subdomains). This is authoritative so a stale cookie
+ *      or stray `?company=` can never make a real domain serve another brand.
+ *   2. `?company=` override (dev convenience) — also persisted to a cookie.
  *   3. A previously-set `company` cookie (keeps the dev override sticky across
  *      internal navigations so links never need to carry `?company=`).
  *   4. The default company.
  *
- * Persisting the override in a cookie is the structural fix for brand "leaks":
- * navigating between pages can no longer fall back to the default brand just
- * because an internal link forgot to forward the `?company=` param.
+ * Making the explicit host win first is the structural fix for brand "leaks":
+ * on `cypher.net` (the default brand's domain) a lingering `company=wilderworld`
+ * cookie previously overrode the host and served Wilder World. The override and
+ * cookie now only apply on non-mapped hosts (`localhost`, `*.onrender.com`).
  */
 export function middleware(req: NextRequest) {
+  const hostKey = resolveHostCompany(req.headers.get('host'));
   const override = normalizeCompany(req.nextUrl.searchParams.get('company'));
-  const hostKey = resolveCompanyKey(req.headers.get('host'));
   const cookieKey = normalizeCompany(req.cookies.get(COMPANY_COOKIE)?.value);
 
-  const company =
-    override ?? (hostKey !== DEFAULT_COMPANY ? hostKey : cookieKey ?? DEFAULT_COMPANY);
+  const company = hostKey ?? override ?? cookieKey ?? DEFAULT_COMPANY;
 
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set('x-company', company);
