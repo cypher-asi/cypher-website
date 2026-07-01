@@ -2,6 +2,7 @@ import { ArrowUpRight } from 'lucide-react';
 import { SectionHeader } from '@/components/SectionHeader';
 import CityShowcase from '@/sites/wilderworld/CityShowcase';
 import RegionSelector from '@/sites/wilderworld/RegionSelector';
+import PlotMetrics from '@/sites/wilderworld/PlotMetrics';
 import Neighborhoods from '@/sites/wilderworld/Neighborhoods';
 import styles from './page.module.css';
 
@@ -45,6 +46,7 @@ export default function CityPage() {
           alt="Map of the Island's neighborhoods"
         />
       </div>
+      <PlotMetrics />
       <Neighborhoods />
     </div>
   );

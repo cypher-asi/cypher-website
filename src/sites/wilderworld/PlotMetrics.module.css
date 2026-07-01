@@ -1,0 +1,68 @@
+/* ============================================================================
+   Plot metrics – animated count-up of The Island's plot distribution.
+   ============================================================================ */
+
+.wrap {
+  margin-top: clamp(1.5rem, 4vh, 3rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 4vh, 2.5rem);
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  background: #0a0a0a;
+  border: 1px solid var(--color-border);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: clamp(0.75rem, 1.5vw, 1.25rem);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-block: clamp(0.75rem, 1.5vh, 1.25rem);
+  border-top: 1px solid var(--color-border);
+}
+
+.value {
+  font-family: var(--font-display), system-ui, -apple-system, sans-serif;
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.label {
+  font-family: var(--font-mono), 'Fira Code', monospace;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+/* The total is shown larger, in the accent color. */
+.statLarge {
+  border-top: none;
+  padding-block: 0;
+  gap: 0.5rem;
+}
+
+.statLarge .value {
+  font-size: clamp(3rem, 8vw, 6rem);
+  color: #f97316;
+}
+
+.statLarge .label {
+  font-size: 0.75rem;
+}
+
+@media (max-width: 760px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
