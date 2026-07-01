@@ -131,6 +131,7 @@ const BUILD_FEATURES: Feature[] = [
     title: 'Build',
     description:
       'Construct and customize everything from vehicles to virtual real estate.',
+    image: '/images/wilder-world/wiami_buildings_construction.png',
   },
   {
     title: 'Sell',
