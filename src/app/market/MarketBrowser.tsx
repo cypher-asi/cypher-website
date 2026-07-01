@@ -8,7 +8,7 @@ import type { MarketCollection } from '@/app/api/market/collections/route';
 import type { TraitCategory } from '@/app/api/market/traits/route';
 import { formatUsd, formatEth } from '@/lib/price';
 import { FadeInImage } from '@/components/FadeInImage';
-import { AnimatedHeight } from '@/components/AnimatedHeight';
+import { AnimatedPanel } from '@/components/AnimatedPanel';
 import { CustomScrollbar } from '@/components/CustomScrollbar';
 import ItemModal from './ItemModal';
 import styles from './market.module.css';
@@ -16,6 +16,7 @@ import styles from './market.module.css';
 type Props = { industries: WilderIndustry[] };
 
 type SelectedTraits = Record<string, Set<string>>;
+type Availability = 'listed' | 'unlisted';
 type FilterView = {
   slug: string;
   cats: TraitCategory[];
@@ -43,6 +44,9 @@ export default function MarketBrowser({ industries }: Props) {
 
   const [selected, setSelected] = useState<SelectedTraits>({});
   const [openTraitGroups, setOpenTraitGroups] = useState<Record<string, boolean>>({});
+  // Market shows listed items (cheapest first) by default; the left-rail filter
+  // toggles to unlisted tokens.
+  const [availability, setAvailability] = useState<Availability>('listed');
 
   // The filter panel has an explicit loading state so collection switches have
   // real height states to animate through: previous traits -> loading -> traits.
@@ -58,6 +62,10 @@ export default function MarketBrowser({ industries }: Props) {
   // Guards against a single close triggering more than one history.back()
   // (history.back is async, so re-entrant calls would overshoot the grid).
   const closingRef = useRef(false);
+  // Identifies the active collection+availability request. In-flight "load
+  // more" responses whose key no longer matches are discarded so switching
+  // collections never mixes items from the previous one.
+  const loadKeyRef = useRef('');
 
   const [gridSize, setGridSize] = useState<'lg' | 'md' | 'sm'>('md');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -103,6 +111,8 @@ export default function MarketBrowser({ industries }: Props) {
     if (saved === 'lg' || saved === 'md' || saved === 'sm') setGridSize(saved);
     const savedView = localStorage.getItem('market-view');
     if (savedView === 'grid' || savedView === 'list') setViewMode(savedView);
+    const savedAvail = localStorage.getItem('market-availability');
+    if (savedAvail === 'listed' || savedAvail === 'unlisted') setAvailability(savedAvail);
   }, []);
 
   const changeGridSize = useCallback((size: 'lg' | 'md' | 'sm') => {
@@ -131,30 +141,43 @@ export default function MarketBrowser({ industries }: Props) {
       const p = new URLSearchParams(window.location.search);
       const c = p.get('c');
       const token = p.get('token');
-      if (c && allEntries.some((e) => e.slug === c)) setActiveSlug(c);
+      if (c && allEntries.some((e) => e.slug === c) && c !== activeSlug) {
+        setOpenTraitGroups({});
+        setFilterView({ slug: c, cats: [], state: 'loading' });
+        setActiveSlug(c);
+      } else if (c && allEntries.some((e) => e.slug === c)) {
+        setActiveSlug(c);
+      }
       setModalId(token);
       closingRef.current = false;
     };
     apply();
     window.addEventListener('popstate', apply);
     return () => window.removeEventListener('popstate', apply);
-  }, [allEntries]);
+  }, [allEntries, activeSlug]);
 
-  /* ----- Load the first page whenever the active collection changes ------- */
+  /* ----- Reset trait selection when the collection changes ---------------- */
+  useEffect(() => {
+    setSelected({});
+  }, [activeSlug]);
+
+  /* ----- Load first page on collection or availability change ------------- */
   useEffect(() => {
     if (!activeSlug) return;
     let alive = true;
+    loadKeyRef.current = `${activeSlug}|${availability}`;
     setLoading(true);
+    setLoadingMore(false);
     setError(false);
     setItems([]);
     setNext(null);
-    setSelected({});
     batchBaseRef.current = 0;
-    fetch(`/api/market/nfts?slug=${encodeURIComponent(activeSlug)}`)
+    fetch(
+      `/api/market/nfts?slug=${encodeURIComponent(activeSlug)}&status=${availability}`
+    )
       .then((r) => r.json())
       .then((d: { items?: MarketNft[]; next?: string | null }) => {
         if (!alive) return;
-        if (!d.items || d.items.length === 0) setError(true);
         setItems(d.items ?? []);
         setNext(d.next ?? null);
       })
@@ -167,7 +190,7 @@ export default function MarketBrowser({ industries }: Props) {
     return () => {
       alive = false;
     };
-  }, [activeSlug]);
+  }, [activeSlug, availability]);
 
   /* ----- Load trait categories for the filter panel ----------------------- */
   useEffect(() => {
@@ -201,12 +224,17 @@ export default function MarketBrowser({ industries }: Props) {
 
   const loadMore = useCallback(() => {
     if (!next || loadingMore) return;
+    const key = `${activeSlug}|${availability}`;
     setLoadingMore(true);
     fetch(
-      `/api/market/nfts?slug=${encodeURIComponent(activeSlug)}&next=${encodeURIComponent(next)}`
+      `/api/market/nfts?slug=${encodeURIComponent(activeSlug)}&status=${availability}&next=${encodeURIComponent(
+        next
+      )}`
     )
       .then((r) => r.json())
       .then((d: { items?: MarketNft[]; next?: string | null }) => {
+        // Ignore results that arrive after the collection/availability changed.
+        if (loadKeyRef.current !== key) return;
         setItems((prev) => {
           batchBaseRef.current = prev.length;
           return [...prev, ...(d.items ?? [])];
@@ -214,8 +242,24 @@ export default function MarketBrowser({ industries }: Props) {
         setNext(d.next ?? null);
       })
       .catch(() => {})
-      .finally(() => setLoadingMore(false));
-  }, [next, loadingMore, activeSlug]);
+      .finally(() => {
+        if (loadKeyRef.current === key) setLoadingMore(false);
+      });
+  }, [next, loadingMore, activeSlug, availability]);
+
+  const changeAvailability = useCallback(
+    (value: Availability) => {
+      if (value === availability) return;
+      setAvailability(value);
+      try {
+        localStorage.setItem('market-availability', value);
+      } catch {
+        /* ignore quota / privacy-mode errors */
+      }
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    },
+    [availability]
+  );
 
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
@@ -249,6 +293,12 @@ export default function MarketBrowser({ industries }: Props) {
   }, [openNav]);
 
   /* ----- Collection switching: update URL + scroll to top ----------------- */
+  const beginCollectionSwitch = useCallback((slug: string) => {
+    setOpenTraitGroups({});
+    setFilterView({ slug, cats: [], state: 'loading' });
+    setActiveSlug(slug);
+  }, []);
+
   const selectCollection = useCallback(
     (slug: string) => {
       setOpenNav(null);
@@ -256,11 +306,11 @@ export default function MarketBrowser({ industries }: Props) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
       }
-      setActiveSlug(slug);
+      beginCollectionSwitch(slug);
       window.history.replaceState({}, '', `?c=${slug}`);
       window.scrollTo({ top: 0, behavior: 'auto' });
     },
-    [activeSlug]
+    [activeSlug, beginCollectionSwitch]
   );
 
   /* ----- Client-side trait filtering over loaded items -------------------- */
@@ -440,7 +490,11 @@ export default function MarketBrowser({ industries }: Props) {
       <div className={styles.layout}>
         {/* ---- Left rail: filters + info ---- */}
         <aside className={styles.rail} ref={railRef}>
-          <div className={styles.panel}>
+          <AnimatedPanel
+            className={styles.panel}
+            bodyClassName={styles.panelBody}
+            measureDeps={[filterView.slug, filterView.state, openTraitGroups]}
+          >
             <div className={styles.filtersHead}>
               <p className={styles.railHeading}>Filters</p>
               {selectedCount > 0 && (
@@ -449,65 +503,85 @@ export default function MarketBrowser({ industries }: Props) {
                 </button>
               )}
             </div>
-            <AnimatedHeight
-              innerClassName={styles.panelInner}
-              motionKey={`${filterView.slug}:${filterView.state}`}
-            >
-              {filterView.state === 'loading' ? (
-                <div className={styles.filtersLoading} aria-hidden="true">
-                  <span className={styles.filterSkeleton} />
-                  <span className={styles.filterSkeleton} />
-                  <span className={styles.filterSkeleton} />
-                </div>
-              ) : filterView.slug === '' ? null : filterView.cats.length === 0 ? (
-                <p className={styles.filtersEmpty}>No trait filters available.</p>
-              ) : (
-                <div className={styles.traitGroups}>
-                  {filterView.cats.map((cat) => {
-                    const open = openTraitGroups[cat.type] ?? false;
-                    return (
-                      <div key={cat.type} className={styles.traitGroup}>
-                        <button
-                          className={styles.traitGroupHead}
-                          onClick={() =>
-                            setOpenTraitGroups((p) => ({ ...p, [cat.type]: !open }))
-                          }
-                        >
-                          <span>{cat.type}</span>
-                          <ChevronDown
-                            size={14}
-                            className={open ? styles.chevOpen : styles.chev}
-                          />
-                        </button>
-                        {open && (
-                          <div className={styles.traitValues}>
-                            {cat.values.map((v) => {
-                              const checked = selected[cat.type]?.has(v.value) ?? false;
-                              return (
-                                <label key={v.value} className={styles.traitValue}>
-                                  <input
-                                    type="checkbox"
-                                    checked={checked}
-                                    onChange={() => toggleTrait(cat.type, v.value)}
-                                  />
-                                  <span className={styles.traitValueLabel}>{v.value}</span>
-                                  <span className={styles.traitValueCount}>{v.count}</span>
-                                </label>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </AnimatedHeight>
-          </div>
+            <div className={styles.statusFilter} role="group" aria-label="Availability">
+              <button
+                type="button"
+                className={`${styles.statusBtn} ${
+                  availability === 'listed' ? styles.statusBtnActive : ''
+                }`}
+                onClick={() => changeAvailability('listed')}
+                aria-pressed={availability === 'listed'}
+              >
+                Listed
+              </button>
+              <button
+                type="button"
+                className={`${styles.statusBtn} ${
+                  availability === 'unlisted' ? styles.statusBtnActive : ''
+                }`}
+                onClick={() => changeAvailability('unlisted')}
+                aria-pressed={availability === 'unlisted'}
+              >
+                Unlisted
+              </button>
+            </div>
+            {filterView.state === 'loading' ? (
+              <div className={styles.filtersLoading} aria-hidden="true">
+                <span className={styles.filterSkeleton} />
+                <span className={styles.filterSkeleton} />
+                <span className={styles.filterSkeleton} />
+              </div>
+            ) : filterView.slug === '' ? null : filterView.cats.length === 0 ? (
+              <p className={styles.filtersEmpty}>No trait filters available.</p>
+            ) : (
+              <div className={styles.traitGroups}>
+                {filterView.cats.map((cat) => {
+                  const open = openTraitGroups[cat.type] ?? false;
+                  return (
+                    <div key={cat.type} className={styles.traitGroup}>
+                      <button
+                        className={styles.traitGroupHead}
+                        onClick={() =>
+                          setOpenTraitGroups((p) => ({ ...p, [cat.type]: !open }))
+                        }
+                      >
+                        <span>{cat.type}</span>
+                        <ChevronDown
+                          size={14}
+                          className={open ? styles.chevOpen : styles.chev}
+                        />
+                      </button>
+                      {open && (
+                        <div className={styles.traitValues}>
+                          {cat.values.map((v) => {
+                            const checked = selected[cat.type]?.has(v.value) ?? false;
+                            return (
+                              <label key={v.value} className={styles.traitValue}>
+                                <input
+                                  type="checkbox"
+                                  checked={checked}
+                                  onChange={() => toggleTrait(cat.type, v.value)}
+                                />
+                                <span className={styles.traitValueLabel}>{v.value}</span>
+                                <span className={styles.traitValueCount}>{v.count}</span>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </AnimatedPanel>
 
           {/* Info panel */}
-          <div className={styles.panel}>
-            <AnimatedHeight innerClassName={styles.panelInner} motionKey={activeSlug}>
+          <AnimatedPanel
+            className={styles.panel}
+            bodyClassName={styles.panelBody}
+            measureDeps={[activeSlug, activeMeta]}
+          >
             <p className={styles.railHeading}>
               {activeMeta?.name ?? activeEntry?.label ?? activeIndustry?.name ?? 'Collection'}
             </p>
@@ -557,8 +631,7 @@ export default function MarketBrowser({ industries }: Props) {
                 <ArrowUpRight size={12} />
               </a>
             )}
-            </AnimatedHeight>
-          </div>
+          </AnimatedPanel>
 
           <CustomScrollbar targetRef={railRef} showOnHoverOnly />
         </aside>
@@ -597,6 +670,34 @@ export default function MarketBrowser({ industries }: Props) {
                 configured, or view the collection directly on OpenSea.
               </p>
               {activeEntry && (
+                <a
+                  className={styles.emptyLink}
+                  href={`https://opensea.io/collection/${activeEntry.slug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Open on OpenSea
+                  <ArrowUpRight size={14} />
+                </a>
+              )}
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className={styles.empty}>
+              <p className={styles.emptyTitle}>
+                {items.length === 0
+                  ? availability === 'listed'
+                    ? 'No items currently listed'
+                    : 'No unlisted items found'
+                  : 'No items match your filters'}
+              </p>
+              <p className={styles.emptyBody}>
+                {items.length === 0
+                  ? availability === 'listed'
+                    ? 'Nothing in this collection is listed for sale right now. Try the Unlisted filter or browse on OpenSea.'
+                    : 'Every token in this collection appears to be listed. Switch back to the Listed filter to see them.'
+                  : 'Try clearing or adjusting the selected trait filters.'}
+              </p>
+              {items.length === 0 && activeEntry && (
                 <a
                   className={styles.emptyLink}
                   href={`https://opensea.io/collection/${activeEntry.slug}`}

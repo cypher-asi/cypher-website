@@ -582,16 +582,14 @@
 }
 
 .panel {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
+  flex-shrink: 0;
   border: 1px solid var(--color-border);
   background: var(--color-surface);
   padding: clamp(0.85rem, 1.5vw, 1.25rem);
 }
 
-/* Inner wrapper measured by AnimatedHeight; carries the panel's own spacing. */
-.panelInner {
+/* Measured content inside AnimatedPanel; carries spacing between panel sections. */
+.panelBody {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
@@ -622,6 +620,41 @@
   color: #ff6434;
   font-size: 0.72rem;
   font-weight: 600;
+}
+
+/* Listed / Unlisted availability toggle at the top of the filters panel. */
+.statusFilter {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--color-border);
+}
+
+.statusBtn {
+  appearance: none;
+  background: none;
+  border: none;
+  border-left: 1px solid var(--color-border);
+  cursor: pointer;
+  padding: 0.5rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.55);
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.statusBtn:first-child {
+  border-left: none;
+}
+
+.statusBtn:hover {
+  color: #fff;
+}
+
+.statusBtnActive,
+.statusBtnActive:hover {
+  color: #ff6434;
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .filtersEmpty {
