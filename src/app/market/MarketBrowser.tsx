@@ -16,6 +16,13 @@ import styles from './market.module.css';
 type Props = { industries: WilderIndustry[] };
 
 type SelectedTraits = Record<string, Set<string>>;
+type FilterView = {
+  slug: string;
+  cats: TraitCategory[];
+  state: 'loading' | 'ready';
+};
+
+const FILTER_LOADING_MIN_MS = 420;
 
 export default function MarketBrowser({ industries }: Props) {
   const allEntries = useMemo(
@@ -37,13 +44,13 @@ export default function MarketBrowser({ industries }: Props) {
   const [selected, setSelected] = useState<SelectedTraits>({});
   const [openTraitGroups, setOpenTraitGroups] = useState<Record<string, boolean>>({});
 
-  // The filter panel renders from this lagging view rather than the raw fetch
-  // state: the previous collection's filters stay visible until the new ones
-  // are ready, then slug + cats update together so the crossfade and height
-  // tween fire in the same beat (no collapse-to-empty flash).
-  const [filterView, setFilterView] = useState<{ slug: string; cats: TraitCategory[] }>(
-    { slug: '', cats: [] }
-  );
+  // The filter panel has an explicit loading state so collection switches have
+  // real height states to animate through: previous traits -> loading -> traits.
+  const [filterView, setFilterView] = useState<FilterView>({
+    slug: firstSlug,
+    cats: [],
+    state: firstSlug ? 'loading' : 'ready',
+  });
 
   const [openNav, setOpenNav] = useState<string | null>(null);
   const navRef = useRef<HTMLDivElement | null>(null);
@@ -166,20 +173,29 @@ export default function MarketBrowser({ industries }: Props) {
   useEffect(() => {
     if (!activeSlug) return;
     let alive = true;
-    // Keep the current filters on screen while the new ones load; only swap
-    // the displayed view once data arrives to avoid a mid-transition collapse.
+    let readyTimer: ReturnType<typeof setTimeout> | null = null;
+    const startedAt = performance.now();
+    const showReady = (cats: TraitCategory[]) => {
+      const remaining = Math.max(0, FILTER_LOADING_MIN_MS - (performance.now() - startedAt));
+      readyTimer = setTimeout(() => {
+        if (alive) setFilterView({ slug: activeSlug, cats, state: 'ready' });
+      }, remaining);
+    };
+
+    setOpenTraitGroups({});
+    setFilterView({ slug: activeSlug, cats: [], state: 'loading' });
     fetch(`/api/market/traits?slug=${encodeURIComponent(activeSlug)}`)
       .then((r) => r.json())
       .then((d: { categories?: TraitCategory[] }) => {
         if (!alive) return;
-        setOpenTraitGroups({});
-        setFilterView({ slug: activeSlug, cats: d.categories ?? [] });
+        showReady(d.categories ?? []);
       })
       .catch(() => {
-        if (alive) setFilterView({ slug: activeSlug, cats: [] });
+        if (alive) showReady([]);
       });
     return () => {
       alive = false;
+      if (readyTimer) clearTimeout(readyTimer);
     };
   }, [activeSlug]);
 
@@ -433,8 +449,18 @@ export default function MarketBrowser({ industries }: Props) {
                 </button>
               )}
             </div>
-            <AnimatedHeight innerClassName={styles.panelInner} motionKey={filterView.slug}>
-              {filterView.slug === '' ? null : filterView.cats.length === 0 ? (
+            <AnimatedHeight
+              innerClassName={styles.panelInner}
+              motionKey={`${filterView.slug}:${filterView.state}`}
+            >
+              {filterView.state === 'loading' ? (
+                <div className={styles.filtersLoading} aria-live="polite">
+                  <p className={styles.filtersLoadingText}>Loading filters</p>
+                  <span className={styles.filterSkeleton} />
+                  <span className={styles.filterSkeleton} />
+                  <span className={styles.filterSkeleton} />
+                </div>
+              ) : filterView.slug === '' ? null : filterView.cats.length === 0 ? (
                 <p className={styles.filtersEmpty}>No trait filters available.</p>
               ) : (
                 <div className={styles.traitGroups}>

@@ -630,6 +630,36 @@
   margin: 0;
 }
 
+.filtersLoading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-block: 0.15rem;
+}
+
+.filtersLoadingText {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  margin: 0 0 0.1rem;
+}
+
+.filterSkeleton {
+  display: block;
+  height: 0.8rem;
+  width: 100%;
+  background: linear-gradient(100deg, #0e0e10 30%, #17171a 50%, #0e0e10 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.filterSkeleton:nth-child(3) {
+  width: 82%;
+}
+
+.filterSkeleton:nth-child(4) {
+  width: 64%;
+}
+
 .traitGroups {
   display: flex;
   flex-direction: column;
@@ -760,7 +790,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .card {
+  .card,
+  .filterSkeleton {
     animation: none;
   }
 
