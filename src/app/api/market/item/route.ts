@@ -14,6 +14,7 @@ export type MarketItem = {
   identifier: string;
   name: string;
   image: string | null;
+  animationUrl: string | null;
   description: string | null;
   collectionSlug: string;
   collectionName: string;
@@ -50,7 +51,7 @@ export async function GET(request: Request) {
   let detail: OpenSeaCollection | null = null;
   if (!contract) {
     detail = await openseaFetch<OpenSeaCollection>(
-      `/collection/${encodeURIComponent(entry.slug)}`
+      `/collections/${encodeURIComponent(entry.slug)}`
     );
     const contractEntry =
       detail?.contracts?.find((c) => c.chain === chain) ?? detail?.contracts?.[0];
@@ -72,6 +73,7 @@ export async function GET(request: Request) {
     identifier: nft.identifier,
     name: nft.name || `${entry.label ?? entry.slug} #${nft.identifier}`,
     image: nft.display_image_url || nft.image_url || null,
+    animationUrl: nft.display_animation_url || nft.animation_url || null,
     description: nft.description ?? null,
     collectionSlug: entry.slug,
     collectionName: detail?.name ?? entry.label ?? entry.slug,

@@ -36,6 +36,8 @@ export type OpenSeaNft = {
   name: string | null;
   image_url: string | null;
   display_image_url?: string | null;
+  animation_url?: string | null;
+  display_animation_url?: string | null;
   contract: string;
   collection?: string;
   description?: string | null;

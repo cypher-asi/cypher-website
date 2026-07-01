@@ -33,6 +33,7 @@ export default function ItemModal({
   const [item, setItem] = useState<MarketItem | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [mounted, setMounted] = useState(false);
+  const [videoFailed, setVideoFailed] = useState(false);
 
   useEffect(() => setMounted(true), []);
 
@@ -42,6 +43,7 @@ export default function ItemModal({
     let alive = true;
     setStatus('loading');
     setItem(null);
+    setVideoFailed(false);
     const params = new URLSearchParams({ slug, identifier: nft.identifier });
     if (nft.contract) params.set('contract', nft.contract);
     if (nft.chain) params.set('chain', nft.chain);
@@ -89,6 +91,8 @@ export default function ItemModal({
   const priceUsd = formatUsd(priceEth, ethUsd);
   const image = item?.image ?? nft.image;
   const name = item?.name ?? nft.name;
+  const animationUrl = item?.animationUrl ?? null;
+  const showVideo = Boolean(animationUrl) && !videoFailed;
 
   return createPortal(
     <div className={styles.overlay} onClick={onClose} role="dialog" aria-modal="true">
@@ -123,7 +127,20 @@ export default function ItemModal({
 
       <div className={styles.dialog} onClick={(e) => e.stopPropagation()}>
         <div className={styles.frame}>
-          {image ? (
+          {showVideo ? (
+            <video
+              key={animationUrl ?? undefined}
+              className={styles.video}
+              src={animationUrl ?? undefined}
+              poster={image ?? undefined}
+              autoPlay
+              loop
+              muted
+              playsInline
+              controls
+              onError={() => setVideoFailed(true)}
+            />
+          ) : image ? (
             <FadeInImage className={styles.image} src={image} alt={name} />
           ) : (
             <div className={styles.imageFallback} aria-hidden />
