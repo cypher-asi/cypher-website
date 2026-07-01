@@ -382,7 +382,10 @@
   gap: 1rem;
   max-height: calc(100vh - 120px);
   overflow: auto;
-  /* Native scrollbar is replaced by the floating CustomScrollbar overlay. */
+  /* Native scrollbar is replaced by the floating CustomScrollbar overlay.
+     A right-side gutter keeps the overlay in the column's own space instead
+     of overlapping the panels. */
+  padding-right: 0.85rem;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
