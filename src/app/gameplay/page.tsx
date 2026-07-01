@@ -87,6 +87,7 @@ const OPEN_WORLD_FEATURES: Feature[] = [
     title: 'Missions',
     description:
       'Take on RPG-driven missions and quests woven throughout the open world.',
+    image: '/images/wilder-world/Wiami_Missions.png',
   },
   {
     title: 'Street Art',
