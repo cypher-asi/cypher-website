@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import styles from './AnimatedHeight.module.css';
 
 type Props = {
@@ -37,12 +31,10 @@ function prefersReducedMotion() {
 }
 
 /**
- * Wraps content and animates the container's height. The outer element is kept
- * pinned to an explicit pixel height at all times so that whenever the content
- * changes size (an accordion opening, values loading in, or a `motionKey`
- * swap) there is a concrete "from" value for the CSS `height` transition to
- * interpolate. A forced reflow between the old and new height guarantees the
- * transition actually runs instead of the box snapping to the new size.
+ * Wraps content and animates the container's height. Every resize explicitly
+ * starts from the currently painted height, force-commits that value, then
+ * writes the new measured height. That gives the browser a concrete "from" and
+ * "to" for the CSS transition even on initial async load or fast content swaps.
  *
  * When `motionKey` changes the old content fades out, the new content is
  * swapped in, and then the height tweens to the new size while the new content
@@ -60,41 +52,56 @@ export function AnimatedHeight({ children, className, innerClassName, motionKey 
   const [phase, setPhase] = useState<'idle' | 'out' | 'in'>('idle');
   const phaseRef = useRef(phase);
   phaseRef.current = phase;
+  const fromHeightRef = useRef(0);
 
-  // Tween the outer height to match the current inner content. The inner node
-  // is never height-constrained (only the outer clips), so `inner.offsetHeight`
-  // is always the true target height regardless of the outer's pinned value.
-  const tweenHeight = () => {
+  const measureInner = () => innerRef.current?.scrollHeight ?? 0;
+
+  const setHeightInstantly = (height: number) => {
     const outer = outerRef.current;
-    const inner = innerRef.current;
-    if (!outer || !inner) return;
-    const target = inner.offsetHeight;
-    if (prefersReducedMotion()) {
-      outer.style.height = `${target}px`;
-      return;
-    }
-    const current = outer.getBoundingClientRect().height;
-    if (Math.abs(current - target) < 0.5) {
-      outer.style.height = `${target}px`;
-      return;
-    }
-    outer.style.height = `${current}px`;
-    // Force a reflow so the browser commits the "from" height before we set the
-    // target - without this the two writes coalesce and the box just snaps.
+    if (!outer) return;
+    const previousTransition = outer.style.transition;
+    outer.style.transition = 'none';
+    outer.style.height = `${height}px`;
+    // Force the browser to commit the non-transitioned "from" height before a
+    // subsequent animated write. Without this, the two writes can coalesce.
     void outer.offsetHeight;
-    outer.style.height = `${target}px`;
+    outer.style.transition = previousTransition;
   };
 
-  // Pin an initial height on mount and keep it in sync with idle content
-  // changes (accordions, async loads). The inner node is stable (never
-  // remounted), so a single observer suffices.
+  const animateHeight = (from: number, to: number) => {
+    const outer = outerRef.current;
+    if (!outer) return;
+    if (prefersReducedMotion()) {
+      setHeightInstantly(to);
+      return;
+    }
+    if (Math.abs(from - to) < 0.5) {
+      setHeightInstantly(to);
+      return;
+    }
+    setHeightInstantly(from);
+    outer.style.height = `${to}px`;
+  };
+
+  // Pin the initial height before paint. If the initial render is empty, this
+  // pins to 0 so the first async content load has a real height to grow from.
+  useLayoutEffect(() => {
+    const inner = innerRef.current;
+    const outer = outerRef.current;
+    if (!inner || !outer) return;
+    setHeightInstantly(inner.scrollHeight);
+  }, []);
+
+  // Keep height synced to idle content changes (accordions, async loads). The
+  // inner node is stable (never remounted), so a single observer suffices.
   useEffect(() => {
     const inner = innerRef.current;
     const outer = outerRef.current;
     if (!inner || !outer) return;
-    outer.style.height = `${inner.offsetHeight}px`;
     const ro = new ResizeObserver(() => {
-      if (phaseRef.current === 'idle') tweenHeight();
+      if (phaseRef.current !== 'idle') return;
+      const from = outer.getBoundingClientRect().height;
+      animateHeight(from, measureInner());
     });
     ro.observe(inner);
     return () => ro.disconnect();
@@ -119,6 +126,10 @@ export function AnimatedHeight({ children, className, innerClassName, motionKey 
       return;
     }
 
+    const outer = outerRef.current;
+    const inner = innerRef.current;
+    fromHeightRef.current = outer?.getBoundingClientRect().height ?? inner?.scrollHeight ?? 0;
+    setHeightInstantly(fromHeightRef.current);
     setPhase('out');
     const t = setTimeout(() => {
       setRendered({ key: motionKey, node: children });
@@ -131,7 +142,7 @@ export function AnimatedHeight({ children, className, innerClassName, motionKey 
   // paint so the fade-in and resize start together), then return to idle.
   useLayoutEffect(() => {
     if (phase !== 'in') return;
-    tweenHeight();
+    animateHeight(fromHeightRef.current, measureInner());
     const t = setTimeout(() => setPhase('idle'), HEIGHT_MS);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
