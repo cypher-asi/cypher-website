@@ -443,6 +443,10 @@ body::-webkit-scrollbar {
 body[data-company='wilderworld'] {
   -webkit-user-select: none;
   user-select: none;
+
+  /* White hover accent instead of the warm tan used elsewhere. */
+  --color-link-hover: #fff;
+  --link-hover-glow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 /* Keep descriptive body copy selectable so readers can copy it. Descriptions

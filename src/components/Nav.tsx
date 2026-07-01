@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { ArrowDown, ArrowUpRight, ChevronRight, Menu, X } from 'lucide-react';
 import { TypewriterText } from './TypewriterText';
 import type { TypewriterSegment } from './TypewriterText';
@@ -365,6 +366,24 @@ export function Nav({
 
   const activeId = panelOpen ? displayedSection?.id ?? null : null;
 
+  // Highlight the nav item for the page you're currently on (e.g. /universe,
+  // /gameplay). A section matches when its own href, or one of its sub-items'
+  // hrefs, points at the current route.
+  const pathname = usePathname();
+  const currentId = useMemo(() => {
+    if (!pathname) return null;
+    const matches = (href?: string) => {
+      if (!href || !href.startsWith('/')) return false;
+      const path = href.split(/[?#]/)[0];
+      if (path === '/') return pathname === '/';
+      return pathname === path || pathname.startsWith(`${path}/`);
+    };
+    const match = sections.find(
+      (s) => !s.external && (matches(s.href) || s.subItems?.some((i) => !i.external && matches(i.href)))
+    );
+    return match?.id ?? null;
+  }, [pathname, sections]);
+
   return (
     <>
       <header
@@ -397,7 +416,8 @@ export function Nav({
             {sections.map((section) => {
               const inner = <span>{section.label}</span>;
               const buttonClass = navStyle === 'buttons' ? styles.topNavButton : '';
-              const linkClass = `${styles.topNavLink} ${buttonClass} ${activeId === section.id ? styles.topNavLinkActive : ''}`;
+              const isActive = activeId === section.id || currentId === section.id;
+              const linkClass = `${styles.topNavLink} ${buttonClass} ${isActive ? styles.topNavLinkActive : ''}`;
               return (
                 <div
                   key={section.id}
