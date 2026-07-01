@@ -115,6 +115,7 @@ const OPEN_WORLD_FEATURES: Feature[] = [
     title: 'Police Encounters',
     description:
       'Outrun and outwit the law in high-stakes encounters across the streets.',
+    image: '/images/wilder-world/wiami_police.png',
   },
 ];
 
