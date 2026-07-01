@@ -43,7 +43,7 @@ const INDUSTRIES: AccordionItem[] = [
     title: 'PALs',
     description:
       'Companion bots that fight, craft, and explore alongside you across the simulation.',
-    image: '/images/wilder-world/trinity.png',
+    image: '/images/wilder-world/industry_pals.png',
   },
   {
     id: 'crafts',
