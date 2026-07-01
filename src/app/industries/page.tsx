@@ -36,7 +36,7 @@ const INDUSTRIES: AccordionItem[] = [
     title: 'Moto',
     description:
       'Tear through Wiami on customizable motorcycles tuned for speed and style.',
-    image: '/images/wilder-world/race_burnout.png',
+    image: '/images/wilder-world/industries_moto.png',
   },
   {
     id: 'pals',
@@ -50,7 +50,7 @@ const INDUSTRIES: AccordionItem[] = [
     title: 'Crafts',
     description:
       'Forge weapons, gear, and upgrades from the resources you gather and salvage.',
-    image: '/images/wilder-world/gear.avif',
+    image: '/images/wilder-world/industries_crafts.jpg',
   },
   {
     id: 'cribs',
