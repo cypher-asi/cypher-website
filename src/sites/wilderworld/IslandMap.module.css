@@ -21,7 +21,7 @@
 .controls {
   position: absolute;
   bottom: clamp(0.75rem, 2vw, 1.5rem);
-  right: clamp(0.75rem, 2vw, 1.5rem);
+  left: clamp(0.75rem, 2vw, 1.5rem);
   z-index: 2;
   display: inline-flex;
   gap: 0.25rem;
@@ -55,6 +55,6 @@
 
 .controlActive,
 .controlActive:hover {
-  color: #0a0a0a;
-  background: #f97316;
+  color: #000;
+  background: #ff6434;
 }

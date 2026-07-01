@@ -54,7 +54,7 @@
 
 .statLarge .value {
   font-size: clamp(3rem, 8vw, 6rem);
-  color: #f97316;
+  color: #ff6434;
 }
 
 .statLarge .label {
