@@ -518,12 +518,20 @@ code {
 }
 
 .sci-btn-primary {
-  background: #ff6434;
   color: #000;
+  background-color: #ff6434;
+  background-image: linear-gradient(#ff7d55, #ff7d55);
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 0% 100%;
+  transition:
+    background-size var(--transition-normal),
+    color var(--transition-normal),
+    opacity var(--transition-normal);
 }
 
 .sci-btn-primary:hover {
-  background: #ff7d55;
+  background-size: 100% 100%;
 }
 
 /* Borderless ghost variant (e.g. Watch Trailer over the hero video). */
