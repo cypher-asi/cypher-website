@@ -726,14 +726,19 @@
     opacity 200ms ease;
 }
 
-/* Cross the two bars into an X. Bars are 1.5px tall with a 6px gap, so each
-   center sits 3.75px from the toggle's midline. */
+/* Collapse the three bars into an X. Bars are 1.5px tall with a 6px gap, so the
+   top and bottom bar centers sit 7.5px from the toggle's midline; the middle
+   bar fades out. */
 .menuToggleOpen .menuBar:nth-child(1) {
-  transform: translateY(3.75px) rotate(45deg);
+  transform: translateY(7.5px) rotate(45deg);
 }
 
 .menuToggleOpen .menuBar:nth-child(2) {
-  transform: translateY(-3.75px) rotate(-45deg);
+  opacity: 0;
+}
+
+.menuToggleOpen .menuBar:nth-child(3) {
+  transform: translateY(-7.5px) rotate(-45deg);
 }
 
 /* ============================================================================

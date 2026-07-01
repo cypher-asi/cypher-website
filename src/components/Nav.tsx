@@ -525,6 +525,7 @@ export function Nav({
             >
               <span className={styles.menuBar} />
               <span className={styles.menuBar} />
+              <span className={styles.menuBar} />
             </button>
           </div>
         </div>
