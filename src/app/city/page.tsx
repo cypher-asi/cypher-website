@@ -40,7 +40,17 @@ export default function CityPage() {
         eyebrow="The Island"
         title="Nine Neighborhoods"
         subtitle="The Island is divided into distinct neighborhoods, each with its own character, industry, and role in the life of Wiami."
-      />
+      >
+        <a
+          className="sci-btn sci-btn-primary"
+          href="https://map.wilderworld.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Explore the Island
+          <ArrowUpRight size={16} />
+        </a>
+      </SectionHeader>
       <IslandMap />
       <PlotMetrics />
       <Neighborhoods />
