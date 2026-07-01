@@ -3,27 +3,25 @@
   transition: height 0.28s ease;
 }
 
-.swap {
-  animation: fadeSwap 0.3s ease;
+.inner {
+  opacity: 1;
+  transition: opacity 0.16s ease;
 }
 
-@keyframes fadeSwap {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Fading the outgoing content away. */
+.out {
+  opacity: 0;
+}
+
+/* Incoming content parked invisibly for one frame before it fades in. */
+.hidden {
+  opacity: 0;
+  transition: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .outer {
+  .outer,
+  .inner {
     transition: none;
-  }
-
-  .swap {
-    animation: none;
   }
 }
