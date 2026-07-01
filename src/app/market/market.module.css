@@ -158,6 +158,20 @@
   appearance: none;
   padding: 0;
   transition: border-color 0.18s ease, transform 0.18s ease;
+  /* Progressive reveal: squares cascade in as they render. `backwards` keeps
+     the hidden from-state during the per-card animation-delay set inline. */
+  animation: cardIn 0.4s ease backwards;
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .card:hover {
@@ -481,5 +495,11 @@
 @media (max-width: 760px) {
   .page {
     padding: calc(72px + 1.5rem) 1.25rem 4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    animation: none;
   }
 }

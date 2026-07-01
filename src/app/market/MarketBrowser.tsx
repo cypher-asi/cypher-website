@@ -446,13 +446,14 @@ export default function MarketBrowser({ industries }: Props) {
           ) : (
             <>
               <div className={styles.grid}>
-                {filtered.map((nft) => {
+                {filtered.map((nft, i) => {
                   const priceUsd = formatUsd(nft.priceEth, ethUsd);
                   return (
                     <button
                       key={`${nft.contract}-${nft.identifier}`}
                       type="button"
                       className={styles.card}
+                      style={{ animationDelay: `${(i % 25) * 28}ms` }}
                       onClick={() => openModal(nft.identifier)}
                     >
                       <div className={styles.cardImageWrap}>
