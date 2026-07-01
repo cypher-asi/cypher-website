@@ -60,11 +60,11 @@ const INDUSTRIES: AccordionItem[] = [
     image: '/images/wilder-world/build_construction.png',
   },
   {
-    id: 'airwild',
-    title: 'AIRWILD',
+    id: 'kicks',
+    title: 'Kicks',
     description:
-      'Take to the skies with aircraft and drones that open the world from above.',
-    image: '/images/wilder-world/wilder-world-bg.png',
+      'Lace up exclusive, collectible footwear that sets your style apart on the streets of Wiami.',
+    image: '/images/wilder-world/industries_kicks.png',
   },
 ];
 

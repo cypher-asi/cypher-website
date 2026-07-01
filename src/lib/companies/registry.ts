@@ -232,7 +232,7 @@ const wilderFooter: FooterConfig = {
         { label: 'PALs', href: 'https://www.wilderworld.com/pals', external: true },
         { label: 'Crafts', href: 'https://www.wilderworld.com/crafts', external: true },
         { label: 'Cribs', href: 'https://www.wilderworld.com/cribs', external: true },
-        { label: 'AIRWILD', href: 'https://www.wilderworld.com/airwild', external: true },
+        { label: 'Kicks', href: 'https://www.wilderworld.com/kicks', external: true },
       ],
     },
     {
