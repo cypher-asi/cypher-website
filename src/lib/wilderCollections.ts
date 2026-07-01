@@ -154,6 +154,15 @@ export const WILDER_INDUSTRIES: WilderIndustry[] = [
     name: 'Kicks',
     collections: [
       {
+        id: 'kicks-season-0',
+        slug: 'aws0',
+        label: 'Season 0',
+        chain: 'ethereum',
+        contract: '0x1C42576aCa321a590a809cd8B18492aafC1f3909',
+        launched: '2021',
+        blurb: 'AIR WILD Season 0 — the genesis Wilder.Kicks sneaker drop.',
+      },
+      {
         id: 'kicks-season-1',
         slug: 'air-wild-season-1',
         label: 'Season 1',
