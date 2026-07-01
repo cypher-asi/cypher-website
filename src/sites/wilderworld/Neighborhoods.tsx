@@ -73,6 +73,7 @@ const NEIGHBORHOODS: Neighborhood[] = [
     x: 62,
     y: 60,
     thumb: '/images/wilder-world/island_neighborhood_outline_Nexus.jpg',
+    shot: '/images/wilder-world/island_shot_nexus.png',
     blurb:
       'The crypto-financial core. Skyscrapers, DAOs, and data centers concentrate the on-chain economy, the place where capital, code, and governance converge.',
   },
