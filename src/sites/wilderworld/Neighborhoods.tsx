@@ -55,7 +55,7 @@ const NEIGHBORHOODS: Neighborhood[] = [
     x: 45,
     y: 45,
     thumb: '/images/wilder-world/island_neighborhood_outline_LittleMeow.jpg',
-    shot: '/images/wilder-world/island_shot_little_meow.png',
+    shot: '/images/wilder-world/island_shot_little_meow_01.png',
     blurb:
       'Rebellious, loud, and alive: the home of the Wilders. Entertainment-driven and fiercely independent, this is where culture is made and the spirit of the resistance burns brightest.',
   },
