@@ -300,6 +300,167 @@
 }
 
 /* ----------------------------------------------------------------------------
+   List view (OpenSea-style rows)
+   --------------------------------------------------------------------------- */
+.listView {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+/* Shared column template for the header + every row. */
+.listHeader,
+.row,
+.rowSkeleton {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 6rem 5rem 8rem 5.5rem;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0.85rem;
+}
+
+.listHeader {
+  position: sticky;
+  top: calc(var(--site-nav-offset, 0px) + 3.75rem);
+  z-index: 5;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  transition: top 300ms ease;
+}
+
+.colToken,
+.colTraits,
+.colPrice {
+  text-align: right;
+}
+
+.colAction {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.row {
+  border-bottom: 1px solid var(--color-border);
+  cursor: pointer;
+  color: inherit;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.row:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.row:focus-visible {
+  outline: 1px solid #ff6434;
+  outline-offset: -1px;
+}
+
+.rowItem {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-width: 0;
+}
+
+.rowThumb {
+  position: relative;
+  flex: 0 0 auto;
+  width: 2.4rem;
+  height: 2.4rem;
+  background: #000;
+  overflow: hidden;
+}
+
+.rowThumbImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rowThumbFallback {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #17171a, #0e0e10);
+}
+
+.rowName {
+  font-family: var(--font-display), system-ui, -apple-system, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rowMuted {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.rowPrice {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.buyLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  border: 1px solid var(--color-border);
+  padding: 0.3rem 0.6rem;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #ff6434;
+  text-decoration: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.buyLink:hover {
+  border-color: #ff6434;
+  background: rgba(255, 100, 52, 0.08);
+}
+
+/* List loading skeleton rows. */
+.rowSkeleton {
+  border-bottom: 1px solid var(--color-border);
+  grid-template-columns: 2.4rem minmax(0, 1fr);
+}
+
+.rowSkeleton:last-child {
+  border-bottom: none;
+}
+
+.rowSkeletonThumb,
+.rowSkeletonBar {
+  height: 2.4rem;
+  background: linear-gradient(100deg, #0e0e10 30%, #17171a 50%, #0e0e10 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.rowSkeletonBar {
+  height: 0.9rem;
+}
+
+/* ----------------------------------------------------------------------------
    Loading skeletons + empty state
    --------------------------------------------------------------------------- */
 .skeleton {
@@ -584,6 +745,17 @@
   .page {
     padding-inline: 1.25rem;
     padding-bottom: 4rem;
+  }
+
+  /* Drop the Token + Traits columns so rows stay readable on narrow screens. */
+  .listHeader,
+  .row {
+    grid-template-columns: minmax(0, 1fr) 7rem 5rem;
+  }
+
+  .colToken,
+  .colTraits {
+    display: none;
   }
 }
 

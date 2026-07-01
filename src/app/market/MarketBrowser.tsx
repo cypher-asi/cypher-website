@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowUpRight, ChevronDown, Grid2x2, Grid3x3, LayoutGrid } from 'lucide-react';
+import { ArrowUpRight, ChevronDown, Grid2x2, Grid3x3, LayoutGrid, List } from 'lucide-react';
 import type { WilderIndustry } from '@/lib/wilderCollections';
 import type { MarketNft } from '@/lib/opensea';
 import type { MarketCollection } from '@/app/api/market/collections/route';
@@ -48,8 +48,12 @@ export default function MarketBrowser({ industries }: Props) {
   const [openNav, setOpenNav] = useState<string | null>(null);
   const navRef = useRef<HTMLDivElement | null>(null);
   const railRef = useRef<HTMLElement | null>(null);
+  // Guards against a single close triggering more than one history.back()
+  // (history.back is async, so re-entrant calls would overshoot the grid).
+  const closingRef = useRef(false);
 
   const [gridSize, setGridSize] = useState<'lg' | 'md' | 'sm'>('md');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   // Index at which the most recently loaded batch starts, so each page of
   // results staggers in one-at-a-time relative to itself (not the whole list).
@@ -86,16 +90,29 @@ export default function MarketBrowser({ industries }: Props) {
     };
   }, []);
 
-  /* ----- Remember the preferred grid density ------------------------------ */
+  /* ----- Remember the preferred grid density + view mode ------------------ */
   useEffect(() => {
     const saved = localStorage.getItem('market-grid-size');
     if (saved === 'lg' || saved === 'md' || saved === 'sm') setGridSize(saved);
+    const savedView = localStorage.getItem('market-view');
+    if (savedView === 'grid' || savedView === 'list') setViewMode(savedView);
   }, []);
 
   const changeGridSize = useCallback((size: 'lg' | 'md' | 'sm') => {
     setGridSize(size);
+    setViewMode('grid');
     try {
       localStorage.setItem('market-grid-size', size);
+      localStorage.setItem('market-view', 'grid');
+    } catch {
+      /* ignore quota / privacy-mode errors */
+    }
+  }, []);
+
+  const showList = useCallback(() => {
+    setViewMode('list');
+    try {
+      localStorage.setItem('market-view', 'list');
     } catch {
       /* ignore quota / privacy-mode errors */
     }
@@ -109,6 +126,7 @@ export default function MarketBrowser({ industries }: Props) {
       const token = p.get('token');
       if (c && allEntries.some((e) => e.slug === c)) setActiveSlug(c);
       setModalId(token);
+      closingRef.current = false;
     };
     apply();
     window.addEventListener('popstate', apply);
@@ -265,6 +283,7 @@ export default function MarketBrowser({ industries }: Props) {
   const openModal = useCallback(
     (id: string, { replace = false }: { replace?: boolean } = {}) => {
       setModalId(id);
+      closingRef.current = false;
       const url = `?c=${activeSlug}&token=${id}`;
       const state = { token: id };
       // Opening from the grid pushes a single history entry; navigating the
@@ -276,8 +295,11 @@ export default function MarketBrowser({ industries }: Props) {
   );
 
   const closeModal = useCallback(() => {
-    if (window.history.state?.token) window.history.back();
-    else {
+    if (closingRef.current) return;
+    if (window.history.state?.token) {
+      closingRef.current = true;
+      window.history.back();
+    } else {
       setModalId(null);
       window.history.replaceState({}, '', `?c=${activeSlug}`);
     }
@@ -353,33 +375,48 @@ export default function MarketBrowser({ industries }: Props) {
           })}
         </nav>
 
-        <div className={styles.sizeToggle} role="group" aria-label="Grid size">
+        <div className={styles.sizeToggle} role="group" aria-label="View mode">
           <button
             type="button"
-            className={`${styles.sizeBtn} ${gridSize === 'lg' ? styles.sizeBtnActive : ''}`}
+            className={`${styles.sizeBtn} ${
+              viewMode === 'grid' && gridSize === 'lg' ? styles.sizeBtnActive : ''
+            }`}
             onClick={() => changeGridSize('lg')}
             aria-label="Large grid"
-            aria-pressed={gridSize === 'lg'}
+            aria-pressed={viewMode === 'grid' && gridSize === 'lg'}
           >
             <Grid2x2 size={16} />
           </button>
           <button
             type="button"
-            className={`${styles.sizeBtn} ${gridSize === 'md' ? styles.sizeBtnActive : ''}`}
+            className={`${styles.sizeBtn} ${
+              viewMode === 'grid' && gridSize === 'md' ? styles.sizeBtnActive : ''
+            }`}
             onClick={() => changeGridSize('md')}
             aria-label="Medium grid"
-            aria-pressed={gridSize === 'md'}
+            aria-pressed={viewMode === 'grid' && gridSize === 'md'}
           >
             <LayoutGrid size={16} />
           </button>
           <button
             type="button"
-            className={`${styles.sizeBtn} ${gridSize === 'sm' ? styles.sizeBtnActive : ''}`}
+            className={`${styles.sizeBtn} ${
+              viewMode === 'grid' && gridSize === 'sm' ? styles.sizeBtnActive : ''
+            }`}
             onClick={() => changeGridSize('sm')}
             aria-label="Small grid"
-            aria-pressed={gridSize === 'sm'}
+            aria-pressed={viewMode === 'grid' && gridSize === 'sm'}
           >
             <Grid3x3 size={16} />
+          </button>
+          <button
+            type="button"
+            className={`${styles.sizeBtn} ${viewMode === 'list' ? styles.sizeBtnActive : ''}`}
+            onClick={showList}
+            aria-label="List view"
+            aria-pressed={viewMode === 'list'}
+          >
+            <List size={16} />
           </button>
         </div>
       </div>
@@ -504,11 +541,29 @@ export default function MarketBrowser({ industries }: Props) {
         {/* ---- Center: NFT grid ---- */}
         <div className={styles.main}>
           {loading ? (
-            <div className={gridClass}>
-              {Array.from({ length: 12 }).map((_, i) => (
-                <div key={i} className={styles.skeleton} aria-hidden />
-              ))}
-            </div>
+            viewMode === 'list' ? (
+              <div className={styles.listView}>
+                <div className={styles.listHeader}>
+                  <span>Item</span>
+                  <span className={styles.colToken}>Token</span>
+                  <span className={styles.colTraits}>Traits</span>
+                  <span className={styles.colPrice}>Buy Now</span>
+                  <span className={styles.colAction} />
+                </div>
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <div key={i} className={styles.rowSkeleton} aria-hidden>
+                    <div className={styles.rowSkeletonThumb} />
+                    <div className={styles.rowSkeletonBar} />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className={gridClass}>
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <div key={i} className={styles.skeleton} aria-hidden />
+                ))}
+              </div>
+            )
           ) : error ? (
             <div className={styles.empty}>
               <p className={styles.emptyTitle}>No items to display</p>
@@ -528,6 +583,84 @@ export default function MarketBrowser({ industries }: Props) {
                 </a>
               )}
             </div>
+          ) : viewMode === 'list' ? (
+            <>
+              <div className={styles.listView}>
+                <div className={styles.listHeader}>
+                  <span>Item</span>
+                  <span className={styles.colToken}>Token</span>
+                  <span className={styles.colTraits}>Traits</span>
+                  <span className={styles.colPrice}>Buy Now</span>
+                  <span className={styles.colAction} />
+                </div>
+                {filtered.map((nft) => {
+                  const priceUsd = formatUsd(nft.priceEth, ethUsd);
+                  const price = priceUsd ?? formatEth(nft.priceEth) ?? '—';
+                  return (
+                    <div
+                      key={`${nft.contract}-${nft.identifier}`}
+                      className={styles.row}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => openModal(nft.identifier)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          openModal(nft.identifier);
+                        }
+                      }}
+                    >
+                      <div className={styles.rowItem}>
+                        <div className={styles.rowThumb}>
+                          {nft.image ? (
+                            <FadeInImage
+                              className={styles.rowThumbImg}
+                              src={nft.image}
+                              alt={nft.name}
+                              loading="lazy"
+                            />
+                          ) : (
+                            <div className={styles.rowThumbFallback} aria-hidden />
+                          )}
+                        </div>
+                        <span className={styles.rowName}>{nft.name}</span>
+                      </div>
+                      <span className={`${styles.colToken} ${styles.rowMuted}`}>
+                        #{nft.identifier}
+                      </span>
+                      <span className={`${styles.colTraits} ${styles.rowMuted}`}>
+                        {nft.traits.length}
+                      </span>
+                      <span className={`${styles.colPrice} ${styles.rowPrice}`}>{price}</span>
+                      <span className={styles.colAction}>
+                        <a
+                          className={styles.buyLink}
+                          href={`https://opensea.io/assets/${nft.chain}/${nft.contract}/${nft.identifier}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          Buy
+                          <ArrowUpRight size={13} />
+                        </a>
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+              {next && (
+                <div ref={sentinelRef} className={styles.loadMoreRow}>
+                  <button
+                    type="button"
+                    className={styles.loadMore}
+                    onClick={loadMore}
+                    disabled={loadingMore}
+                  >
+                    {loadingMore ? 'Loading…' : 'Load more'}
+                  </button>
+                </div>
+              )}
+            </>
           ) : (
             <>
               <div className={gridClass}>
