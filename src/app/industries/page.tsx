@@ -57,7 +57,7 @@ const INDUSTRIES: AccordionItem[] = [
     title: 'Cribs',
     description:
       'Design and own living spaces that showcase your collection and status in Wiami.',
-    image: '/images/wilder-world/build_construction.png',
+    image: '/images/wilder-world/industries_cribs.png',
   },
   {
     id: 'kicks',
