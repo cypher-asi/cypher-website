@@ -97,6 +97,7 @@ const NEIGHBORHOODS: Neighborhood[] = [
     x: 86,
     y: 75,
     thumb: '/images/wilder-world/island_neighborhood_outline_NorthStar.jpg',
+    shot: '/images/wilder-world/island_shot_north_star.png',
     blurb:
       "Serene, exclusive, and above it all. The luxury residential zone of quiet streets, skyline views, and rarefied calm where Wiami's elite reside.",
   },
