@@ -79,6 +79,20 @@ const INDUSTRIES: AccordionItem[] = [
   },
 ];
 
+// Collection header ("banner") images pulled from OpenSea and saved locally by
+// scripts/fetch-industry-heroes.mjs. Industries without a tradeable collection
+// (Avatars, Weapons) fall back to a placeholder.
+const HERO_IMAGES: Record<string, string> = {
+  land: '/images/wilder-world/industries/land.avif',
+  wheels: '/images/wilder-world/industries/wheels.avif',
+  beasts: '/images/wilder-world/industries/beasts.avif',
+  moto: '/images/wilder-world/industries/moto.avif',
+  pals: '/images/wilder-world/industries/pals.avif',
+  crafts: '/images/wilder-world/industries/crafts.avif',
+  cribs: '/images/wilder-world/industries/cribs.avif',
+  kicks: '/images/wilder-world/industries/kicks.avif',
+};
+
 export default function IndustriesPage() {
   return (
     <div className={styles.page}>
@@ -111,11 +125,16 @@ export default function IndustriesPage() {
           const industry = WILDER_INDUSTRIES.find((i) => i.id === it.id);
           const slug = industry?.collections[0]?.slug;
           const href = slug ? `/market?c=${slug}` : '/market';
+          const heroImage = HERO_IMAGES[it.id];
           return (
             <section key={it.id} id={`industry-${it.id}`} className={styles.industry}>
               <h2 className={styles.industryTitle}>{it.title}</h2>
               <div className={styles.industryHero} aria-hidden>
-                <span className={styles.industryHeroLabel}>{it.title} hero</span>
+                {heroImage ? (
+                  <FadeInImage className={styles.industryHeroImg} src={heroImage} alt="" />
+                ) : (
+                  <span className={styles.industryHeroLabel}>{it.title} hero</span>
+                )}
               </div>
               <Link href={href} className={`sci-btn sci-btn-primary ${styles.industryButton}`}>
                 View on Market
