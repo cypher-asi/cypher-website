@@ -34,10 +34,16 @@ export default function MarketBrowser({ industries }: Props) {
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(false);
 
-  const [traitCats, setTraitCats] = useState<TraitCategory[]>([]);
-  const [traitsLoading, setTraitsLoading] = useState(false);
   const [selected, setSelected] = useState<SelectedTraits>({});
   const [openTraitGroups, setOpenTraitGroups] = useState<Record<string, boolean>>({});
+
+  // The filter panel renders from this lagging view rather than the raw fetch
+  // state: the previous collection's filters stay visible until the new ones
+  // are ready, then slug + cats update together so the crossfade and height
+  // tween fire in the same beat (no collapse-to-empty flash).
+  const [filterView, setFilterView] = useState<{ slug: string; cats: TraitCategory[] }>(
+    { slug: '', cats: [] }
+  );
 
   const [openNav, setOpenNav] = useState<string | null>(null);
   const navRef = useRef<HTMLDivElement | null>(null);
@@ -142,16 +148,17 @@ export default function MarketBrowser({ industries }: Props) {
   useEffect(() => {
     if (!activeSlug) return;
     let alive = true;
-    setTraitCats([]);
-    setTraitsLoading(true);
+    // Keep the current filters on screen while the new ones load; only swap
+    // the displayed view once data arrives to avoid a mid-transition collapse.
     fetch(`/api/market/traits?slug=${encodeURIComponent(activeSlug)}`)
       .then((r) => r.json())
       .then((d: { categories?: TraitCategory[] }) => {
-        if (alive) setTraitCats(d.categories ?? []);
+        if (!alive) return;
+        setOpenTraitGroups({});
+        setFilterView({ slug: activeSlug, cats: d.categories ?? [] });
       })
-      .catch(() => {})
-      .finally(() => {
-        if (alive) setTraitsLoading(false);
+      .catch(() => {
+        if (alive) setFilterView({ slug: activeSlug, cats: [] });
       });
     return () => {
       alive = false;
@@ -376,7 +383,7 @@ export default function MarketBrowser({ industries }: Props) {
         {/* ---- Left rail: filters + info ---- */}
         <aside className={styles.rail} ref={railRef}>
           <div className={styles.panel}>
-            <AnimatedHeight innerClassName={styles.panelInner}>
+            <AnimatedHeight innerClassName={styles.panelInner} motionKey={filterView.slug}>
               <div className={styles.filtersHead}>
                 <p className={styles.railHeading}>Filters</p>
                 {selectedCount > 0 && (
@@ -385,11 +392,11 @@ export default function MarketBrowser({ industries }: Props) {
                   </button>
                 )}
               </div>
-              {traitsLoading ? null : traitCats.length === 0 ? (
+              {filterView.slug === '' ? null : filterView.cats.length === 0 ? (
                 <p className={styles.filtersEmpty}>No trait filters available.</p>
               ) : (
                 <div className={styles.traitGroups}>
-                  {traitCats.map((cat) => {
+                  {filterView.cats.map((cat) => {
                     const open = openTraitGroups[cat.type] ?? false;
                     return (
                       <div key={cat.type} className={styles.traitGroup}>
@@ -433,7 +440,7 @@ export default function MarketBrowser({ industries }: Props) {
 
           {/* Info panel */}
           <div className={styles.panel}>
-            <AnimatedHeight innerClassName={styles.panelInner}>
+            <AnimatedHeight innerClassName={styles.panelInner} motionKey={activeSlug}>
             <p className={styles.railHeading}>
               {activeMeta?.name ?? activeEntry?.label ?? activeIndustry?.name ?? 'Collection'}
             </p>
