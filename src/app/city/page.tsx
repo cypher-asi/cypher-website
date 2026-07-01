@@ -2,6 +2,7 @@ import { ArrowUpRight } from 'lucide-react';
 import { SectionHeader } from '@/components/SectionHeader';
 import CityShowcase from '@/sites/wilderworld/CityShowcase';
 import RegionSelector from '@/sites/wilderworld/RegionSelector';
+import IslandMap from '@/sites/wilderworld/IslandMap';
 import PlotMetrics from '@/sites/wilderworld/PlotMetrics';
 import Neighborhoods from '@/sites/wilderworld/Neighborhoods';
 import styles from './page.module.css';
@@ -39,13 +40,7 @@ export default function CityPage() {
         title="Nine Neighborhoods"
         subtitle="The Island is divided into distinct neighborhoods, each with its own character, industry, and role in the life of Wiami."
       />
-      <div className={styles.landplots}>
-        <img
-          className={styles.landplotsImg}
-          src="/images/wilder-world/island-landplots.webp"
-          alt="Map of the Island's neighborhoods"
-        />
-      </div>
+      <IslandMap />
       <PlotMetrics />
       <Neighborhoods />
     </div>

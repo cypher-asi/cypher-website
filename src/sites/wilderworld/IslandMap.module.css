@@ -1,0 +1,60 @@
+/* ============================================================================
+   Island map – overview map that toggles between the Neighborhoods and Plots
+   views via a segmented control pinned to the bottom-right.
+   ============================================================================ */
+
+.frame {
+  position: relative;
+  margin-top: clamp(1.5rem, 4vh, 3rem);
+  overflow: hidden;
+  background: #000;
+  border: 1px solid var(--color-border);
+  line-height: 0;
+}
+
+.img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.controls {
+  position: absolute;
+  bottom: clamp(0.75rem, 2vw, 1.5rem);
+  right: clamp(0.75rem, 2vw, 1.5rem);
+  z-index: 2;
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  backdrop-filter: blur(4px);
+  line-height: normal;
+}
+
+.control {
+  appearance: none;
+  cursor: pointer;
+  padding: 0.4rem 0.8rem;
+  background: none;
+  border: none;
+  border-radius: 2px;
+  font-family: var(--font-mono), 'Fira Code', monospace;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.control:hover {
+  color: #fff;
+}
+
+.controlActive,
+.controlActive:hover {
+  color: #0a0a0a;
+  background: #f97316;
+}
