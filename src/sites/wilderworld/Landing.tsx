@@ -192,7 +192,7 @@ export default function WilderworldLanding() {
           />
           <div className={styles.cityMap}>
             <FadeInImage
-              className={styles.cityMapVideo}
+              className={`${styles.cityMapVideo} ${styles.mediaRight}`}
               src={
                 isMobile
                   ? mobileSrc('spartan_attack', format)
@@ -221,7 +221,7 @@ export default function WilderworldLanding() {
           />
           <div className={styles.cityMap}>
             <FadeInImage
-              className={styles.cityMapVideo}
+              className={`${styles.cityMapVideo} ${styles.mediaRight}`}
               src={
                 isMobile
                   ? mobileSrc('trinity_fire', format)

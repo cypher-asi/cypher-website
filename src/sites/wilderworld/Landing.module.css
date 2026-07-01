@@ -401,6 +401,12 @@
     aspect-ratio: 3 / 4;
     margin-top: clamp(1.25rem, 5vw, 2rem);
   }
+
+  /* Pin specific cropped images to the right edge on mobile so their subject
+     stays in frame (City Under Attack, Fight For Freedom, Auric faction bg). */
+  .mediaRight {
+    object-position: right center;
+  }
 }
 
 /* ============================================================================

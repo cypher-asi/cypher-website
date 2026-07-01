@@ -38,7 +38,9 @@ export default function FactionSelector() {
   return (
     <div className={styles.frame}>
       <FadeInImage
-        className={styles.bg}
+        className={`${styles.bg} ${
+          selected.name === 'Auric' ? styles.mediaRight : ''
+        }`}
         src={isMobile ? mobileSrc(selected.mobile, format) : selected.image}
         alt=""
         aria-hidden
