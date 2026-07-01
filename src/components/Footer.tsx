@@ -47,7 +47,12 @@ export function Footer({ footer }: { footer: FooterConfig }) {
   const withCompany = useCallback(
     (href: string) => {
       if (!companyParam || !href.startsWith('/')) return href;
-      return `${href}${href.includes('?') ? '&' : '?'}company=${companyParam}`;
+      // Insert the param before any hash so `/industries#industry-land` becomes
+      // `/industries?company=X#industry-land` (a valid, still-scrolling URL).
+      const hashIndex = href.indexOf('#');
+      const path = hashIndex === -1 ? href : href.slice(0, hashIndex);
+      const hash = hashIndex === -1 ? '' : href.slice(hashIndex);
+      return `${path}${path.includes('?') ? '&' : '?'}company=${companyParam}${hash}`;
     },
     [companyParam]
   );
