@@ -83,14 +83,16 @@ const INDUSTRIES: AccordionItem[] = [
 // scripts/fetch-industry-heroes.mjs. Industries without a tradeable collection
 // (Avatars, Weapons) fall back to a placeholder.
 const HERO_IMAGES: Record<string, string> = {
-  land: '/images/wilder-world/industries/land.avif',
-  wheels: '/images/wilder-world/industries/wheels.avif',
-  beasts: '/images/wilder-world/industries/beasts.avif',
-  moto: '/images/wilder-world/industries/moto.avif',
-  pals: '/images/wilder-world/industries/pals.avif',
-  crafts: '/images/wilder-world/industries/crafts.avif',
-  cribs: '/images/wilder-world/industries/cribs.avif',
-  kicks: '/images/wilder-world/industries/kicks.avif',
+  land: '/images/wilder-world/industries_land_hero.png',
+  avatars: '/images/wilder-world/industries_avatars_hero.png',
+  wheels: '/images/wilder-world/industries_wheels_hero.png',
+  weapons: '/images/wilder-world/industries_weapons_hero.jpg',
+  beasts: '/images/wilder-world/industries_beasts_hero.png',
+  moto: '/images/wilder-world/industries_moto_hero.png',
+  pals: '/images/wilder-world/industries_gens_hero.jpg',
+  crafts: '/images/wilder-world/industries_crafts_hero.png',
+  cribs: '/images/wilder-world/industries_cribs_hero.png',
+  kicks: '/images/wilder-world/industries_kicks_hero.png',
 };
 
 export default function IndustriesPage() {
