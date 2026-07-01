@@ -94,15 +94,6 @@ const NEIGHBORHOODS: Neighborhood[] = [
     blurb:
       "Serene, exclusive, and above it all. The luxury residential zone of quiet streets, skyline views, and rarefied calm where Wiami's elite reside.",
   },
-  {
-    name: 'Shanty Town',
-    tag: 'Frontier',
-    x: 50,
-    y: 50,
-    full: true,
-    blurb:
-      'The raw underbelly of Wiami. A dense, improvised sprawl where outsiders and hustlers carve out lives off the grid. Gritty, resourceful, and unpredictable, it is the frontier within the city.',
-  },
 ];
 
 function zoomStyle(n: Neighborhood) {
