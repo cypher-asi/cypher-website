@@ -1,24 +1,48 @@
 /* ============================================================================
-   Market – a live NFT marketplace. The NFT grid fills the main column while a
-   right-hand rail lists Wilder World industries/collections. Container width and
-   padding mirror the Universe / Gameplay / City / Economy pages so the page
-   reads consistently with the rest of the site.
+   Market – a live NFT marketplace. OpenSea-style three-column layout:
+   trait filters on the left, the NFT grid in the center, and the industry /
+   collection rail plus collection info on the right.
    ============================================================================ */
 
 .page {
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
   padding-inline: clamp(0.75rem, 2vw, 1.5rem);
+  padding-top: clamp(4.5rem, 10vh, 6.5rem);
   padding-bottom: clamp(4rem, 10vh, 8rem);
   display: flex;
   flex-direction: column;
 }
 
-/* Grid on the left, sticky industry rail on the right. */
+/* Tight one-line page header (replaces the standard SectionHeader). */
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0.75rem;
+}
+
+.headerTitle {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: clamp(1rem, 2.2vw, 1.35rem);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.headerSub {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+/* filters | grid | rail */
 .layout {
   display: grid;
-  grid-template-columns: 1fr 18rem;
+  grid-template-columns: 15rem 1fr 18rem;
   gap: clamp(1rem, 2.5vw, 2rem);
-  margin-top: clamp(1.5rem, 4vh, 3rem);
+  margin-top: clamp(1rem, 3vh, 2rem);
   align-items: start;
 }
 
@@ -41,8 +65,12 @@
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   overflow: hidden;
+  text-align: left;
   text-decoration: none;
   color: inherit;
+  cursor: pointer;
+  appearance: none;
+  padding: 0;
   transition: border-color 0.18s ease, transform 0.18s ease;
 }
 
@@ -64,7 +92,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, opacity 0.5s ease;
 }
 
 .card:hover .cardImage {
@@ -79,6 +107,9 @@
 
 .cardBody {
   padding: 0.6rem 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
 }
 
 .cardName {
@@ -91,6 +122,12 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.cardPrice {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
 }
 
 /* ----------------------------------------------------------------------------
@@ -140,7 +177,7 @@
 }
 
 .emptyLink,
-.sidebarOpensea {
+.railOpensea {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
@@ -151,7 +188,7 @@
 }
 
 .emptyLink:hover,
-.sidebarOpensea:hover {
+.railOpensea:hover {
   text-decoration: underline;
 }
 
@@ -190,20 +227,9 @@
 }
 
 /* ----------------------------------------------------------------------------
-   Industry sidebar
+   Shared rail styling (filters + industries)
    --------------------------------------------------------------------------- */
-.sidebar {
-  position: sticky;
-  top: 96px;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  padding: clamp(1rem, 2vw, 1.5rem);
-}
-
-.sidebarHeading {
+.railHeading {
   font-family: var(--font-display), system-ui, sans-serif;
   font-size: 0.7rem;
   font-weight: 700;
@@ -211,6 +237,133 @@
   text-transform: uppercase;
   color: var(--color-text-secondary);
   margin: 0;
+}
+
+.filters,
+.rail {
+  position: sticky;
+  top: 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  padding: clamp(0.85rem, 1.5vw, 1.25rem);
+  max-height: calc(100vh - 120px);
+  overflow: auto;
+}
+
+/* ----------------------------------------------------------------------------
+   Filter panel (left)
+   --------------------------------------------------------------------------- */
+.filtersHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.clearBtn {
+  appearance: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ff6434;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.filtersEmpty {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.traitGroups {
+  display: flex;
+  flex-direction: column;
+}
+
+.traitGroup {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.traitGroupHead {
+  appearance: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.chev {
+  transition: transform 0.18s ease;
+}
+
+.chevOpen {
+  transform: rotate(180deg);
+  transition: transform 0.18s ease;
+}
+
+.traitValues {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding-bottom: 0.6rem;
+  max-height: 14rem;
+  overflow: auto;
+}
+
+.traitValue {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.traitValueLabel {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.traitValueCount {
+  font-size: 0.72rem;
+  opacity: 0.7;
+}
+
+/* ----------------------------------------------------------------------------
+   Industry rail (right)
+   --------------------------------------------------------------------------- */
+.industryList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.industry {
+  display: flex;
+  flex-direction: column;
+}
+
+.industryName {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--color-text-primary);
+  margin: 0.5rem 0 0.15rem;
 }
 
 .collectionList {
@@ -222,34 +375,27 @@
   appearance: none;
   background: none;
   border: none;
-  border-bottom: 1px solid var(--color-border);
   cursor: pointer;
   text-align: left;
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 0.5rem;
-  padding: 0.6rem 0;
-  font-family: var(--font-display), system-ui, -apple-system, sans-serif;
+  padding: 0.3rem 0 0.3rem 0.75rem;
+  font-family: var(--font-sans), system-ui, sans-serif;
   transition: color 0.18s ease;
 }
 
-.collectionItem:last-child {
-  border-bottom: none;
-}
-
 .collectionLabel {
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  text-transform: uppercase;
+  font-size: 0.85rem;
+  font-weight: 500;
   color: rgba(255, 255, 255, 0.55);
   transition: color 0.18s ease;
 }
 
 .collectionFloor {
   font-family: var(--font-sans), system-ui, sans-serif;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: var(--color-text-secondary);
   white-space: nowrap;
 }
@@ -263,60 +409,79 @@
   color: #ff6434;
 }
 
-.sidebarBlurb {
-  font-size: 0.85rem;
+/* ----------------------------------------------------------------------------
+   Collection info panel
+   --------------------------------------------------------------------------- */
+.info {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border);
+  margin-top: 0.5rem;
+}
+
+.infoRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.45rem 0.65rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.infoRow:last-child {
+  border-bottom: none;
+}
+
+.infoLabel {
+  font-size: 0.72rem;
+  color: var(--color-text-secondary);
+}
+
+.infoValue {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.railBlurb {
+  font-size: 0.82rem;
   line-height: 1.55;
   color: var(--color-text-secondary);
   margin: 0.25rem 0 0;
 }
 
 /* ----------------------------------------------------------------------------
-   Responsive – collapse the two-column layout and turn the rail into a
-   horizontally scrollable chip row above the grid.
+   Responsive
    --------------------------------------------------------------------------- */
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
+  .layout {
+    grid-template-columns: 1fr 16rem;
+  }
+
+  .filters {
+    display: none;
+  }
+}
+
+@media (max-width: 820px) {
   .layout {
     grid-template-columns: 1fr;
   }
 
-  .sidebar {
+  .rail {
     position: static;
     order: -1;
-  }
-
-  .collectionList {
-    flex-direction: row;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    gap: 0.5rem;
-    scrollbar-width: none;
-  }
-
-  .collectionList::-webkit-scrollbar {
-    display: none;
-  }
-
-  .collectionItem {
-    border-bottom: none;
-    border: 1px solid var(--color-border);
-    padding: 0.45rem 0.85rem;
-    white-space: nowrap;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.1rem;
-  }
-
-  .collectionItem:last-child {
-    border: 1px solid var(--color-border);
-  }
-
-  .collectionLabel {
-    font-size: 0.8rem;
+    max-height: none;
   }
 }
 
 @media (max-width: 760px) {
   .page {
-    padding: calc(72px + 2rem) 1.25rem 4rem;
+    padding: calc(72px + 1.5rem) 1.25rem 4rem;
   }
 }

@@ -1,5 +1,9 @@
+import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 import { SectionHeader } from '@/components/SectionHeader';
 import ImageAccordion, { type AccordionItem } from '@/components/ImageAccordion';
+import { WILDER_INDUSTRIES } from '@/lib/wilderCollections';
+import { FadeInImage } from '@/components/FadeInImage';
 import styles from './page.module.css';
 
 const INDUSTRIES: AccordionItem[] = [
@@ -86,7 +90,7 @@ export default function IndustriesPage() {
       />
 
       <div className={styles.hero}>
-        <img
+        <FadeInImage
           className={styles.heroImg}
           src="/images/wilder-world/industries.avif"
           alt=""
@@ -101,6 +105,26 @@ export default function IndustriesPage() {
       />
 
       <ImageAccordion items={INDUSTRIES} />
+
+      <div className={styles.industryList}>
+        {INDUSTRIES.map((it) => {
+          const industry = WILDER_INDUSTRIES.find((i) => i.id === it.id);
+          const slug = industry?.collections[0]?.slug;
+          const href = slug ? `/market?c=${slug}` : '/market';
+          return (
+            <section key={it.id} id={`industry-${it.id}`} className={styles.industry}>
+              <h2 className={styles.industryTitle}>{it.title}</h2>
+              <div className={styles.industryHero} aria-hidden>
+                <span className={styles.industryHeroLabel}>{it.title} hero</span>
+              </div>
+              <Link href={href} className={`sci-btn sci-btn-primary ${styles.industryButton}`}>
+                View on Market
+                <ArrowRight size={15} />
+              </Link>
+            </section>
+          );
+        })}
+      </div>
     </div>
   );
 }

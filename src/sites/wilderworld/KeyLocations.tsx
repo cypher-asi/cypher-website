@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { FadeInImage } from '@/components/FadeInImage';
 import styles from './KeyLocations.module.css';
 
 type Location = { name: string; image: string; blurb: string };
@@ -67,7 +68,7 @@ export default function KeyLocations() {
 
   return (
     <div className={styles.frame}>
-      <img
+      <FadeInImage
         key={selected.name}
         className={styles.bg}
         src={selected.image}

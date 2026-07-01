@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { ArrowUpRight, Clock, Link2, X } from 'lucide-react';
 import type { Product } from './ProductGrid';
 import { XIcon } from './ProductGrid';
+import { FadeInImage } from '@/components/FadeInImage';
 import styles from './ProductModal.module.css';
 
 interface ProductModalProps {
@@ -85,7 +86,7 @@ export function ProductModal({ product, gridRect, onClose }: ProductModalProps) 
           }
         >
           {!product.image && product.logo && (
-            <img
+            <FadeInImage
               className={styles.mediaLogo}
               src={product.logo}
               alt={product.name}

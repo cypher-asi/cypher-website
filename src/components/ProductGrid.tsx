@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { ArrowUpRight, Clock, Link2 } from 'lucide-react';
 import { ProductModal } from './ProductModal';
+import { FadeInImage } from '@/components/FadeInImage';
 import styles from '@/sites/cypher/Landing.module.css';
 
 export function XIcon({ size = 12 }: { size?: number }) {
@@ -230,7 +231,7 @@ function CardInner({
         <span className={styles.cardBody}>
           <span className={styles.cardLogoSection}>
             {product.logo ? (
-              <img
+              <FadeInImage
                 className={styles.cardLogo}
                 src={product.logo}
                 alt={product.name}

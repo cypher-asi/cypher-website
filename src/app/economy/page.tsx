@@ -1,4 +1,5 @@
 import { SectionHeader } from '@/components/SectionHeader';
+import { FadeInImage } from '@/components/FadeInImage';
 import styles from './page.module.css';
 
 export default function EconomyPage() {
@@ -12,7 +13,7 @@ export default function EconomyPage() {
       />
 
       <div className={styles.hero}>
-        <img className={styles.heroImg} src="/images/wilder-world/gear.avif" alt="" aria-hidden />
+        <FadeInImage className={styles.heroImg} src="/images/wilder-world/gear.avif" alt="" aria-hidden />
       </div>
 
       <section className={styles.section}>
@@ -22,7 +23,7 @@ export default function EconomyPage() {
           subtitle="Mine, refine, build, and sell — every step is onchain, and every asset is yours to trade."
         />
         <div className={styles.diagram}>
-          <img
+          <FadeInImage
             className={styles.diagramImg}
             src="/images/wilder-world/mine_workflow.avif"
             alt="Economy workflow: mine resources, refine to panels, build, then sell"
@@ -37,7 +38,7 @@ export default function EconomyPage() {
           subtitle="Extract raw materials across Wiami's resource-rich mainland. Every haul mints as ERC-20 resource tokens you can trade or sell for real money."
         />
         <div className={styles.media}>
-          <img className={styles.mediaImg} src="/images/wilder-world/mining.png" alt="" aria-hidden />
+          <FadeInImage className={styles.mediaImg} src="/images/wilder-world/mining.png" alt="" aria-hidden />
         </div>
       </section>
 
@@ -48,7 +49,7 @@ export default function EconomyPage() {
           subtitle="Convert twelve core materials — over 4.5 billion resources in all, from abundant Iron to scarce Cobalt and Lithium — into ERC-1155 building panels."
         />
         <div className={styles.diagram}>
-          <img
+          <FadeInImage
             className={styles.diagramImg}
             src="/images/wilder-world/resources.avif"
             alt="Resource breakdown across twelve materials with total supply"
@@ -63,7 +64,7 @@ export default function EconomyPage() {
           subtitle="Combine building panels to manufacture vehicles, gear, and structures on the assembly line — each a tradeable onchain asset."
         />
         <div className={styles.media}>
-          <img className={styles.mediaImg} src="/images/wilder-world/wiami_droid_assembly_line.jpg" alt="" aria-hidden />
+          <FadeInImage className={styles.mediaImg} src="/images/wilder-world/wiami_droid_assembly_line.jpg" alt="" aria-hidden />
         </div>
       </section>
 
@@ -74,7 +75,7 @@ export default function EconomyPage() {
           subtitle="List your creations in Wiami's marketplaces and shops, selling to other players for real money."
         />
         <div className={styles.media}>
-          <img className={styles.mediaImg} src="/images/wilder-world/wiami_shop_interior.png" alt="" aria-hidden />
+          <FadeInImage className={styles.mediaImg} src="/images/wilder-world/wiami_shop_interior.png" alt="" aria-hidden />
         </div>
       </section>
     </div>

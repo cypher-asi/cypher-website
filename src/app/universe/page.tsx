@@ -1,4 +1,5 @@
 import { SectionHeader } from '@/components/SectionHeader';
+import { FadeInImage } from '@/components/FadeInImage';
 import styles from './page.module.css';
 
 type Block = { kind: 'p' | 'lead'; text: string };
@@ -139,7 +140,7 @@ export default function UniversePage() {
             }
           >
             <div className={styles.photo}>
-              <img
+              <FadeInImage
                 className={`${styles.photoImg} ${section.focusLower ? styles.photoImgFocusLower : ''}`}
                 src={section.image}
                 alt=""

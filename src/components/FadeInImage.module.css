@@ -1,0 +1,16 @@
+.image {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.loaded {
+  opacity: 1;
+}
+
+/* Respect users who prefer reduced motion: show images immediately. */
+@media (prefers-reduced-motion: reduce) {
+  .image {
+    opacity: 1;
+    transition: none;
+  }
+}

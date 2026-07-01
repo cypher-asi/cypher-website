@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { FadeInImage } from '@/components/FadeInImage';
 import styles from './Landing.module.css';
 
 type Faction = { name: string; image: string };
@@ -33,7 +34,7 @@ export default function FactionSelector() {
 
   return (
     <div className={styles.frame}>
-      <img className={styles.bg} src={selected.image} alt="" aria-hidden />
+      <FadeInImage className={styles.bg} src={selected.image} alt="" aria-hidden />
       <div className={styles.scrimDiagonal} aria-hidden />
       <div className={styles.overlay}>
         <div className={styles.factionGroups}>

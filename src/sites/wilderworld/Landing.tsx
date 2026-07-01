@@ -5,6 +5,7 @@ import { SectionHeader } from '@/components/SectionHeader';
 import GameplayCard, { type GameplayCardProps } from './GameplayCard';
 import FactionSelector from './FactionSelector';
 import NewsCarousel from './NewsCarousel';
+import { FadeInImage } from '@/components/FadeInImage';
 import styles from './Landing.module.css';
 
 const EARLY_ACCESS_URL =
@@ -143,7 +144,7 @@ export default function WilderworldLanding() {
             }
           />
           <div className={styles.cityMap}>
-            <img
+            <FadeInImage
               className={styles.cityMapVideo}
               src="/images/wilder-world/spartan_attack.png"
               alt=""
@@ -168,7 +169,7 @@ export default function WilderworldLanding() {
             }
           />
           <div className={styles.cityMap}>
-            <img
+            <FadeInImage
               className={styles.cityMapVideo}
               src="/images/wilder-world/trinity_fire.png"
               alt=""

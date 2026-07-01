@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server';
-import { getCollectionBySlug } from '@/lib/wilderCollections';
-import { openseaFetch, type OpenSeaCollection, type OpenSeaNft } from '@/lib/opensea';
+import { getEntryBySlug } from '@/lib/wilderCollections';
+import {
+  fetchNftByContract,
+  fetchBestListingsMap,
+  openseaFetch,
+  type OpenSeaCollection,
+  type OpenSeaNft,
+} from '@/lib/opensea';
 
 export const revalidate = 300;
 
@@ -12,59 +18,71 @@ export type MarketItem = {
   collectionSlug: string;
   collectionName: string;
   traits: Array<{ type: string; value: string }>;
+  priceEth: number | null;
   openseaUrl: string;
 };
 
 /**
- * GET /api/market/item?slug=<collection>&identifier=<tokenId>
- * Resolves the collection's contract from OpenSea, then returns full metadata
- * (traits, description, image) for a single NFT.
+ * GET /api/market/item?slug=<collection>&identifier=<tokenId>&contract=&chain=
+ *
+ * Resolves full metadata for a single NFT. The previous implementation looked
+ * up the collection by slug and then picked the *first* contract, which was
+ * wrong for umbrella slugs (e.g. `wilderworld`) and produced "Item
+ * unavailable". We now resolve directly by the token's own contract + chain
+ * (passed from the grid, with the configured contract as a fallback).
  */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const slug = searchParams.get('slug');
   const identifier = searchParams.get('identifier');
+  const contractParam = searchParams.get('contract');
+  const chainParam = searchParams.get('chain');
 
-  const config = slug ? getCollectionBySlug(slug) : undefined;
-  if (!config || !identifier) {
+  const entry = slug ? getEntryBySlug(slug) : undefined;
+  if (!entry || !identifier) {
     return NextResponse.json({ item: null }, { status: 400 });
   }
 
-  const detail = await openseaFetch<OpenSeaCollection>(
-    `/collection/${encodeURIComponent(config.slug)}`
-  );
-  const contractEntry =
-    detail?.contracts?.find((c) => c.chain === config.chain) ?? detail?.contracts?.[0];
+  const chain = chainParam || entry.chain;
+  let contract = contractParam || entry.contract || null;
 
-  if (!contractEntry) {
+  // Last-resort: resolve a contract from the collection detail.
+  let detail: OpenSeaCollection | null = null;
+  if (!contract) {
+    detail = await openseaFetch<OpenSeaCollection>(
+      `/collection/${encodeURIComponent(entry.slug)}`
+    );
+    const contractEntry =
+      detail?.contracts?.find((c) => c.chain === chain) ?? detail?.contracts?.[0];
+    contract = contractEntry?.address ?? null;
+  }
+
+  if (!contract) {
     return NextResponse.json({ item: null }, { status: 404 });
   }
 
-  const nftRes = await openseaFetch<{ nft: OpenSeaNft }>(
-    `/chain/${encodeURIComponent(contractEntry.chain)}/contract/${encodeURIComponent(
-      contractEntry.address
-    )}/nfts/${encodeURIComponent(identifier)}`
-  );
-
-  const nft = nftRes?.nft;
+  const nft: OpenSeaNft | null = await fetchNftByContract(chain, contract, identifier);
   if (!nft) {
     return NextResponse.json({ item: null }, { status: 404 });
   }
 
+  const priceMap = await fetchBestListingsMap(entry.slug);
+
   const item: MarketItem = {
     identifier: nft.identifier,
-    name: nft.name || `${config.industry} #${nft.identifier}`,
+    name: nft.name || `${entry.label ?? entry.slug} #${nft.identifier}`,
     image: nft.display_image_url || nft.image_url || null,
     description: nft.description ?? null,
-    collectionSlug: config.slug,
-    collectionName: detail?.name ?? config.industry,
+    collectionSlug: entry.slug,
+    collectionName: detail?.name ?? entry.label ?? entry.slug,
     traits: (nft.traits ?? []).map((t) => ({
       type: t.trait_type,
       value: String(t.value),
     })),
+    priceEth: priceMap[nft.identifier] ?? null,
     openseaUrl:
       nft.opensea_url ||
-      `https://opensea.io/assets/${contractEntry.chain}/${contractEntry.address}/${nft.identifier}`,
+      `https://opensea.io/assets/${chain}/${contract}/${nft.identifier}`,
   };
 
   return NextResponse.json({ item });

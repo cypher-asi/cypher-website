@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import type { NewsItem } from '@/app/api/news/route';
+import { FadeInImage } from '@/components/FadeInImage';
 import styles from './Landing.module.css';
 
 function formatDate(date: string | null): string | null {
@@ -44,7 +45,7 @@ export default function NewsCarousel() {
           rel="noopener noreferrer"
         >
           {item.image ? (
-            <img
+            <FadeInImage
               className={styles.newsImage}
               src={item.image}
               alt=""

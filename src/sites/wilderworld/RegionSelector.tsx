@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { FadeInImage } from '@/components/FadeInImage';
 import styles from './RegionSelector.module.css';
 
 type Status = 'LIVE' | 'PLANNING' | 'FUTURE';
@@ -38,14 +39,14 @@ export default function RegionSelector() {
       <div className={styles.tag}>{selected.status}</div>
       {/* Dim base map of the whole world. Fixed in place; only the highlighted
           territory changes when a different region is selected. */}
-      <img
+      <FadeInImage
         className={styles.base}
         src="/images/wilder-world/map-base.webp"
         alt=""
         aria-hidden
       />
       {/* Selected territory lights up on top of the base. */}
-      <img
+      <FadeInImage
         key={selected.name}
         className={styles.highlight}
         src={selected.image}

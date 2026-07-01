@@ -2,6 +2,7 @@
 
 import { useRef } from 'react';
 import Link from 'next/link';
+import { FadeInImage } from '@/components/FadeInImage';
 import styles from './Landing.module.css';
 
 export type GameplayCardProps = {
@@ -47,7 +48,7 @@ export default function GameplayCard({
           aria-hidden
         />
       ) : image ? (
-        <img className={styles.gameplayVideo} src={image} alt="" aria-hidden />
+        <FadeInImage className={styles.gameplayVideo} src={image} alt="" aria-hidden />
       ) : null}
       <h3 className={styles.gameplayTitle}>{title}</h3>
       <div className={styles.gameplayDescWrap}>
