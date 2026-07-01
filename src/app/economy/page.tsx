@@ -34,7 +34,7 @@ export default function EconomyPage() {
         <SectionHeader
           eyebrow="Mine"
           title="Harvest the Frontier"
-          subtitle="Extract raw materials across Wiami's resource-rich mainland. Every haul mints as ERC-20 resource tokens, backed by $WILD."
+          subtitle="Extract raw materials across Wiami's resource-rich mainland. Every haul mints as ERC-20 resource tokens you can trade or sell for real money."
         />
         <div className={styles.media}>
           <img className={styles.mediaImg} src="/images/wilder-world/mining.png" alt="" aria-hidden />
@@ -71,7 +71,7 @@ export default function EconomyPage() {
         <SectionHeader
           eyebrow="Sell"
           title="Turn Assets to Income"
-          subtitle="List your creations in Wiami's marketplaces and shops, selling to other players for $WILD."
+          subtitle="List your creations in Wiami's marketplaces and shops, selling to other players for real money."
         />
         <div className={styles.media}>
           <img className={styles.mediaImg} src="/images/wilder-world/wiami_shop_interior.png" alt="" aria-hidden />

@@ -19,7 +19,7 @@ const REGIONS: Region[] = [
     image: '/images/wilder-world/map-mainland.webp',
     status: 'PLANNING',
     blurb:
-      'A resource-rich frontier of 40,000 onchain Land parcels, fueling the mining that powers the $WILD economy.',
+      'A resource-rich frontier of 40,000 onchain Land parcels, fueling the mining of resources you can sell for real money.',
   },
   {
     name: "No Man's Land",

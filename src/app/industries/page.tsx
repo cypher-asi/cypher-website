@@ -7,7 +7,7 @@ const INDUSTRIES: AccordionItem[] = [
     id: 'land',
     title: 'Land',
     description:
-      'Claim and develop onchain parcels across Wiami, the foundation of mining and the $WILD economy.',
+      'Claim and develop onchain parcels across Wiami, the foundation of mining resources you can sell for real money.',
     image: '/images/wilder-world/industries_land.png',
   },
   {
