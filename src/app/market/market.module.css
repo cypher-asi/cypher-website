@@ -1,0 +1,322 @@
+/* ============================================================================
+   Market – a live NFT marketplace. The NFT grid fills the main column while a
+   right-hand rail lists Wilder World industries/collections. Container width and
+   padding mirror the Universe / Gameplay / City / Economy pages so the page
+   reads consistently with the rest of the site.
+   ============================================================================ */
+
+.page {
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  padding-inline: clamp(0.75rem, 2vw, 1.5rem);
+  padding-bottom: clamp(4rem, 10vh, 8rem);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Grid on the left, sticky industry rail on the right. */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 18rem;
+  gap: clamp(1rem, 2.5vw, 2rem);
+  margin-top: clamp(1.5rem, 4vh, 3rem);
+  align-items: start;
+}
+
+.main {
+  min-width: 0;
+}
+
+/* ----------------------------------------------------------------------------
+   NFT grid + cards
+   --------------------------------------------------------------------------- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(9rem, 15vw, 13rem), 1fr));
+  gap: clamp(0.5rem, 1.2vw, 1rem);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.18s ease, transform 0.18s ease;
+}
+
+.card:hover {
+  border-color: #ff6434;
+  transform: translateY(-2px);
+}
+
+.cardImageWrap {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  background: #000;
+  overflow: hidden;
+}
+
+.cardImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.card:hover .cardImage {
+  transform: scale(1.04);
+}
+
+.cardImageFallback {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #17171a, #0e0e10);
+}
+
+.cardBody {
+  padding: 0.6rem 0.7rem;
+}
+
+.cardName {
+  display: block;
+  font-family: var(--font-display), system-ui, -apple-system, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ----------------------------------------------------------------------------
+   Loading skeletons + empty state
+   --------------------------------------------------------------------------- */
+.skeleton {
+  aspect-ratio: 1 / 1;
+  background: linear-gradient(100deg, #0e0e10 30%, #17171a 50%, #0e0e10 70%);
+  background-size: 200% 100%;
+  border: 1px solid var(--color-border);
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: clamp(2rem, 6vw, 4rem);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.emptyTitle {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.emptyBody {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--color-text-secondary);
+  margin: 0;
+  max-width: 34rem;
+}
+
+.emptyLink,
+.sidebarOpensea {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #ff6434;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.emptyLink:hover,
+.sidebarOpensea:hover {
+  text-decoration: underline;
+}
+
+/* ----------------------------------------------------------------------------
+   Load more
+   --------------------------------------------------------------------------- */
+.loadMoreRow {
+  display: flex;
+  justify-content: center;
+  padding-block: clamp(1.5rem, 4vh, 2.5rem);
+}
+
+.loadMore {
+  appearance: none;
+  cursor: pointer;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  padding: 0.7rem 1.6rem;
+  transition: border-color 0.18s ease, color 0.18s ease;
+}
+
+.loadMore:hover:not(:disabled) {
+  border-color: #ff6434;
+  color: #ff6434;
+}
+
+.loadMore:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+/* ----------------------------------------------------------------------------
+   Industry sidebar
+   --------------------------------------------------------------------------- */
+.sidebar {
+  position: sticky;
+  top: 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  padding: clamp(1rem, 2vw, 1.5rem);
+}
+
+.sidebarHeading {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.collectionList {
+  display: flex;
+  flex-direction: column;
+}
+
+.collectionItem {
+  appearance: none;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.6rem 0;
+  font-family: var(--font-display), system-ui, -apple-system, sans-serif;
+  transition: color 0.18s ease;
+}
+
+.collectionItem:last-child {
+  border-bottom: none;
+}
+
+.collectionLabel {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  transition: color 0.18s ease;
+}
+
+.collectionFloor {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.collectionItem:hover .collectionLabel {
+  color: #fff;
+}
+
+.collectionItemActive .collectionLabel,
+.collectionItemActive:hover .collectionLabel {
+  color: #ff6434;
+}
+
+.sidebarBlurb {
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--color-text-secondary);
+  margin: 0.25rem 0 0;
+}
+
+/* ----------------------------------------------------------------------------
+   Responsive – collapse the two-column layout and turn the rail into a
+   horizontally scrollable chip row above the grid.
+   --------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+    order: -1;
+  }
+
+  .collectionList {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 0.5rem;
+    scrollbar-width: none;
+  }
+
+  .collectionList::-webkit-scrollbar {
+    display: none;
+  }
+
+  .collectionItem {
+    border-bottom: none;
+    border: 1px solid var(--color-border);
+    padding: 0.45rem 0.85rem;
+    white-space: nowrap;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.1rem;
+  }
+
+  .collectionItem:last-child {
+    border: 1px solid var(--color-border);
+  }
+
+  .collectionLabel {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding: calc(72px + 2rem) 1.25rem 4rem;
+  }
+}

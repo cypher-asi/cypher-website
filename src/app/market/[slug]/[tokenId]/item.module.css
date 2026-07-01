@@ -1,0 +1,226 @@
+/* ============================================================================
+   Market item detail – large framed artwork on the left, metadata and traits
+   on the right. Padding mirrors the other Wilder World pages.
+   ============================================================================ */
+
+.page {
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  padding-inline: clamp(0.75rem, 2vw, 1.5rem);
+  padding-top: clamp(5rem, 12vh, 8rem);
+  padding-bottom: clamp(4rem, 10vh, 8rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 3vh, 2rem);
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  align-self: flex-start;
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.18s ease;
+}
+
+.back:hover {
+  color: #ff6434;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: start;
+}
+
+/* ----------------------------------------------------------------------------
+   Artwork
+   --------------------------------------------------------------------------- */
+.frame {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  background: #000;
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.imageFallback {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #17171a, #0e0e10);
+}
+
+.frameSkeleton,
+.textSkeleton {
+  background: linear-gradient(100deg, #0e0e10 30%, #17171a 50%, #0e0e10 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.textSkeleton {
+  height: 1.5rem;
+  border-radius: 2px;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* ----------------------------------------------------------------------------
+   Details column
+   --------------------------------------------------------------------------- */
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.collectionName {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #ff6434;
+  margin: 0;
+}
+
+.title {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.description {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  margin: 0;
+  max-width: 40rem;
+}
+
+.openseaLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  align-self: flex-start;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  padding: 0.65rem 1.3rem;
+  text-decoration: none;
+  transition: border-color 0.18s ease, color 0.18s ease;
+}
+
+.openseaLink:hover {
+  border-color: #ff6434;
+  color: #ff6434;
+}
+
+/* ----------------------------------------------------------------------------
+   Traits
+   --------------------------------------------------------------------------- */
+.traitsSection {
+  margin-top: 0.5rem;
+}
+
+.traitsHeading {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  margin: 0 0 0.75rem;
+}
+
+.traitsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+  gap: 0.5rem;
+}
+
+.trait {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  padding: 0.6rem 0.75rem;
+}
+
+.traitType {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.traitValue {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ----------------------------------------------------------------------------
+   Error state
+   --------------------------------------------------------------------------- */
+.errorBox {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: clamp(2rem, 6vw, 4rem);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.errorTitle {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.errorBody {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+@media (max-width: 860px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}

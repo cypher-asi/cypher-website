@@ -23,6 +23,14 @@ npm run lint      # Lint with ESLint
 npm run typecheck # Type-check with tsc (no emit)
 ```
 
+## Environment
+
+Copy `.env.example` to `.env.local` and fill in the values:
+
+| Variable | Used by | Notes |
+|----------|---------|-------|
+| `OPENSEA_API_KEY` | Wilder World Market page (`/market`) | OpenSea API v2 key used server-side to browse live onchain NFTs and metadata. Get one at [OpenSea API keys](https://docs.opensea.io/reference/api-keys). If unset, the Market page renders a graceful empty state. |
+
 ## Pages
 
 | Route | Description |
