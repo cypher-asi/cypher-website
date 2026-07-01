@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import styles from './PlotMetrics.module.css';
 
-const TOTAL = { label: 'Total Plots', value: 4444 };
+const TOTAL = { label: 'Total Island Plots', value: 4444 };
 
 const METRICS = [
   { label: 'Residential', value: 2629 },
