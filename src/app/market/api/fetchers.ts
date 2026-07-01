@@ -1,0 +1,80 @@
+import type { MarketNft } from '@/lib/opensea';
+import type { MarketCollection } from '@/app/api/market/collections/route';
+import type { MarketItem } from '@/app/api/market/item/route';
+import type { Availability } from '../types';
+
+export type NftsPage = {
+  items: MarketNft[];
+  next: string | null;
+};
+
+/** Thrown when a market route handler reports an upstream failure. */
+export class MarketFetchError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'MarketFetchError';
+  }
+}
+
+async function getJson(url: string): Promise<unknown> {
+  const res = await fetch(url);
+  if (!res.ok) throw new MarketFetchError(`Request failed (${res.status})`);
+  return res.json();
+}
+
+export async function fetchCollections(): Promise<Record<string, MarketCollection>> {
+  const data = await getJson('/api/market/collections');
+  const collections =
+    data && typeof data === 'object' && 'collections' in data
+      ? (data as { collections?: MarketCollection[] }).collections
+      : undefined;
+  const byId: Record<string, MarketCollection> = {};
+  for (const c of collections ?? []) byId[c.slug] = c;
+  return byId;
+}
+
+export async function fetchEthPrice(): Promise<number | null> {
+  const data = await getJson('/api/market/eth-price');
+  if (data && typeof data === 'object' && 'usd' in data) {
+    const usd = (data as { usd?: number | null }).usd;
+    return typeof usd === 'number' ? usd : null;
+  }
+  return null;
+}
+
+export async function fetchNftsPage(
+  slug: string,
+  availability: Availability,
+  next: string | null
+): Promise<NftsPage> {
+  const params = new URLSearchParams({ slug, status: availability });
+  if (next) params.set('next', next);
+  const data = await getJson(`/api/market/nfts?${params.toString()}`);
+  const parsed = (data ?? {}) as {
+    items?: MarketNft[];
+    next?: string | null;
+    error?: boolean;
+  };
+  // An upstream failure must never be shown as "no listed items"; surface it as
+  // an error so the empty-state copy stays truthful.
+  if (parsed.error) throw new MarketFetchError('Upstream NFT data unavailable');
+  return { items: parsed.items ?? [], next: parsed.next ?? null };
+}
+
+export async function fetchItem(args: {
+  slug: string;
+  identifier: string;
+  contract?: string;
+  chain?: string;
+}): Promise<MarketItem> {
+  const params = new URLSearchParams({ slug: args.slug, identifier: args.identifier });
+  if (args.contract) params.set('contract', args.contract);
+  if (args.chain) params.set('chain', args.chain);
+  const data = await getJson(`/api/market/item?${params.toString()}`);
+  const item =
+    data && typeof data === 'object' && 'item' in data
+      ? (data as { item?: MarketItem | null }).item
+      : null;
+  if (!item) throw new MarketFetchError('Item metadata unavailable');
+  return item;
+}

@@ -8,6 +8,7 @@ import { MusicProvider } from '@/components/MusicContext';
 import { CustomScrollbar } from '@/components/CustomScrollbar';
 import { getCurrentCompany } from '@/lib/companies/current';
 import { fontVariables } from '@/lib/fonts';
+import { Providers } from './providers';
 
 export async function generateMetadata(): Promise<Metadata> {
   const company = await getCurrentCompany();
@@ -43,27 +44,29 @@ export default async function RootLayout({
       style={fontStyle}
     >
       <body data-company={company.key}>
-        <ThemeWrapper
-          defaultTheme={company.defaultTheme}
-          defaultAccent={company.accent}
-          storageKey={`zui-theme-${company.key}`}
-        >
-          <MusicProvider>
-            <CustomScrollbar />
-            <Nav
-              wordmark={company.wordmark}
-              wordmarkLogo={company.wordmarkLogo}
-              cta={company.cta}
-              sections={company.nav}
-              navStyle={company.navStyle}
-              pageSections={company.pageSections}
-            />
-            <main id="page-main">
-              {children}
-              <Footer footer={company.footer} />
-            </main>
-          </MusicProvider>
-        </ThemeWrapper>
+        <Providers>
+          <ThemeWrapper
+            defaultTheme={company.defaultTheme}
+            defaultAccent={company.accent}
+            storageKey={`zui-theme-${company.key}`}
+          >
+            <MusicProvider>
+              <CustomScrollbar />
+              <Nav
+                wordmark={company.wordmark}
+                wordmarkLogo={company.wordmarkLogo}
+                cta={company.cta}
+                sections={company.nav}
+                navStyle={company.navStyle}
+                pageSections={company.pageSections}
+              />
+              <main id="page-main">
+                {children}
+                <Footer footer={company.footer} />
+              </main>
+            </MusicProvider>
+          </ThemeWrapper>
+        </Providers>
       </body>
     </html>
   );
