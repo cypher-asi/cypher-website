@@ -52,17 +52,10 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  /* Center the cover crop both vertically and horizontally. */
+  /* Show the whole image at its correct proportions inside the square frame
+     rather than cropping/zooming to fill it. */
+  object-fit: contain;
   object-position: center;
-}
-
-/* A landscape photo exactly fills the portrait frame's height (cover crops the
-   sides), so a dark/empty top band in the source stays visible. Zoom slightly
-   toward the bottom to crop that band out while keeping the subject framed. */
-.photoImgFocusLower {
-  transform: scale(1.16);
-  transform-origin: 50% 100%;
 }
 
 .story {

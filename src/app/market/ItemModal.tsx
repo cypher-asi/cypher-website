@@ -122,7 +122,14 @@ export default function ItemModal({
 
   return createPortal(
     <div className={styles.overlay} onClick={onClose} role="dialog" aria-modal="true">
-      <button className={styles.close} onClick={onClose} aria-label="Close">
+      <button
+        className={styles.close}
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
+        aria-label="Close"
+      >
         <X size={22} />
       </button>
 
@@ -205,21 +212,19 @@ export default function ItemModal({
             </>
           ) : (
             <>
+              {/* Header block: rendered immediately from grid data so it
+                  never moves while onchain detail loads in below. */}
               <p className={styles.collectionName}>
                 {item?.collectionName ?? nft.collectionSlug}
               </p>
               <h2 className={styles.title}>{name}</h2>
 
-              {(priceUsd || priceEth != null) && (
-                <div className={styles.priceRow}>
-                  <span className={styles.priceLabel}>Price</span>
-                  <span className={styles.priceValue}>
-                    {priceUsd ?? formatEth(priceEth) ?? '—'}
-                  </span>
-                </div>
-              )}
-
-              {item?.description && <p className={styles.description}>{item.description}</p>}
+              <div className={styles.priceRow}>
+                <span className={styles.priceLabel}>Price</span>
+                <span className={styles.priceValue}>
+                  {priceUsd ?? formatEth(priceEth) ?? '—'}
+                </span>
+              </div>
 
               <a
                 className={styles.openseaLink}
@@ -234,27 +239,45 @@ export default function ItemModal({
                 <ArrowUpRight size={14} />
               </a>
 
+              {/* Description: reserves space with skeleton lines, then swaps
+                  to the real text with a fade so nothing jumps. */}
+              {status === 'loading' ? (
+                <div className={styles.descriptionSkeleton} aria-hidden>
+                  <div className={styles.textSkeleton} style={{ width: '92%' }} />
+                  <div className={styles.textSkeleton} style={{ width: '100%' }} />
+                  <div className={styles.textSkeleton} style={{ width: '76%' }} />
+                </div>
+              ) : item?.description ? (
+                <p className={`${styles.description} ${styles.fadeIn}`}>{item.description}</p>
+              ) : null}
+
+              {/* Traits: skeleton chip grid reserves space, then fades in. */}
               {status === 'loading' ? (
                 <div className={styles.traitsSection}>
-                  <div className={styles.textSkeleton} style={{ width: '40%' }} aria-hidden />
-                  <div className={styles.textSkeleton} style={{ width: '70%' }} aria-hidden />
-                </div>
-              ) : (
-                item &&
-                item.traits.length > 0 && (
-                  <div className={styles.traitsSection}>
-                    <p className={styles.traitsHeading}>Traits</p>
-                    <div className={styles.traitsGrid}>
-                      {item.traits.map((t) => (
-                        <div key={`${t.type}-${t.value}`} className={styles.trait}>
-                          <span className={styles.traitType}>{t.type}</span>
-                          <span className={styles.traitValue}>{t.value}</span>
-                        </div>
-                      ))}
-                    </div>
+                  <div
+                    className={styles.textSkeleton}
+                    style={{ width: '30%', marginBottom: '0.6rem' }}
+                    aria-hidden
+                  />
+                  <div className={styles.traitsGrid}>
+                    {Array.from({ length: 6 }).map((_, i) => (
+                      <div key={i} className={styles.traitSkeleton} aria-hidden />
+                    ))}
                   </div>
-                )
-              )}
+                </div>
+              ) : item && item.traits.length > 0 ? (
+                <div className={`${styles.traitsSection} ${styles.fadeIn}`}>
+                  <p className={styles.traitsHeading}>Traits</p>
+                  <div className={styles.traitsGrid}>
+                    {item.traits.map((t) => (
+                      <div key={`${t.type}-${t.value}`} className={styles.trait}>
+                        <span className={styles.traitType}>{t.type}</span>
+                        <span className={styles.traitValue}>{t.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
             </>
           )}
         </div>

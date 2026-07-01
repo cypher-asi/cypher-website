@@ -56,7 +56,7 @@ export async function GET() {
   const results = await Promise.all(
     ALL_ENTRIES.map(async (c): Promise<MarketCollection> => {
       const [detail, stats, topOfferEth] = await Promise.all([
-        openseaFetch<OpenSeaCollection>(`/collection/${encodeURIComponent(c.slug)}`),
+        openseaFetch<OpenSeaCollection>(`/collections/${encodeURIComponent(c.slug)}`),
         openseaFetch<OpenSeaStats>(`/collections/${encodeURIComponent(c.slug)}/stats`),
         fetchTopOfferEth(c.slug),
       ]);

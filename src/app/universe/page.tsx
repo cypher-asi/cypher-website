@@ -9,8 +9,6 @@ type Section = {
   title: string;
   image: string;
   blocks: Block[];
-  /** Zoom the photo toward its lower half to crop a dark/empty top band. */
-  focusLower?: boolean;
 };
 
 const SECTIONS: Section[] = [
@@ -18,7 +16,6 @@ const SECTIONS: Section[] = [
     id: 'history',
     title: 'History',
     image: '/images/wilder-world/wiami-forum.png',
-    focusLower: true,
     blocks: [
       { kind: 'p', text: 'Earth stands at the edge of extinction.' },
       {
@@ -114,7 +111,7 @@ export default function UniversePage() {
           >
             <div className={styles.photo}>
               <FadeInImage
-                className={`${styles.photoImg} ${section.focusLower ? styles.photoImgFocusLower : ''}`}
+                className={styles.photoImg}
                 src={section.image}
                 alt=""
                 aria-hidden

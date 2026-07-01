@@ -258,6 +258,38 @@
   animation: shimmer 1.4s ease-in-out infinite;
 }
 
+/* Reserves the same vertical space the real description will occupy so the
+   traits section below it doesn't jump when the text loads in. */
+.descriptionSkeleton {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Matches the height of a real .trait chip so the grid keeps its footprint. */
+.traitSkeleton {
+  height: 3.1rem;
+  border: 1px solid #1c1c1f;
+  background: linear-gradient(100deg, #0e0e10 30%, #17171a 50%, #0e0e10 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+/* Graceful reveal for content that swaps in from its skeleton. */
+.fadeIn {
+  animation: detailsFadeIn 0.35s ease both;
+}
+
+@keyframes detailsFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @keyframes shimmer {
   from {
     background-position: 200% 0;
@@ -334,7 +366,12 @@
     animation: none;
   }
 
-  .textSkeleton {
+  .textSkeleton,
+  .traitSkeleton {
+    animation: none;
+  }
+
+  .fadeIn {
     animation: none;
   }
 

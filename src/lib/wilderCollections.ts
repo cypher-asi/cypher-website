@@ -122,16 +122,6 @@ export const WILDER_INDUSTRIES: WilderIndustry[] = [
         blurb:
           'GEN companion bots that fight, craft and explore alongside you across the simulation.',
       },
-      {
-        // NOTE: BEINGs is the second PALs collection. Slug/contract not yet
-        // verified against a live OpenSea listing — confirm before relying on
-        // its stats. The grid degrades gracefully to an empty state if unset.
-        id: 'pals-being',
-        slug: 'wilder-pals-being',
-        label: 'BEING',
-        chain: 'ethereum',
-        blurb: 'BEINGs — humanoid lifeforms materialized by GENs.',
-      },
     ],
   },
   {
@@ -169,7 +159,7 @@ export const WILDER_INDUSTRIES: WilderIndustry[] = [
       {
         id: 'kicks-season-0',
         slug: 'aws0',
-        label: 'Season 0',
+        label: 'AIRWILD Season 0',
         chain: 'ethereum',
         contract: '0x1C42576aCa321a590a809cd8B18492aafC1f3909',
         launched: '2021',
@@ -177,17 +167,17 @@ export const WILDER_INDUSTRIES: WilderIndustry[] = [
       },
       {
         id: 'kicks-season-1',
-        slug: 'air-wild-season-1',
-        label: 'Season 1',
+        slug: 'aws1',
+        label: 'AIRWILD Season 1',
         chain: 'ethereum',
         contract: '0x4d8165cb6861253e9edFBAC2f41A386BA1a0A175',
-        launched: 'Jan 2022',
+        launched: 'Aug 2023',
         blurb: 'AIR WILD Season 1 — collectible footwear that sets your style apart.',
       },
       {
         id: 'kicks-season-2',
         slug: 'air-wild',
-        label: 'Season 2',
+        label: 'AIRWILD Season 2',
         chain: 'ethereum',
         contract: '0x35D2f3CDAf5e2DeA9e6ae3553A4CAacbA860A395',
         launched: '2022',
