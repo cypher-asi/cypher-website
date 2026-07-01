@@ -82,6 +82,40 @@ const RACE_FEATURES: Feature[] = [
   },
 ];
 
+const OPEN_WORLD_FEATURES: Feature[] = [
+  {
+    title: 'Missions',
+    description:
+      'Take on RPG-driven missions and quests woven throughout the open world.',
+  },
+  {
+    title: 'Street Art',
+    description:
+      'Discover and create street art that brings the walls of Wiami to life.',
+    image: '/images/wilder-world/wiami_space_man.avif',
+  },
+  {
+    title: 'Social Experiences',
+    description:
+      'Meet up, hang out, and share moments with other players across the city.',
+  },
+  {
+    title: 'Shopping',
+    description:
+      'Browse storefronts and marketplaces for gear, fashion, and rare assets.',
+  },
+  {
+    title: 'Explorable Interiors',
+    description:
+      'Step inside buildings, venues, and hidden spaces scattered across Wiami.',
+  },
+  {
+    title: 'Police Chases',
+    description:
+      'Outrun the law in high-stakes pursuits tearing through the streets.',
+  },
+];
+
 type Placeholder = {
   id: string;
   eyebrow: string;
@@ -91,14 +125,6 @@ type Placeholder = {
 };
 
 const PLACEHOLDERS: Placeholder[] = [
-  {
-    id: 'explore',
-    eyebrow: 'Explore',
-    title: 'A Living Open World',
-    subtitle:
-      'Roam a massive open world driven by RPG missions and discovery. Full details coming soon.',
-    image: '/images/wilder-world/open_world_city.jpg',
-  },
   {
     id: 'build',
     eyebrow: 'Build',
@@ -196,6 +222,30 @@ export default function GameplayPage() {
         </header>
 
         <FeatureGrid features={RACE_FEATURES} />
+      </section>
+
+      <section id="explore" className={styles.modeSection}>
+        <SectionHeader
+          eyebrow="Explore"
+          title="A Living Open World"
+          subtitle="Roam a massive open world driven by RPG missions, culture, and discovery."
+        />
+
+        <div className={styles.media}>
+          <img
+            className={styles.mediaVideo}
+            src="/images/wilder-world/open_world_city.jpg"
+            alt=""
+            aria-hidden
+          />
+        </div>
+
+        <header className={styles.featuresHead}>
+          <p className={styles.featuresEyebrow}>Features</p>
+          <h3 className={styles.featuresTitle}>Live in Wiami</h3>
+        </header>
+
+        <FeatureGrid features={OPEN_WORLD_FEATURES} />
       </section>
 
       {PLACEHOLDERS.map((mode) => (
