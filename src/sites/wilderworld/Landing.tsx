@@ -74,7 +74,7 @@ export default function WilderworldLanding() {
         clearInterval(typer);
         setTypingDone(true);
       }
-    }, 85);
+    }, 45);
     return () => clearInterval(typer);
   }, []);
 
