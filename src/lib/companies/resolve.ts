@@ -5,6 +5,11 @@ function isCompanyKey(value: string): value is CompanyKey {
   return value in COMPANIES;
 }
 
+/** Returns the value as a valid CompanyKey, or null if unknown/missing. */
+export function normalizeCompany(value: string | null | undefined): CompanyKey | null {
+  return value && isCompanyKey(value) ? value : null;
+}
+
 /**
  * Resolves a request host (e.g. "zode.org", "www.zode.org:443",
  * "zode.localhost:3000") to a company key. Falls back to the default company.
