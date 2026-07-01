@@ -20,7 +20,7 @@ export default function EconomyPage() {
         <SectionHeader
           eyebrow="Workflow"
           title="From Resource to Revenue"
-          subtitle="Mine, refine, build, and sell — every step is onchain, and every asset is yours to trade."
+          subtitle="Mine, refine, build, and sell. Every step is onchain, and every asset is yours to trade."
         />
         <div className={styles.diagram}>
           <FadeInImage
@@ -46,7 +46,7 @@ export default function EconomyPage() {
         <SectionHeader
           eyebrow="Refine"
           title="Forge Building Panels"
-          subtitle="Convert twelve core materials — over 4.5 billion resources in all, from abundant Iron to scarce Cobalt and Lithium — into ERC-1155 building panels."
+          subtitle="Convert twelve core materials (over 4.5 billion resources in all, from abundant Iron to scarce Cobalt and Lithium) into ERC-1155 building panels."
         />
         <div className={styles.diagram}>
           <FadeInImage
@@ -61,7 +61,7 @@ export default function EconomyPage() {
         <SectionHeader
           eyebrow="Build"
           title="Assemble the Future"
-          subtitle="Combine building panels to manufacture vehicles, gear, and structures on the assembly line — each a tradeable onchain asset."
+          subtitle="Combine building panels to manufacture vehicles, gear, and structures on the assembly line, each a tradeable onchain asset."
         />
         <div className={styles.media}>
           <FadeInImage className={styles.mediaImg} src="/images/wilder-world/wiami_droid_assembly_line.jpg" alt="" aria-hidden />
