@@ -720,17 +720,17 @@
 .menuBar {
   display: block;
   width: 24px;
-  height: 1.5px;
+  height: 2px;
   background: currentColor;
   transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
     opacity 200ms ease;
 }
 
-/* Collapse the three bars into an X. Bars are 1.5px tall with a 6px gap, so the
-   top and bottom bar centers sit 7.5px from the toggle's midline; the middle
+/* Collapse the three bars into an X. Bars are 2px tall with a 6px gap, so the
+   top and bottom bar centers sit 8px from the toggle's midline; the middle
    bar fades out. */
 .menuToggleOpen .menuBar:nth-child(1) {
-  transform: translateY(7.5px) rotate(45deg);
+  transform: translateY(8px) rotate(45deg);
 }
 
 .menuToggleOpen .menuBar:nth-child(2) {
@@ -738,7 +738,7 @@
 }
 
 .menuToggleOpen .menuBar:nth-child(3) {
-  transform: translateY(-7.5px) rotate(-45deg);
+  transform: translateY(-8px) rotate(-45deg);
 }
 
 /* ============================================================================

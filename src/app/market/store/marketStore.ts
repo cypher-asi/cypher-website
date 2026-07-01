@@ -103,7 +103,13 @@ export const useMarketStore = create<MarketStore>()(
     }),
     {
       name: 'market-ui',
-      storage: createJSONStorage(() => localStorage),
+      // Guarded so the store is a no-op on the server (no `window`) and always
+      // targets the DOM's localStorage in the browser/tests.
+      storage: createJSONStorage(() =>
+        typeof window !== 'undefined'
+          ? window.localStorage
+          : (undefined as unknown as Storage)
+      ),
       // Only durable view preferences are persisted; transient UI (open menus,
       // modal, trait selection) always starts fresh.
       partialize: (state) => ({

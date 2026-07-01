@@ -1,0 +1,1 @@
+export { CollectionNav } from './CollectionNav';

@@ -230,10 +230,17 @@ export function Nav({
         const parts = m[1].split(',').map((s) => parseFloat(s));
         const [r, g, b] = parts;
         const a = parts[3] === undefined ? 1 : parts[3];
-        if (a > 0.1) {
-          const lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
-          return lum > 0.5 ? `rgb(${r}, ${g}, ${b})` : null;
-        }
+        if (a <= 0.1) continue;
+        // Skip saturated accent-coloured elements (e.g. the orange CTA buttons,
+        // badges). The scrim is only meant to adapt to near-neutral light/dark
+        // *section* backgrounds; without this a mid-tone accent like the orange
+        // #ff6434 button (luminance ~0.51) would tint the whole scrim orange as
+        // it scrolls past the sample point. Keep scanning deeper so we still
+        // pick up the real section background sitting behind such elements.
+        const chroma = Math.max(r, g, b) - Math.min(r, g, b);
+        if (chroma > 40) continue;
+        const lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+        return lum > 0.5 ? `rgb(${r}, ${g}, ${b})` : null;
       }
       return null;
     };

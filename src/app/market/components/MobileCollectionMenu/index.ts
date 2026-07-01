@@ -1,0 +1,1 @@
+export { MobileCollectionMenu } from './MobileCollectionMenu';
