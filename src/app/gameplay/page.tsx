@@ -99,6 +99,7 @@ const OPEN_WORLD_FEATURES: Feature[] = [
     title: 'Social Experiences',
     description:
       'Meet up, hang out, and share moments with other players across the city.',
+    image: '/images/wilder-world/wiami_social_experiences.png',
   },
   {
     title: 'Shopping',
@@ -110,6 +111,7 @@ const OPEN_WORLD_FEATURES: Feature[] = [
     title: 'Nightlife',
     description:
       'Dive into clubs, venues, and after-dark experiences across the city.',
+    image: '/images/wilder-world/wiami_nightlife.jpg',
   },
   {
     title: 'Police Encounters',
