@@ -371,10 +371,11 @@
     margin-top: clamp(1.25rem, 5vw, 2rem);
   }
 
-  /* Pin specific cropped images to the right edge on mobile so their subject
-     stays in frame (City Under Attack, Fight For Freedom, Auric faction bg). */
+  /* Nudge specific cropped images off-center toward the right on mobile so
+     their subject stays in frame (City Under Attack, Fight For Freedom, Auric
+     faction bg) without pinning fully to the edge. */
   .mediaRight {
-    object-position: right center;
+    object-position: 70% center;
   }
 }
 
