@@ -20,16 +20,18 @@ type ViewId = (typeof VIEWS)[number]['id'];
 
 export default function IslandMap() {
   const [active, setActive] = useState<ViewId>('neighborhoods');
-  const view = VIEWS.find((v) => v.id === active) ?? VIEWS[0];
 
   return (
     <div className={styles.frame}>
-      <img
-        key={view.id}
-        className={styles.img}
-        src={view.src}
-        alt="Map of the Island"
-      />
+      {VIEWS.map((v) => (
+        <img
+          key={v.id}
+          className={`${styles.img} ${v.id === active ? styles.imgActive : ''}`}
+          src={v.src}
+          alt={v.id === active ? 'Map of the Island' : ''}
+          aria-hidden={v.id !== active}
+        />
+      ))}
       <div className={styles.controls}>
         {VIEWS.map((v) => (
           <button
