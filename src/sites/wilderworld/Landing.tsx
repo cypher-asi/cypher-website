@@ -108,41 +108,41 @@ export default function WilderworldLanding() {
             onLoadedData={() => setHeroReady(true)}
           />
           <div className={styles.scrim} aria-hidden />
-          <div className={styles.overlay}>
-            <h1 className={styles.heading}>
-              {typed}
-              <span
-                className={`${styles.caret} ${typingDone ? styles.caretDone : ''}`}
-                aria-hidden
-              />
-            </h1>
-            <p
-              className={`${styles.bodyText} ${styles.heroDesc} ${descIn ? styles.heroDescIn : ''}`}
+        </div>
+        <div className={styles.overlay}>
+          <h1 className={styles.heading}>
+            {typed}
+            <span
+              className={`${styles.caret} ${typingDone ? styles.caretDone : ''}`}
+              aria-hidden
+            />
+          </h1>
+          <p
+            className={`${styles.bodyText} ${styles.heroDesc} ${descIn ? styles.heroDescIn : ''}`}
+          >
+            {HERO_DESCRIPTION}
+          </p>
+          <div
+            className={`${styles.actions} ${styles.heroActions} ${actionsIn ? styles.heroActionsIn : ''}`}
+          >
+            <a
+              className="sci-btn sci-btn-primary"
+              href={EARLY_ACCESS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              {HERO_DESCRIPTION}
-            </p>
-            <div
-              className={`${styles.actions} ${styles.heroActions} ${actionsIn ? styles.heroActionsIn : ''}`}
+              Early Access
+              <ArrowUpRight size={16} />
+            </a>
+            <a
+              className="sci-btn sci-btn-ghost"
+              href={TRAILER_URL}
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              <a
-                className="sci-btn sci-btn-primary"
-                href={EARLY_ACCESS_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Early Access
-                <ArrowUpRight size={16} />
-              </a>
-              <a
-                className="sci-btn sci-btn-ghost"
-                href={TRAILER_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Play size={15} />
-                Watch Trailer
-              </a>
-            </div>
+              <Play size={15} />
+              Watch Trailer
+            </a>
           </div>
         </div>
       </section>

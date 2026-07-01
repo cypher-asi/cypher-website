@@ -9,6 +9,7 @@
 }
 
 .hero {
+  position: relative;
   height: 100vh;
   height: 100dvh;
   display: flex;
@@ -119,9 +120,11 @@
 }
 
 .overlay {
+  /* Anchored to the bottom-left of the hero frame on desktop (offsets match the
+     hero padding so it lines up with the frame's inner edge). */
   position: absolute;
-  left: 0;
-  bottom: 0;
+  left: clamp(0.75rem, 2vw, 1.5rem);
+  bottom: clamp(0.75rem, 2vh, 1.5rem);
   display: flex;
   flex-direction: column;
   gap: clamp(1rem, 2.5vh, 1.75rem);
@@ -153,6 +156,35 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 1rem;
+}
+
+/* On phones the hero is not a full-height cropped background. The city footage
+   shows in its natural horizontal (16:9) frame and autoplays, with the
+   heading, copy and buttons stacked below it in normal flow. */
+@media (max-width: 640px) {
+  .hero {
+    height: auto;
+    min-height: 0;
+    padding: calc(64px + 0.75rem) 0.75rem 2rem;
+    gap: 1rem;
+  }
+
+  .hero .frame {
+    flex: none;
+    aspect-ratio: 16 / 9;
+  }
+
+  /* No overlay scrim needed once the text sits below the video. */
+  .hero .scrim {
+    display: none;
+  }
+
+  .overlay {
+    position: static;
+    max-width: none;
+    padding: 0;
+    gap: 0.9rem;
+  }
 }
 
 /* Blinking caret shown while the heading types itself out. */
