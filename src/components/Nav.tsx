@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ArrowDown, ArrowUpRight, ChevronRight, Menu, X } from 'lucide-react';
+import { ArrowDown, ArrowUpRight, ChevronRight } from 'lucide-react';
 import { TypewriterText } from './TypewriterText';
 import type { TypewriterSegment } from './TypewriterText';
 import { SectionNav } from './SectionNav';
@@ -518,11 +518,13 @@ export function Nav({
               </button>
             )}
             <button
-              className={styles.hamburger}
-              onClick={() => setMobileOpen(true)}
-              aria-label="Open menu"
+              className={`${styles.menuToggle} ${mobileOpen ? styles.menuToggleOpen : ''}`}
+              onClick={() => setMobileOpen((o) => !o)}
+              aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={mobileOpen}
             >
-              <Menu size={20} />
+              <span className={styles.menuBar} />
+              <span className={styles.menuBar} />
             </button>
           </div>
         </div>
@@ -649,34 +651,7 @@ export function Nav({
         onClick={() => setMobileOpen(false)}
       />
       <div className={`${styles.drawer} ${mobileOpen ? styles.drawerOpen : ''}`}>
-        <div className={styles.drawerHeader}>
-          <Link href={homeHref} className={styles.drawerTitle} onClick={() => setMobileOpen(false)}>
-            {wordmarkLogo ? (
-              <img className={styles.brandLogo} src={wordmarkLogo.src} alt={wordmarkLogo.alt} />
-            ) : (
-              `/${wordmark}`
-            )}
-          </Link>
-          <button
-            className={styles.drawerClose}
-            onClick={() => setMobileOpen(false)}
-            aria-label="Close menu"
-          >
-            <X size={18} />
-          </button>
-        </div>
-        {cta ? (
-          <a
-            href={cta.href}
-            target={cta.external ? '_blank' : undefined}
-            rel={cta.external ? 'noopener noreferrer' : undefined}
-            className={`sci-btn sci-btn-primary ${styles.drawerCta}`}
-            onClick={() => setMobileOpen(false)}
-          >
-            {cta.label}
-            <ArrowUpRight size={14} />
-          </a>
-        ) : (
+        {!cta && (
           <button
             type="button"
             className={styles.drawerLaunch}

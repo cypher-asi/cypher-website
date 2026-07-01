@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 import Link from 'next/link';
 import { FadeInImage } from '@/components/FadeInImage';
+import { useMobileMedia, mobileSrc } from './useMobileMedia';
 import styles from './Landing.module.css';
 
 export type GameplayCardProps = {
@@ -10,6 +11,8 @@ export type GameplayCardProps = {
   description: string;
   video?: string;
   image?: string;
+  /** Basename of the mobile poster (e.g. "race") under /mobile/. */
+  poster?: string;
   href?: string;
 };
 
@@ -18,9 +21,11 @@ export default function GameplayCard({
   description,
   video,
   image,
+  poster,
   href,
 }: GameplayCardProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const { isMobile, format } = useMobileMedia();
 
   const handleEnter = () => {
     const el = videoRef.current;
@@ -34,9 +39,20 @@ export default function GameplayCard({
     el.pause();
   };
 
+  // On phones there is no hover, so never fetch the video: show the optimized
+  // first-frame still instead (WebP, or JPEG on slow / save-data connections).
+  const showImageOnly = isMobile && (poster || image);
+
   const inner = (
     <>
-      {video ? (
+      {showImageOnly ? (
+        <FadeInImage
+          className={styles.gameplayVideo}
+          src={poster ? mobileSrc(poster, format) : image}
+          alt=""
+          aria-hidden
+        />
+      ) : video ? (
         <video
           ref={videoRef}
           className={styles.gameplayVideo}

@@ -1,62 +1,129 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, Play } from 'lucide-react';
 import { SectionHeader } from '@/components/SectionHeader';
 import GameplayCard, { type GameplayCardProps } from './GameplayCard';
 import FactionSelector from './FactionSelector';
 import NewsCarousel from './NewsCarousel';
+import LazyVideo from './LazyVideo';
 import { FadeInImage } from '@/components/FadeInImage';
+import { useMobileMedia, mobileSrc } from './useMobileMedia';
 import styles from './Landing.module.css';
 
 const EARLY_ACCESS_URL =
   'https://store.epicgames.com/p/wilder-world-wilder-world-alpha-b4ccf8?lang=en-US';
 const TRAILER_URL = 'https://www.youtube.com/watch?v=7G8SwYp6gPo';
 
+const HERO_HEADING = 'The Simulation.';
+const HERO_DESCRIPTION =
+  'A photorealistic open world built on the blockchain. Step into Wiami and shape a living, player-owned universe.';
+
 const GAMEPLAY_MODES: GameplayCardProps[] = [
   {
     title: 'Race',
     description: 'Tear through the streets in high-speed races across Wiami.',
     video: '/videos/wiami-race.mp4',
+    poster: 'race',
     href: '/gameplay#race',
   },
   {
     title: 'Fight',
     description: 'Take the fight street-level in intense FPS battles.',
     video: '/videos/wiami-fight.mp4',
+    poster: 'fight',
     href: '/gameplay#fight',
   },
   {
     title: 'Explore',
     description: 'Roam a massive open world driven by RPG missions.',
     video: '/images/wilder-world/meow_craft.mp4',
+    poster: 'explore',
     href: '/gameplay#explore',
   },
   {
     title: 'Build',
     description: 'Own and build everything from land to vehicles.',
     video: '/videos/wilder_construction.mp4',
+    poster: 'build',
     href: '/gameplay#build',
   },
 ];
 
 export default function WilderworldLanding() {
+  const { isMobile, format } = useMobileMedia();
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
+  const [heroReady, setHeroReady] = useState(false);
+  const [typed, setTyped] = useState('');
+  const [typingDone, setTypingDone] = useState(false);
+  const [descIn, setDescIn] = useState(false);
+  const [actionsIn, setActionsIn] = useState(false);
+
+  // If the video is served from cache the canplay event can fire before React
+  // attaches its handler, so also check readyState once on mount.
+  useEffect(() => {
+    if (heroVideoRef.current && heroVideoRef.current.readyState >= 3) {
+      setHeroReady(true);
+    }
+  }, []);
+
+  // Type out the heading, then fade in the description, then slide up the buttons.
+  useEffect(() => {
+    let i = 0;
+    const typer = setInterval(() => {
+      i += 1;
+      setTyped(HERO_HEADING.slice(0, i));
+      if (i >= HERO_HEADING.length) {
+        clearInterval(typer);
+        setTypingDone(true);
+      }
+    }, 85);
+    return () => clearInterval(typer);
+  }, []);
+
+  useEffect(() => {
+    if (!typingDone) return;
+    const descTimer = setTimeout(() => setDescIn(true), 200);
+    const actionsTimer = setTimeout(() => setActionsIn(true), 650);
+    return () => {
+      clearTimeout(descTimer);
+      clearTimeout(actionsTimer);
+    };
+  }, [typingDone]);
+
   return (
     <div className={styles.page}>
       <section className={styles.hero}>
         <div className={styles.frame}>
           <video
-            className={styles.video}
+            ref={heroVideoRef}
+            className={`${styles.video} ${styles.heroVideo} ${heroReady ? styles.heroVideoReady : ''}`}
             src="/videos/sunset_hero.mp4"
             autoPlay
             muted
             loop
             playsInline
             aria-hidden
+            onCanPlay={() => setHeroReady(true)}
+            onLoadedData={() => setHeroReady(true)}
           />
           <div className={styles.scrim} aria-hidden />
           <div className={styles.overlay}>
-            <h1 className={styles.heading}>The Simulation.</h1>
-            <div className={styles.actions}>
+            <h1 className={styles.heading}>
+              {typed}
+              <span
+                className={`${styles.caret} ${typingDone ? styles.caretDone : ''}`}
+                aria-hidden
+              />
+            </h1>
+            <p
+              className={`${styles.bodyText} ${styles.heroDesc} ${descIn ? styles.heroDescIn : ''}`}
+            >
+              {HERO_DESCRIPTION}
+            </p>
+            <div
+              className={`${styles.actions} ${styles.heroActions} ${actionsIn ? styles.heroActionsIn : ''}`}
+            >
               <a
                 className="sci-btn sci-btn-primary"
                 href={EARLY_ACCESS_URL}
@@ -116,17 +183,7 @@ export default function WilderworldLanding() {
               </>
             }
           />
-          <div className={styles.cityMap}>
-            <video
-              className={styles.cityMapVideo}
-              src="/videos/wiami-map.mp4"
-              autoPlay
-              muted
-              loop
-              playsInline
-              aria-hidden
-            />
-          </div>
+          <LazyVideo src="/videos/wiami-map.mp4" poster="map" />
         </div>
       </section>
 
@@ -146,7 +203,11 @@ export default function WilderworldLanding() {
           <div className={styles.cityMap}>
             <FadeInImage
               className={styles.cityMapVideo}
-              src="/images/wilder-world/spartan_attack.png"
+              src={
+                isMobile
+                  ? mobileSrc('spartan_attack', format)
+                  : '/images/wilder-world/spartan_attack.png'
+              }
               alt=""
               aria-hidden
             />
@@ -171,7 +232,11 @@ export default function WilderworldLanding() {
           <div className={styles.cityMap}>
             <FadeInImage
               className={styles.cityMapVideo}
-              src="/images/wilder-world/trinity_fire.png"
+              src={
+                isMobile
+                  ? mobileSrc('trinity_fire', format)
+                  : '/images/wilder-world/trinity_fire.png'
+              }
               alt=""
               aria-hidden
             />
@@ -210,17 +275,7 @@ export default function WilderworldLanding() {
               </>
             }
           />
-          <div className={styles.cityMap}>
-            <video
-              className={styles.cityMapVideo}
-              src="/videos/wiami-token.mp4"
-              autoPlay
-              muted
-              loop
-              playsInline
-              aria-hidden
-            />
-          </div>
+          <LazyVideo src="/videos/wiami-token.mp4" poster="token" />
         </div>
       </section>
 
