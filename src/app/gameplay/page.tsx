@@ -126,6 +126,7 @@ const BUILD_FEATURES: Feature[] = [
     title: 'Mine',
     description:
       'Extract resources from the land to fuel crafting and the $WILD economy.',
+    image: '/images/wilder-world/wiami_miner_vehicle.png',
   },
   {
     title: 'Build',
