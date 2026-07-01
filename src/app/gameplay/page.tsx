@@ -1,6 +1,7 @@
 import { SectionHeader } from '@/components/SectionHeader';
 import GameplayPillars from '@/sites/wilderworld/GameplayPillars';
-import { FadeInImage } from '@/components/FadeInImage';
+import LazyVideo from '@/sites/wilderworld/LazyVideo';
+import { MobileImage } from '@/sites/wilderworld/MobileImage';
 import styles from './page.module.css';
 
 type Feature = { title: string; description: string; image?: string };
@@ -150,7 +151,7 @@ function FeatureGrid({ features }: { features: Feature[] }) {
         <article key={feature.title} className={styles.featureCard}>
           {feature.image ? (
             <>
-              <FadeInImage
+              <MobileImage
                 className={styles.featureBg}
                 src={feature.image}
                 alt=""
@@ -188,17 +189,12 @@ export default function GameplayPage() {
           subtitle="Intense first and third person combat, missions, and extraction."
         />
 
-        <div className={styles.media}>
-          <video
-            className={styles.mediaVideo}
-            src="/videos/wiami-fight.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
-            aria-hidden
-          />
-        </div>
+        <LazyVideo
+          src="/videos/wiami-fight.mp4"
+          poster="fight"
+          className={styles.media}
+          mediaClassName={styles.mediaVideo}
+        />
 
         <header className={styles.featuresHead}>
           <p className={styles.featuresEyebrow}>Features</p>
@@ -216,7 +212,7 @@ export default function GameplayPage() {
         />
 
         <div className={styles.media}>
-          <FadeInImage
+          <MobileImage
             className={styles.mediaVideo}
             src="/images/wilder-world/race_burnout.png"
             alt=""
@@ -240,7 +236,7 @@ export default function GameplayPage() {
         />
 
         <div className={styles.media}>
-          <FadeInImage
+          <MobileImage
             className={styles.mediaVideo}
             src="/images/wilder-world/open_world_city.jpg"
             alt=""
@@ -264,7 +260,7 @@ export default function GameplayPage() {
         />
 
         <div className={styles.media}>
-          <FadeInImage
+          <MobileImage
             className={styles.mediaVideo}
             src="/images/wilder-world/build_construction.png"
             alt=""

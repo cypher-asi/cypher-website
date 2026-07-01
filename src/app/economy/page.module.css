@@ -80,3 +80,12 @@
     padding: calc(72px + 2rem) 1.25rem 4rem;
   }
 }
+
+@media (max-width: 640px) {
+  /* Taller photographic frames on phones (portrait). Diagrams keep their own
+     natural sizing so labels stay legible. */
+  .hero,
+  .media {
+    aspect-ratio: 3 / 4;
+  }
+}

@@ -151,7 +151,8 @@
 
   .panel {
     flex: none;
-    height: 14rem;
+    /* ~2x taller than before (14rem) for a more mobile-oriented card. */
+    height: 28rem;
   }
 
   .panelActive {

@@ -140,7 +140,8 @@
 
   .stage {
     order: -1;
-    aspect-ratio: 16 / 9;
+    /* Taller stage on phones for a more mobile-oriented view. */
+    aspect-ratio: 4 / 5;
     min-height: 0;
   }
 

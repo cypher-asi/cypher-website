@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useMobileMedia, mobileImageFromPath } from './useMobileMedia';
 import styles from './IslandMap.module.css';
 
 const VIEWS = [
@@ -20,6 +21,7 @@ type ViewId = (typeof VIEWS)[number]['id'];
 
 export default function IslandMap() {
   const [active, setActive] = useState<ViewId>('neighborhoods');
+  const { isMobile, format } = useMobileMedia();
 
   return (
     <div className={styles.frame}>
@@ -27,7 +29,7 @@ export default function IslandMap() {
         <img
           key={v.id}
           className={`${styles.img} ${v.id === active ? styles.imgActive : ''}`}
-          src={v.src}
+          src={isMobile ? mobileImageFromPath(v.src, format) : v.src}
           alt={v.id === active ? 'Map of the Island' : ''}
           aria-hidden={v.id !== active}
         />

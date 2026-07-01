@@ -3,6 +3,7 @@
 import { useCallback, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { useMobileMedia, mobileImageFromPath } from '@/sites/wilderworld/useMobileMedia';
 import styles from './ImageAccordion.module.css';
 
 export type AccordionItem = {
@@ -22,12 +23,19 @@ function AccordionPanel({
   item,
   isActive,
   onActivate,
+  mobileOptimized = false,
 }: {
   item: AccordionItem;
   isActive: boolean;
   onActivate: () => void;
+  mobileOptimized?: boolean;
 }) {
   const [loaded, setLoaded] = useState(false);
+  const { isMobile, format } = useMobileMedia();
+  // When enabled (Wilder World callers), serve the mobile-optimized copy on
+  // phones; otherwise use the source image untouched.
+  const imageSrc =
+    mobileOptimized && isMobile ? mobileImageFromPath(item.image, format) : item.image;
 
   // Defer flipping to "loaded" until the next frame so the browser first paints
   // the opacity:0 state -- otherwise cached images would snap in with no fade.
@@ -58,7 +66,7 @@ function AccordionPanel({
       <img
         ref={imgRef}
         className={`${styles.bg} ${loaded ? styles.bgLoaded : ''}`}
-        src={item.image}
+        src={imageSrc}
         alt=""
         aria-hidden
         onLoad={markLoaded}
@@ -96,7 +104,14 @@ function AccordionPanel({
   );
 }
 
-export default function ImageAccordion({ items }: { items: AccordionItem[] }) {
+export default function ImageAccordion({
+  items,
+  mobileOptimized = false,
+}: {
+  items: AccordionItem[];
+  /** Serve Wilder World mobile-optimized images on phones (wilder callers). */
+  mobileOptimized?: boolean;
+}) {
   const [activeId, setActiveId] = useState<string>(items[0]?.id);
 
   return (
@@ -107,6 +122,7 @@ export default function ImageAccordion({ items }: { items: AccordionItem[] }) {
           item={item}
           isActive={item.id === activeId}
           onActivate={() => setActiveId(item.id)}
+          mobileOptimized={mobileOptimized}
         />
       ))}
     </div>

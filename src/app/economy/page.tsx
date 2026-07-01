@@ -1,5 +1,6 @@
 import { SectionHeader } from '@/components/SectionHeader';
 import { FadeInImage } from '@/components/FadeInImage';
+import { MobileImage } from '@/sites/wilderworld/MobileImage';
 import styles from './page.module.css';
 
 export default function EconomyPage() {
@@ -13,7 +14,7 @@ export default function EconomyPage() {
       />
 
       <div className={styles.hero}>
-        <FadeInImage className={styles.heroImg} src="/images/wilder-world/gear.avif" alt="" aria-hidden />
+        <MobileImage className={styles.heroImg} src="/images/wilder-world/gear.avif" alt="" aria-hidden />
       </div>
 
       <section className={styles.section}>
@@ -38,7 +39,7 @@ export default function EconomyPage() {
           subtitle="Extract raw materials across Wiami's resource-rich mainland. Every haul mints as ERC-20 resource tokens you can trade or sell for real money."
         />
         <div className={styles.media}>
-          <FadeInImage className={styles.mediaImg} src="/images/wilder-world/mining.png" alt="" aria-hidden />
+          <MobileImage className={styles.mediaImg} src="/images/wilder-world/mining.png" alt="" aria-hidden />
         </div>
       </section>
 
@@ -64,7 +65,7 @@ export default function EconomyPage() {
           subtitle="Combine building panels to manufacture vehicles, gear, and structures on the assembly line, each a tradeable onchain asset."
         />
         <div className={styles.media}>
-          <FadeInImage className={styles.mediaImg} src="/images/wilder-world/wiami_droid_assembly_line.jpg" alt="" aria-hidden />
+          <MobileImage className={styles.mediaImg} src="/images/wilder-world/wiami_droid_assembly_line.jpg" alt="" aria-hidden />
         </div>
       </section>
 
@@ -75,7 +76,7 @@ export default function EconomyPage() {
           subtitle="List your creations in Wiami's marketplaces and shops, selling to other players for real money."
         />
         <div className={styles.media}>
-          <FadeInImage className={styles.mediaImg} src="/images/wilder-world/wiami_shop_interior.png" alt="" aria-hidden />
+          <MobileImage className={styles.mediaImg} src="/images/wilder-world/wiami_shop_interior.png" alt="" aria-hidden />
         </div>
       </section>
     </div>

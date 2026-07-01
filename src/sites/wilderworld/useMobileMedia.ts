@@ -58,3 +58,17 @@ export function useMobileMedia(): { isMobile: boolean; format: ImageFormat } {
 export function mobileSrc(name: string, format: ImageFormat): string {
   return `/images/wilder-world/mobile/${name}_mobile.${format}`;
 }
+
+/**
+ * Rewrites a `/images/wilder-world/<name>.<ext>` path to its pre-generated
+ * mobile-optimized copy. Returns the input unchanged for any other path.
+ */
+export function mobileImageFromPath(
+  src: string | undefined,
+  format: ImageFormat
+): string | undefined {
+  if (typeof src !== 'string' || !src.startsWith('/images/wilder-world/')) return src;
+  const file = src.split('/').pop() ?? '';
+  const base = file.replace(/\.[^.]+$/, '');
+  return base ? mobileSrc(base, format) : src;
+}

@@ -3,7 +3,7 @@ import { ArrowRight } from 'lucide-react';
 import { SectionHeader } from '@/components/SectionHeader';
 import ImageAccordion, { type AccordionItem } from '@/components/ImageAccordion';
 import { WILDER_INDUSTRIES } from '@/lib/wilderCollections';
-import { FadeInImage } from '@/components/FadeInImage';
+import { MobileImage } from '@/sites/wilderworld/MobileImage';
 import styles from './page.module.css';
 
 const INDUSTRIES: AccordionItem[] = [
@@ -106,7 +106,7 @@ export default function IndustriesPage() {
       />
 
       <div className={styles.hero}>
-        <FadeInImage
+        <MobileImage
           className={styles.heroImg}
           src="/images/wilder-world/industries.avif"
           alt=""
@@ -120,7 +120,7 @@ export default function IndustriesPage() {
         subtitle="Every vertical is its own onchain market with assets you can create, upgrade, trade and truly own."
       />
 
-      <ImageAccordion items={INDUSTRIES} />
+      <ImageAccordion items={INDUSTRIES} mobileOptimized />
 
       <div className={styles.industryList}>
         {INDUSTRIES.map((it) => {
@@ -133,7 +133,7 @@ export default function IndustriesPage() {
               <h2 className={styles.industryTitle}>{it.title}</h2>
               <div className={styles.industryHero} aria-hidden>
                 {heroImage ? (
-                  <FadeInImage className={styles.industryHeroImg} src={heroImage} alt="" />
+                  <MobileImage className={styles.industryHeroImg} src={heroImage} alt="" />
                 ) : (
                   <span className={styles.industryHeroLabel}>{it.title} hero</span>
                 )}

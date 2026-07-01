@@ -96,3 +96,11 @@
     padding: calc(72px + 2rem) 1.25rem 4rem;
   }
 }
+
+@media (max-width: 640px) {
+  /* Taller framed images on phones (portrait) for a more mobile-oriented feel. */
+  .hero,
+  .industryHero {
+    aspect-ratio: 3 / 4;
+  }
+}

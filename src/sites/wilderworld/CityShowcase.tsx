@@ -2,11 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Sun, Sunrise } from 'lucide-react';
+import { useMobileMedia } from './useMobileMedia';
+import MobileVideo from './MobileVideo';
 import styles from './CityShowcase.module.css';
 
 const BACKDROPS = [
-  { id: 'day', label: 'Day', Icon: Sun, src: '/videos/midday.mp4' },
-  { id: 'dawn', label: 'Dawn', Icon: Sunrise, src: '/videos/dawn.mp4' },
+  { id: 'day', label: 'Day', Icon: Sun, src: '/videos/midday.mp4', poster: 'midday' },
+  { id: 'dawn', label: 'Dawn', Icon: Sunrise, src: '/videos/dawn.mp4', poster: 'dawn' },
 ] as const;
 
 type BackdropId = (typeof BACKDROPS)[number]['id'];
@@ -19,6 +21,7 @@ export default function CityShowcase() {
   // the footer) while a newly selected clip loads.
   const [aspectRatio, setAspectRatio] = useState('16 / 9');
   const videoRef = useRef<HTMLVideoElement>(null);
+  const { isMobile } = useMobileMedia();
   const activeBackdrop = BACKDROPS.find((b) => b.id === active) ?? BACKDROPS[0];
 
   const syncRatio = useCallback(() => {
@@ -36,17 +39,26 @@ export default function CityShowcase() {
 
   return (
     <div className={styles.showcase} style={{ aspectRatio }}>
-      <video
-        ref={videoRef}
-        className={styles.video}
-        src={activeBackdrop.src}
-        autoPlay
-        muted
-        loop
-        playsInline
-        aria-hidden
-        onLoadedMetadata={syncRatio}
-      />
+      {isMobile ? (
+        <MobileVideo
+          key={active}
+          src={activeBackdrop.src}
+          poster={activeBackdrop.poster}
+          mediaClassName={styles.video}
+        />
+      ) : (
+        <video
+          ref={videoRef}
+          className={styles.video}
+          src={activeBackdrop.src}
+          autoPlay
+          muted
+          loop
+          playsInline
+          aria-hidden
+          onLoadedMetadata={syncRatio}
+        />
+      )}
       <div className={styles.timeControls}>
         {BACKDROPS.map(({ id, label, Icon }) => (
           <button

@@ -320,6 +320,46 @@
   opacity: 1;
 }
 
+/* Centered tap-to-play button shown over a poster on mobile. Hidden on larger
+   screens, where videos autoplay or play on hover. */
+.playButton {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  padding: 0;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 999px;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: opacity 0.3s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.playButton:hover {
+  background: rgba(0, 0, 0, 0.6);
+  border-color: #fff;
+}
+
+/* While playing, fade the button back so it doesn't cover the footage; it
+   stays tappable to pause. */
+.playButtonPlaying {
+  opacity: 0.25;
+}
+
+@media (max-width: 640px) {
+  .playButton {
+    display: inline-flex;
+  }
+}
+
 @media (max-width: 640px) {
   /* The framed video/image sections read tiny at 16:9 on a phone. Give them a
      taller aspect and edge-to-edge width so the map, token and breach shots

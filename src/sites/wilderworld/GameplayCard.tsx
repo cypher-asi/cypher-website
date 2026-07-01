@@ -4,6 +4,7 @@ import { useRef } from 'react';
 import Link from 'next/link';
 import { FadeInImage } from '@/components/FadeInImage';
 import { useMobileMedia, mobileSrc } from './useMobileMedia';
+import MobileVideo from './MobileVideo';
 import styles from './Landing.module.css';
 
 export type GameplayCardProps = {
@@ -39,13 +40,14 @@ export default function GameplayCard({
     el.pause();
   };
 
-  // On phones there is no hover, so never fetch the video: show the optimized
-  // first-frame still instead (WebP, or JPEG on slow / save-data connections).
-  const showImageOnly = isMobile && (poster || image);
-
+  // On phones there is no hover. When the card has a video, show its optimized
+  // first-frame poster with a tap-to-play button; otherwise fall back to the
+  // still image.
   const inner = (
     <>
-      {showImageOnly ? (
+      {isMobile && video && poster ? (
+        <MobileVideo src={video} poster={poster} mediaClassName={styles.gameplayVideo} />
+      ) : isMobile && (poster || image) ? (
         <FadeInImage
           className={styles.gameplayVideo}
           src={poster ? mobileSrc(poster, format) : image}

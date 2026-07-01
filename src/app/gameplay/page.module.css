@@ -208,6 +208,13 @@
   }
 }
 
+@media (max-width: 640px) {
+  /* Taller media frame on phones so the mode hero reads large. */
+  .media {
+    aspect-ratio: 3 / 4;
+  }
+}
+
 @media (max-width: 560px) {
   .featureGrid {
     grid-template-columns: 1fr;
@@ -215,7 +222,8 @@
 
   .featureCard {
     aspect-ratio: auto;
-    min-height: 9rem;
+    /* ~2x taller than before (9rem) for a more mobile-oriented card. */
+    min-height: 18rem;
   }
 
   /* On touch, where there is no hover, always show the description. */

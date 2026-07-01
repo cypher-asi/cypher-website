@@ -35,5 +35,5 @@ const PILLARS: AccordionItem[] = [
 ];
 
 export default function GameplayPillars() {
-  return <ImageAccordion items={PILLARS} />;
+  return <ImageAccordion items={PILLARS} mobileOptimized />;
 }

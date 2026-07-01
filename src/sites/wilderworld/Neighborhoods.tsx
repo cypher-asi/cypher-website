@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { FadeInImage } from '@/components/FadeInImage';
+import { MobileImage } from './MobileImage';
 import styles from './Neighborhoods.module.css';
 
 const MAP = '/images/wilder-world/island-landplots.webp';
@@ -134,7 +134,7 @@ export default function Neighborhoods() {
               className={`${styles.thumb} ${i === active ? styles.thumbActive : ''}`}
               onClick={() => setActive(i)}
             >
-              <FadeInImage
+              <MobileImage
                 className={styles.thumbImg}
                 src={n.thumb ?? MAP}
                 alt=""
@@ -146,7 +146,7 @@ export default function Neighborhoods() {
         </div>
       </div>
       <div className={styles.stage}>
-        <FadeInImage
+        <MobileImage
           key={current.name}
           className={styles.stageImg}
           src={current.shot ?? MAP}
