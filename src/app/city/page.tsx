@@ -5,6 +5,7 @@ import RegionSelector from '@/sites/wilderworld/RegionSelector';
 import IslandMap from '@/sites/wilderworld/IslandMap';
 import PlotMetrics from '@/sites/wilderworld/PlotMetrics';
 import Neighborhoods from '@/sites/wilderworld/Neighborhoods';
+import KeyLocations from '@/sites/wilderworld/KeyLocations';
 import styles from './page.module.css';
 
 export default function CityPage() {
@@ -43,6 +44,13 @@ export default function CityPage() {
       <IslandMap />
       <PlotMetrics />
       <Neighborhoods />
+
+      <SectionHeader
+        eyebrow="The Island"
+        title="Key Locations"
+        subtitle="Landmarks that define Wiami, from where every Wilder begins to the corners where the city's stories unfold."
+      />
+      <KeyLocations />
     </div>
   );
 }
