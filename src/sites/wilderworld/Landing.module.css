@@ -158,37 +158,6 @@
   gap: 1rem;
 }
 
-/* On phones the hero is not a full-height cropped background. The city footage
-   shows in its natural horizontal (16:9) frame and autoplays, with the
-   heading, copy and buttons stacked below it in normal flow. */
-@media (max-width: 640px) {
-  .hero {
-    height: auto;
-    min-height: 0;
-    /* Symmetric vertical spacing around the description: the gap above it
-       (between the video and the text) matches the padding below it. */
-    padding: calc(64px + 1.5rem) 0.75rem 1.5rem;
-    gap: 1.5rem;
-  }
-
-  .hero .frame {
-    flex: none;
-    aspect-ratio: 16 / 9;
-  }
-
-  /* No overlay scrim needed once the text sits below the video. */
-  .hero .scrim {
-    display: none;
-  }
-
-  .overlay {
-    position: static;
-    max-width: none;
-    padding: 0;
-    gap: 0.9rem;
-  }
-}
-
 /* Blinking caret shown while the heading types itself out. */
 .caret {
   display: inline-block;
