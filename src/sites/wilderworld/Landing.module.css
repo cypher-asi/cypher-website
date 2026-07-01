@@ -165,8 +165,10 @@
   .hero {
     height: auto;
     min-height: 0;
-    padding: calc(64px + 0.75rem) 0.75rem 2rem;
-    gap: 1rem;
+    /* Symmetric vertical spacing around the description: the gap above it
+       (between the video and the text) matches the padding below it. */
+    padding: calc(64px + 1.5rem) 0.75rem 1.5rem;
+    gap: 1.5rem;
   }
 
   .hero .frame {
