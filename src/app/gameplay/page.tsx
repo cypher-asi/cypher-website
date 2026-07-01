@@ -107,9 +107,9 @@ const OPEN_WORLD_FEATURES: Feature[] = [
     image: '/images/wilder-world/Wiami_Shopping.png',
   },
   {
-    title: 'Explorable Interiors',
+    title: 'Nightlife',
     description:
-      'Step inside buildings, venues, and hidden spaces scattered across Wiami.',
+      'Dive into clubs, venues, and after-dark experiences across the city.',
   },
   {
     title: 'Police Encounters',
