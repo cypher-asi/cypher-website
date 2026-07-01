@@ -3,8 +3,11 @@ import { getEntryBySlug } from '@/lib/wilderCollections';
 import {
   fetchNftsByContract,
   fetchBestListingsMap,
+  fetchBestListingsPage,
+  fetchNftsByIdentifiers,
   normalizeNft,
   openseaFetch,
+  type BestListing,
   type MarketNft,
   type OpenSeaNft,
 } from '@/lib/opensea';
@@ -12,21 +15,69 @@ import {
 export const revalidate = 300;
 
 /**
- * GET /api/market/nfts?slug=<collection>&next=<cursor>
- * Returns a page of NFTs for a Wilder World collection, resolved by its onchain
- * contract (so umbrella slugs like `wilderworld` never leak in), enriched with
- * best-listing prices in ETH where available.
+ * GET /api/market/nfts?slug=<collection>&next=<cursor>&status=<listed|unlisted>
+ *
+ * - status=listed (default): drives the grid from best listings, so results are
+ *   sorted cheapest-first and every item carries a price. Paginated via the
+ *   listings `next` cursor; metadata is batch-resolved by token identifier.
+ * - status=unlisted: enumerates the collection by contract and returns only the
+ *   tokens that have no active best listing (best-effort, price is always null).
  */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const slug = searchParams.get('slug');
   const next = searchParams.get('next');
+  const status = searchParams.get('status') === 'unlisted' ? 'unlisted' : 'listed';
 
   const empty: { items: MarketNft[]; next: string | null } = { items: [], next: null };
 
   const entry = slug ? getEntryBySlug(slug) : undefined;
   if (!entry) return NextResponse.json(empty);
 
+  if (status === 'listed') {
+    const page = await fetchBestListingsPage(entry.slug, next);
+    if (!page) return NextResponse.json(empty);
+
+    // Listings are already ascending; a token can appear more than once, so
+    // keep the first (cheapest) occurrence and preserve that order.
+    const seen = new Set<string>();
+    const ordered: BestListing[] = [];
+    for (const listing of page.listings) {
+      if (seen.has(listing.identifier)) continue;
+      seen.add(listing.identifier);
+      ordered.push(listing);
+    }
+
+    const meta = await fetchNftsByIdentifiers(
+      entry.chain,
+      ordered.map((o) => ({
+        contract: o.contract || entry.contract || '',
+        identifier: o.identifier,
+      }))
+    );
+    const metaById: Record<string, OpenSeaNft> = {};
+    for (const m of meta) metaById[m.identifier] = m;
+
+    const items: MarketNft[] = ordered.map((o) => {
+      const m = metaById[o.identifier];
+      if (m) return normalizeNft(m, entry.slug, entry.chain, o.priceEth);
+      // Never drop a priced listing just because metadata was missing.
+      return {
+        identifier: o.identifier,
+        name: `#${o.identifier}`,
+        image: null,
+        collectionSlug: entry.slug,
+        contract: o.contract || entry.contract || '',
+        chain: entry.chain,
+        priceEth: o.priceEth,
+        traits: [],
+      };
+    });
+
+    return NextResponse.json({ items, next: page.next });
+  }
+
+  // status === 'unlisted'
   let nfts: OpenSeaNft[] = [];
   let nextCursor: string | null = null;
 
@@ -37,7 +88,6 @@ export async function GET(request: Request) {
       nextCursor = data.next;
     }
   } else {
-    // Fallback to slug-based listing when we don't have a verified contract.
     const params = new URLSearchParams({ limit: '50' });
     if (next) params.set('next', next);
     const data = await openseaFetch<{ nfts?: OpenSeaNft[]; next?: string | null }>(
@@ -49,14 +99,13 @@ export async function GET(request: Request) {
     }
   }
 
-  if (nfts.length === 0) return NextResponse.json(empty);
+  if (nfts.length === 0) return NextResponse.json({ items: [], next: nextCursor });
 
   const priceMap = await fetchBestListingsMap(entry.slug);
 
-  return NextResponse.json({
-    items: nfts.map((nft) =>
-      normalizeNft(nft, entry.slug, entry.chain, priceMap[nft.identifier] ?? null)
-    ),
-    next: nextCursor,
-  });
+  const items = nfts
+    .filter((nft) => priceMap[nft.identifier] == null)
+    .map((nft) => normalizeNft(nft, entry.slug, entry.chain, null));
+
+  return NextResponse.json({ items, next: nextCursor });
 }

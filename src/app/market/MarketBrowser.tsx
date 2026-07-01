@@ -25,6 +25,26 @@ type FilterView = {
 
 const FILTER_LOADING_MIN_MS = 420;
 
+const itemKey = (nft: MarketNft) => `${nft.contract}-${nft.identifier}`;
+
+/**
+ * Keep the first occurrence of each token. OpenSea can surface the same token
+ * across paginated "load more" responses (and a token may carry more than one
+ * listing), so appending pages blindly produces duplicate React keys — which
+ * corrupts reconciliation and leaves stale cards behind on collection switch.
+ */
+function dedupeItems(list: MarketNft[]): MarketNft[] {
+  const seen = new Set<string>();
+  const out: MarketNft[] = [];
+  for (const nft of list) {
+    const key = itemKey(nft);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(nft);
+  }
+  return out;
+}
+
 export default function MarketBrowser({ industries }: Props) {
   const allEntries = useMemo(
     () => industries.flatMap((i) => i.collections),
@@ -37,7 +57,10 @@ export default function MarketBrowser({ industries }: Props) {
   const [ethUsd, setEthUsd] = useState<number | null>(null);
 
   const [items, setItems] = useState<MarketNft[]>([]);
-  const [next, setNext] = useState<string | null>(null);
+  // The pagination cursor is stored together with the collection+availability
+  // key it belongs to. A cursor from one collection can never be replayed
+  // against another, so switching collections can't mix items across them.
+  const [next, setNext] = useState<{ cursor: string; key: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(false);
@@ -165,7 +188,8 @@ export default function MarketBrowser({ industries }: Props) {
   useEffect(() => {
     if (!activeSlug) return;
     let alive = true;
-    loadKeyRef.current = `${activeSlug}|${availability}`;
+    const key = `${activeSlug}|${availability}`;
+    loadKeyRef.current = key;
     setLoading(true);
     setLoadingMore(false);
     setError(false);
@@ -178,8 +202,8 @@ export default function MarketBrowser({ industries }: Props) {
       .then((r) => r.json())
       .then((d: { items?: MarketNft[]; next?: string | null }) => {
         if (!alive) return;
-        setItems(d.items ?? []);
-        setNext(d.next ?? null);
+        setItems(dedupeItems(d.items ?? []));
+        setNext(d.next ? { cursor: d.next, key } : null);
       })
       .catch(() => {
         if (alive) setError(true);
@@ -223,12 +247,15 @@ export default function MarketBrowser({ industries }: Props) {
   }, [activeSlug]);
 
   const loadMore = useCallback(() => {
-    if (!next || loadingMore) return;
     const key = `${activeSlug}|${availability}`;
+    // Only page when the cursor belongs to the collection on screen right now.
+    // During a collection switch `next` briefly still points at the previous
+    // collection; this check drops that stale request before it can fire.
+    if (!next || next.key !== key || loadingMore) return;
     setLoadingMore(true);
     fetch(
       `/api/market/nfts?slug=${encodeURIComponent(activeSlug)}&status=${availability}&next=${encodeURIComponent(
-        next
+        next.cursor
       )}`
     )
       .then((r) => r.json())
@@ -237,9 +264,9 @@ export default function MarketBrowser({ industries }: Props) {
         if (loadKeyRef.current !== key) return;
         setItems((prev) => {
           batchBaseRef.current = prev.length;
-          return [...prev, ...(d.items ?? [])];
+          return dedupeItems([...prev, ...(d.items ?? [])]);
         });
-        setNext(d.next ?? null);
+        setNext(d.next ? { cursor: d.next, key } : null);
       })
       .catch(() => {})
       .finally(() => {

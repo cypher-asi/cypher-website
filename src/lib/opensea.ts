@@ -30,6 +30,28 @@ export async function openseaFetch<T>(path: string): Promise<T | null> {
   }
 }
 
+/** POST a JSON body to an OpenSea endpoint. Returns null on any failure. */
+export async function openseaPost<T>(path: string, body: unknown): Promise<T | null> {
+  const key = process.env.OPENSEA_API_KEY;
+  if (!key) return null;
+  try {
+    const res = await fetch(`${OPENSEA_BASE}${path}`, {
+      method: 'POST',
+      headers: {
+        'X-API-KEY': key,
+        accept: 'application/json',
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify(body),
+      next: { revalidate: OPENSEA_REVALIDATE },
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as T;
+  } catch {
+    return null;
+  }
+}
+
 /* ----- Response shapes (only the fields we consume) ----------------------- */
 export type OpenSeaNft = {
   identifier: string;
@@ -73,7 +95,7 @@ type OpenSeaListing = {
   price?: { current?: { value?: string; decimals?: number; currency?: string } };
   protocol_data?: {
     parameters?: {
-      offer?: Array<{ identifierOrCriteria?: string }>;
+      offer?: Array<{ identifierOrCriteria?: string; token?: string }>;
     };
   };
 };
@@ -160,4 +182,66 @@ export async function fetchBestListingsMap(slug: string): Promise<Record<string,
     if (!Number.isNaN(eth)) map[id] = eth;
   }
   return map;
+}
+
+/** A single best listing reduced to what the market grid needs. */
+export type BestListing = { identifier: string; contract: string | null; priceEth: number };
+
+/**
+ * Fetch one page of a collection's best (cheapest-first) listings. The endpoint
+ * returns listings sorted by price ascending with a `next` cursor for paging,
+ * so this drives the "listed, cheapest first" grid directly.
+ */
+export async function fetchBestListingsPage(
+  slug: string,
+  next?: string | null,
+  limit = 60
+): Promise<{ listings: BestListing[]; next: string | null } | null> {
+  const params = new URLSearchParams({ limit: String(limit) });
+  if (next) params.set('next', next);
+  const data = await openseaFetch<{ listings?: OpenSeaListing[]; next?: string | null }>(
+    `/listings/collection/${encodeURIComponent(slug)}/best?${params.toString()}`
+  );
+  if (!data?.listings) return null;
+  const listings: BestListing[] = [];
+  for (const listing of data.listings) {
+    const offer = listing.protocol_data?.parameters?.offer?.[0];
+    const id = offer?.identifierOrCriteria;
+    const raw = listing.price?.current?.value;
+    const decimals = listing.price?.current?.decimals ?? 18;
+    if (!id || !raw) continue;
+    const eth = Number(raw) / 10 ** decimals;
+    if (Number.isNaN(eth)) continue;
+    listings.push({ identifier: id, contract: offer?.token ?? null, priceEth: eth });
+  }
+  return { listings, next: data.next ?? null };
+}
+
+/**
+ * Batch-fetch NFT metadata by identifier via POST /nfts/batch. Chunks requests
+ * so we never exceed the endpoint's per-call limit. Not-found tokens are simply
+ * omitted by OpenSea, so the caller must tolerate gaps.
+ */
+export async function fetchNftsByIdentifiers(
+  chain: string,
+  ids: Array<{ contract: string; identifier: string }>
+): Promise<OpenSeaNft[]> {
+  if (ids.length === 0) return [];
+  const CHUNK = 30;
+  const chunks: Array<Array<{ contract: string; identifier: string }>> = [];
+  for (let i = 0; i < ids.length; i += CHUNK) chunks.push(ids.slice(i, i + CHUNK));
+  const results = await Promise.all(
+    chunks.map((chunk) =>
+      openseaPost<{ nfts?: OpenSeaNft[] }>(`/nfts/batch`, {
+        identifiers: chunk.map((c) => ({
+          chain,
+          contract_address: c.contract,
+          token_id: c.identifier,
+        })),
+      })
+    )
+  );
+  const nfts: OpenSeaNft[] = [];
+  for (const r of results) if (r?.nfts) nfts.push(...r.nfts);
+  return nfts;
 }
