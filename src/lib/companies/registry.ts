@@ -257,7 +257,7 @@ const wilderFooter: FooterConfig = {
       links: [
         { label: 'News', href: 'https://www.wilderworld.com/news', external: true },
         { label: 'X', href: 'https://x.com/WilderWorld', external: true },
-        { label: 'Instagram', href: 'https://www.instagram.com/wilderworld', external: true },
+        { label: 'Instagram', href: 'https://www.instagram.com/wilder.world/', external: true },
         { label: 'Telegram', href: 'https://t.me/wilderworld', external: true },
         { label: 'ZERO', href: 'https://zero.tech', external: true },
         { label: 'YouTube', href: 'https://www.youtube.com/@WilderWorld', external: true },
