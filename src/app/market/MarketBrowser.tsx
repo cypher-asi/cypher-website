@@ -319,6 +319,7 @@ export default function MarketBrowser({ industries }: Props) {
               listedCount={activeMeta?.listedCount ?? null}
               owners={activeMeta?.owners ?? null}
               ethUsd={ethUsd}
+              wildDenominated={isIndexerSource}
               openseaSlug={isIndexerSource ? undefined : activeEntry?.slug}
             />
           </AnimatedPanel>
