@@ -1,0 +1,43 @@
+.connect {
+  appearance: none;
+  padding: 0.5rem 1.1rem;
+  background: #ff6434;
+  border: none;
+  color: #000;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.connect:hover {
+  opacity: 0.9;
+}
+
+.connected {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.identity {
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary);
+}
+
+.disconnect {
+  appearance: none;
+  padding: 0.45rem 0.9rem;
+  background: transparent;
+  border: 1px solid #1c1c1f;
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.disconnect:hover {
+  border-color: #ff6434;
+  color: #ff6434;
+}
