@@ -22,8 +22,11 @@ export function NftCard({ nft, ethUsd, animationDelayMs, onOpen }: Props) {
       onClick={() => onOpen(itemKey(nft))}
     >
       <div className={styles.cardImageWrap}>
-        {nft.amount != null && nft.amount > 1 && (
-          <span className={styles.cardQty} title={`Bundle of ${nft.amount}`}>
+        {nft.fungible && nft.amount != null && (
+          <span
+            className={styles.cardQty}
+            title={nft.amount > 1 ? `Bundle of ${nft.amount}` : 'Single unit'}
+          >
             ×{nft.amount}
           </span>
         )}

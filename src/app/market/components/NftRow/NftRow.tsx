@@ -44,8 +44,11 @@ export function NftRow({ nft, ethUsd, onOpen }: Props) {
           )}
         </div>
         <span className={styles.rowName}>{nft.name}</span>
-        {nft.amount != null && nft.amount > 1 && (
-          <span className={styles.rowQty} title={`Bundle of ${nft.amount}`}>
+        {nft.fungible && nft.amount != null && (
+          <span
+            className={styles.rowQty}
+            title={nft.amount > 1 ? `Bundle of ${nft.amount}` : 'Single unit'}
+          >
             ×{nft.amount}
           </span>
         )}

@@ -123,6 +123,8 @@ export type MarketNft = {
   status?: string;
   /** Listing quantity: N for ERC-1155, 1 for ERC-721. */
   amount?: number;
+  /** From a fungible (ERC-1155) collection — drives explicit ×N quantity on cards. */
+  fungible?: boolean;
 };
 
 export function normalizeNft(

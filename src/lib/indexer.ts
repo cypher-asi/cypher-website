@@ -196,7 +196,8 @@ export type MarketplaceListingsResponse = {
 export function normalizeMarketplaceListing(
   listing: MarketplaceListing,
   collectionSlug: string,
-  chain: string
+  chain: string,
+  fungible = false
 ): MarketNft {
   const metadata = listing.nft?.metadata;
   return {
@@ -213,5 +214,6 @@ export function normalizeMarketplaceListing(
     sellerAddress: listing.sellerAddress.toLowerCase(),
     status: listing.status,
     amount: listing.amount,
+    fungible,
   };
 }

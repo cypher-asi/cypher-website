@@ -34,6 +34,14 @@ export type WilderCollectionEntry = {
   blurb?: string;
   /** Data source; defaults to 'opensea' when omitted. */
   source?: CollectionSource;
+  /**
+   * Fungible collection — an ERC-1155 whose tokenId(s) carry supply, so one
+   * token is held by many owners and can be listed in multiple units. Drives
+   * marketplace treatment: the token stays browsable under Unlisted even while
+   * listed, and its listing cards show an explicit quantity (×1, ×2, …). Omit
+   * for one-of-one ERC-721 collections.
+   */
+  fungible?: boolean;
   /** Numeric chain id for indexer-backed chains (Z-Chain = 9369). */
   chainId?: number;
 };
@@ -204,6 +212,7 @@ export const WILDER_INDUSTRIES: WilderIndustry[] = [
         chain: 'zchain',
         chainId: 9369,
         source: 'indexer',
+        fungible: true,
         contract: '0x5ce3a764cc43e891d8bd068dd16c1b08db4ad0d4',
         blurb: 'Sealed packs on Z-Chain — open them to reveal weapons, wheels and avatars.',
       },

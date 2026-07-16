@@ -11,6 +11,7 @@ import {
   normalizeMarketplaceListing,
   INDEXER_GRID_LIMIT,
   INDEXER_MARKET_LISTINGS_CAP,
+  INDEXER_PAGE_LIMIT,
   type IndexerInventoryResponse,
   type MarketplaceListingsResponse,
 } from '@/lib/indexer';
@@ -191,15 +192,39 @@ async function handleIndexer(
         const pb = BigInt(b.priceRaw);
         return pa < pb ? -1 : pa > pb ? 1 : 0;
       })
-      .map((listing) => normalizeMarketplaceListing(listing, entry.slug, entry.chain));
+      .map((listing) =>
+        normalizeMarketplaceListing(listing, entry.slug, entry.chain, entry.fungible ?? false)
+      );
 
     return NextResponse.json({ items, next: null, error: false });
   }
 
-  // status === 'unlisted': the collection inventory minus tokens that currently
-  // have an active listing (best-effort; price is always null).
-  // `attributes` is a JSON trait filter (e.g. {"Rarity":["Rare"]}) applied
-  // server-side across the whole collection.
+  // status === 'unlisted'
+  // A fungible collection stays browsable even while listed: a listed unit
+  // doesn't remove the token from the collection, which still holds unlisted
+  // supply. Inventory is per-holder, so collapse to one tile per distinct
+  // tokenId and skip the active-listing exclusion. Single page — the fungible
+  // collections in scope have very few distinct tokenIds.
+  if (entry.fungible) {
+    const inv = await indexerFetch<IndexerInventoryResponse>(
+      `/v1/inventory?collections=${encodeURIComponent(contract)}&limit=${INDEXER_PAGE_LIMIT}` +
+        (attributes ? `&attributes=${encodeURIComponent(attributes)}` : '')
+    );
+    if (!inv) return fetchFailed();
+
+    const seen = new Set<string>();
+    const items: MarketNft[] = [];
+    for (const asset of inv.items) {
+      if (seen.has(asset.tokenId)) continue;
+      seen.add(asset.tokenId);
+      items.push(normalizeIndexerAsset(asset, entry.slug, entry.chain));
+    }
+    return NextResponse.json({ items, next: null, error: false });
+  }
+
+  // ERC-721: the collection inventory minus tokens that currently have an active
+  // listing (best-effort; price is always null). `attributes` is a JSON trait
+  // filter (e.g. {"Rarity":["Rare"]}) applied server-side across the collection.
   const inventory = await indexerFetch<IndexerInventoryResponse>(
     `/v1/inventory?collections=${encodeURIComponent(contract)}` +
       `&limit=${INDEXER_GRID_LIMIT}&offset=${offset}` +
