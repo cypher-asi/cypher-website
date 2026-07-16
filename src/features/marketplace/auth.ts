@@ -14,6 +14,7 @@
  * with no ZERO wallet all throw — we never sign for an ambiguous identity.
  */
 import { getMarketplaceConfig } from './config';
+import { getSessionToken } from '../auth/session';
 
 const FETCH_TIMEOUT_MS = 10_000;
 
@@ -48,13 +49,11 @@ interface ZosUserResponse {
 export async function authenticate(request: Request): Promise<ZeroIdentity> {
   const { zosApiUrl } = getMarketplaceConfig();
 
-  const authHeader = request.headers.get('authorization');
-  if (!authHeader?.startsWith('Bearer ')) {
-    throw new MarketplaceAuthError(401, 'Missing or invalid Authorization header');
-  }
-  const token = authHeader.slice(7);
+  // Browser calls carry the httpOnly session cookie; programmatic/testing calls
+  // may send an Authorization: Bearer token instead.
+  const token = getSessionToken(request);
   if (!token) {
-    throw new MarketplaceAuthError(401, 'Missing bearer token');
+    throw new MarketplaceAuthError(401, 'Not signed in');
   }
 
   let response: Response;
