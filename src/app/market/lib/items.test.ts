@@ -26,6 +26,12 @@ describe('itemKey', () => {
   it('combines contract and identifier', () => {
     expect(itemKey(nft({ contract: '0xdef', identifier: '9' }))).toBe('0xdef-9');
   });
+
+  it('appends the listing id so same-token listings stay distinct', () => {
+    expect(itemKey(nft({ contract: '0xdef', identifier: '9', listingId: '42' }))).toBe(
+      '0xdef-9-42'
+    );
+  });
 });
 
 describe('shortId', () => {

@@ -14,7 +14,7 @@ import { useMarketTraitsQuery } from './hooks/useMarketTraitsQuery';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { useInfiniteScroll } from './hooks/useInfiniteScroll';
 import { useMarketUrlSync } from './hooks/useMarketUrlSync';
-import { countSelectedTraits, filterByTraits } from './lib/items';
+import { countSelectedTraits, filterByTraits, itemKey } from './lib/items';
 import type { Availability } from './types';
 import { CollectionNav } from './components/CollectionNav';
 import { MobileCollectionMenu } from './components/MobileCollectionMenu';
@@ -196,16 +196,18 @@ export default function MarketBrowser({ industries }: Props) {
   }, [isMobile, setFiltersOpen, setCollectionMenuOpen]);
 
   /* ----- Item modal navigation ------------------------------------------- */
-  const modalIndex = modalId ? filtered.findIndex((n) => n.identifier === modalId) : -1;
+  // Identify the open item by its full card key, not the bare token id: a 1155
+  // can surface several cards (floor + bundles) sharing one token id.
+  const modalIndex = modalId ? filtered.findIndex((n) => itemKey(n) === modalId) : -1;
   const modalNft = modalIndex >= 0 ? filtered[modalIndex] : null;
 
   const goPrev = useCallback(() => {
-    if (modalIndex > 0) openModal(filtered[modalIndex - 1].identifier, { replace: true });
+    if (modalIndex > 0) openModal(itemKey(filtered[modalIndex - 1]), { replace: true });
   }, [modalIndex, filtered, openModal]);
 
   const goNext = useCallback(() => {
     if (modalIndex >= 0 && modalIndex < filtered.length - 1) {
-      openModal(filtered[modalIndex + 1].identifier, { replace: true });
+      openModal(itemKey(filtered[modalIndex + 1]), { replace: true });
     } else if (hasNextPage) {
       loadMore();
     }
@@ -224,7 +226,7 @@ export default function MarketBrowser({ industries }: Props) {
     <MarketFilters
       activeSlug={activeSlug}
       availability={availability}
-      showAvailability={!isIndexerSource}
+      showAvailability={true}
       traitCategories={traitCategories}
       selectedTraits={selectedTraits}
       openTraitGroups={openTraitGroups}
@@ -241,7 +243,9 @@ export default function MarketBrowser({ industries }: Props) {
       ? availability === 'listed'
         ? {
             title: 'No items currently listed',
-            body: 'Nothing in this collection is listed for sale right now. Try the Unlisted filter or browse on OpenSea.',
+            body: isIndexerSource
+              ? 'Nothing in this collection is listed for sale right now. Try the Unlisted filter to browse the collection.'
+              : 'Nothing in this collection is listed for sale right now. Try the Unlisted filter or browse on OpenSea.',
           }
         : {
             title: 'No unlisted items found',

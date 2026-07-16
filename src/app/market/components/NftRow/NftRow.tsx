@@ -1,8 +1,8 @@
 import { ArrowUpRight } from 'lucide-react';
 import type { MarketNft } from '@/lib/opensea';
-import { formatUsd, formatEth } from '@/lib/price';
+import { formatUsd, formatEth, formatWild } from '@/lib/price';
 import { FadeInImage } from '@/components/FadeInImage';
-import { shortId } from '../../lib/items';
+import { itemKey, shortId } from '../../lib/items';
 import styles from '../../market.module.css';
 
 type Props = {
@@ -12,17 +12,21 @@ type Props = {
 };
 
 export function NftRow({ nft, ethUsd, onOpen }: Props) {
-  const price = formatUsd(nft.priceEth, ethUsd) ?? formatEth(nft.priceEth) ?? '—';
+  const price =
+    (nft.priceWild ? formatWild(nft.priceWild.formatted) : null) ??
+    formatUsd(nft.priceEth, ethUsd) ??
+    formatEth(nft.priceEth) ??
+    '—';
   return (
     <div
       className={styles.row}
       role="button"
       tabIndex={0}
-      onClick={() => onOpen(nft.identifier)}
+      onClick={() => onOpen(itemKey(nft))}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          onOpen(nft.identifier);
+          onOpen(itemKey(nft));
         }
       }}
     >
@@ -40,6 +44,11 @@ export function NftRow({ nft, ethUsd, onOpen }: Props) {
           )}
         </div>
         <span className={styles.rowName}>{nft.name}</span>
+        {nft.amount != null && nft.amount > 1 && (
+          <span className={styles.rowQty} title={`Bundle of ${nft.amount}`}>
+            ×{nft.amount}
+          </span>
+        )}
       </div>
       <span className={`${styles.colToken} ${styles.rowMuted}`} title={`#${nft.identifier}`}>
         #{shortId(nft.identifier)}

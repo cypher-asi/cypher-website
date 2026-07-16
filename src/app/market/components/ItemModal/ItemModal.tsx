@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import { ArrowUpRight, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import type { MarketNft } from '@/lib/opensea';
 import { getEntryBySlug, getEntrySource } from '@/lib/wilderCollections';
-import { formatUsd, formatEth } from '@/lib/price';
+import { formatUsd, formatEth, formatWild } from '@/lib/price';
 import { FadeInImage } from '@/components/FadeInImage';
 import { useItemQuery } from '../../hooks/useItemQuery';
 import styles from '../../ItemModal.module.css';
@@ -96,6 +96,8 @@ export function ItemModal({
 
   const priceEth = item?.priceEth ?? nft.priceEth ?? null;
   const priceUsd = formatUsd(priceEth, ethUsd);
+  // Z-Chain listings settle in WILD (from the grid's MarketNft); prefer it.
+  const priceWild = nft.priceWild ? formatWild(nft.priceWild.formatted) : null;
   const image = item?.image ?? nft.image;
   const name = item?.name ?? nft.name;
   const isLoading = status === 'pending';
@@ -203,9 +205,16 @@ export function ItemModal({
               <div className={styles.priceRow}>
                 <span className={styles.priceLabel}>Price</span>
                 <span className={styles.priceValue}>
-                  {priceUsd ?? formatEth(priceEth) ?? '—'}
+                  {priceWild ?? priceUsd ?? formatEth(priceEth) ?? '—'}
                 </span>
               </div>
+
+              {nft.amount != null && nft.amount > 1 && (
+                <div className={styles.priceRow}>
+                  <span className={styles.priceLabel}>Quantity</span>
+                  <span className={styles.priceValue}>{nft.amount}</span>
+                </div>
+              )}
 
               {!hideOpenSea && (
                 <a
