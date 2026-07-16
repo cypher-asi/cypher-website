@@ -8,7 +8,11 @@ import { openseaFetch, type OpenSeaCollection, type OpenSeaStats } from '@/lib/o
 import {
   indexerFetch,
   resolveMediaUrl,
+  wildFromRaw,
+  INDEXER_PAGE_LIMIT,
   type IndexerInventoryResponse,
+  type MarketplaceCollectionsResponse,
+  type MarketplaceListingsResponse,
 } from '@/lib/indexer';
 
 export const revalidate = 300;
@@ -99,18 +103,23 @@ type IndexerCollectionsResponse = {
 };
 
 /**
- * Z-Chain collections are indexer-backed and browse-only: no floor / offers /
- * volume / owners stats. Name + supply come from the indexer collections
- * endpoint when available, the card image from the first asset. Any indexer
- * failure degrades to config-only nulls — never rejects the whole response.
+ * Z-Chain collections are indexer-backed. Stats come from the indexer: name +
+ * supply + owners from the inventory collections endpoint, floor + listed count
+ * from the marketplace order book, total volume by summing sold listings, all
+ * WILD-denominated. Top Offer is null — the marketplace has no offers/bids, only
+ * fixed-price listings. Any indexer failure degrades to config-only nulls — never
+ * rejects the whole response.
  */
 async function buildIndexerCollection(
   c: WilderCollectionEntry
 ): Promise<MarketCollection> {
-  const [collections, inventory] = await Promise.all([
+  const contractParam = encodeURIComponent(c.contract ?? '');
+  const [collections, inventory, marketCollections, sold] = await Promise.all([
     indexerFetch<IndexerCollectionsResponse>('/v1/inventory/collections'),
-    indexerFetch<IndexerInventoryResponse>(
-      `/v1/inventory?collections=${encodeURIComponent(c.contract ?? '')}`
+    indexerFetch<IndexerInventoryResponse>(`/v1/inventory?collections=${contractParam}`),
+    indexerFetch<MarketplaceCollectionsResponse>('/v1/marketplace/collections'),
+    indexerFetch<MarketplaceListingsResponse>(
+      `/v1/marketplace/listings?collection=${contractParam}&status=sold&limit=${INDEXER_PAGE_LIMIT}`
     ),
   ]);
 
@@ -118,18 +127,29 @@ async function buildIndexerCollection(
   const detail = collections?.collections?.find(
     (col) => (col.collectionAddress ?? '').toLowerCase() === contract
   );
+  const marketStat = marketCollections?.collections?.find(
+    (col) => (col.collectionAddress ?? '').toLowerCase() === contract
+  );
   const firstAsset = inventory?.items?.[0];
+
+  const floorPrice = wildFromRaw(marketStat?.floorPriceRaw);
+  // Sum sold listing prices for total volume (best-effort; capped at one page —
+  // far above current sale counts). BigInt avoids precision loss on the sum.
+  const soldItems = sold?.items ?? [];
+  const totalVolume = soldItems.length
+    ? wildFromRaw(soldItems.reduce((sum, l) => sum + BigInt(l.priceRaw), BigInt(0)).toString())
+    : null;
 
   return {
     slug: c.slug,
     name: detail?.collectionName || (c.label ?? c.slug),
     image: resolveMediaUrl(firstAsset?.metadata?.image),
-    floorPrice: null,
-    floorSymbol: null,
+    floorPrice,
+    floorSymbol: floorPrice != null ? 'WILD' : null,
     topOfferEth: null,
-    totalVolume: null,
-    listedCount: null,
-    owners: null,
+    totalVolume,
+    listedCount: marketStat?.activeListings ?? null,
+    owners: detail?.totalHolders ?? null,
     totalSupply: detail?.totalItems ?? null,
     launched: c.launched ?? null,
   };

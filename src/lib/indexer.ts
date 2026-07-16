@@ -188,6 +188,28 @@ export type MarketplaceListingsResponse = {
   offset: number;
 };
 
+/** A row from `GET /v1/marketplace/collections` — per-collection order-book stats. */
+export type MarketplaceCollectionStat = {
+  collectionAddress: string;
+  collectionName: string;
+  activeListings: number;
+  floorPriceRaw: string | null;
+  floorPriceFormatted: string | null;
+};
+
+export type MarketplaceCollectionsResponse = { collections: MarketplaceCollectionStat[] };
+
+/** WILD (18-decimal) amount from a raw uint256 string, or null. Precision is
+ * fine for display-scale values (well under 2^53 / 1e18 ≈ 9M WILD). */
+export function wildFromRaw(raw: string | null | undefined): number | null {
+  if (!raw) return null;
+  try {
+    return Number(BigInt(raw)) / 1e18;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Convert an active marketplace listing to the shared `MarketNft` shape, carrying
  * the WILD price + listing fields the ETH path doesn't have. `priceEth` stays null

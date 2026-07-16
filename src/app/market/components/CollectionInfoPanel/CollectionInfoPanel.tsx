@@ -11,6 +11,8 @@ type Props = {
   listedCount: number | null;
   owners: number | null;
   ethUsd: number | null;
+  /** Z-Chain collections settle in WILD; show "N WILD" instead of USD. */
+  wildDenominated?: boolean;
   openseaSlug?: string;
 };
 
@@ -26,6 +28,14 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 const money = (value: number | null, ethUsd: number | null): string =>
   formatUsd(value, ethUsd) ?? formatEth(value) ?? '—';
 
+/** Floor / volume: WILD amount for Z-Chain collections, else USD/ETH. */
+const price = (value: number | null, ethUsd: number | null, wild: boolean): string => {
+  if (!wild) return money(value, ethUsd);
+  return value != null
+    ? `${value.toLocaleString(undefined, { maximumFractionDigits: 4 })} WILD`
+    : '—';
+};
+
 export function CollectionInfoPanel({
   name,
   launched,
@@ -35,6 +45,7 @@ export function CollectionInfoPanel({
   listedCount,
   owners,
   ethUsd,
+  wildDenominated = false,
   openseaSlug,
 }: Props) {
   return (
@@ -42,9 +53,9 @@ export function CollectionInfoPanel({
       <p className={styles.railHeading}>{name}</p>
       <div className={styles.info}>
         <InfoRow label="Launched" value={launched ?? '—'} />
-        <InfoRow label="Floor Price" value={money(floorPrice, ethUsd)} />
+        <InfoRow label="Floor Price" value={price(floorPrice, ethUsd, wildDenominated)} />
         <InfoRow label="Top Offer" value={money(topOfferEth, ethUsd)} />
-        <InfoRow label="Total Volume" value={money(totalVolume, ethUsd)} />
+        <InfoRow label="Total Volume" value={price(totalVolume, ethUsd, wildDenominated)} />
         <InfoRow label="Listed" value={listedCount != null ? String(listedCount) : '—'} />
         <InfoRow
           label="Owners (Unique)"

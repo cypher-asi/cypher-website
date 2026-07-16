@@ -33,6 +33,25 @@ const collectionsEnvelope = {
   ],
 };
 
+const marketCollectionsEnvelope = {
+  collections: [
+    {
+      collectionAddress: PACKS_CONTRACT,
+      collectionName: 'Wilder Packs',
+      activeListings: 3,
+      floorPriceRaw: '2000000000000000000',
+      floorPriceFormatted: null,
+    },
+  ],
+};
+
+const soldEnvelope = {
+  items: [{ priceRaw: '3000000000000000000' }, { priceRaw: '2000000000000000000' }],
+  total: 2,
+  limit: 200,
+  offset: 0,
+};
+
 const inventoryEnvelope: IndexerInventoryResponse = {
   items: [
     {
@@ -68,12 +87,13 @@ beforeEach(() => {
 });
 
 describe('GET /api/market/collections (indexer entries)', () => {
-  it('resolves name/totalSupply from the collections envelope (case-insensitive address)', async () => {
-    mockedFetch.mockImplementation(async (path: string) =>
-      path.startsWith('/v1/inventory/collections')
-        ? collectionsEnvelope
-        : inventoryEnvelope
-    );
+  it('resolves name/supply/owners + order-book stats (case-insensitive address)', async () => {
+    mockedFetch.mockImplementation(async (path: string) => {
+      if (path.startsWith('/v1/inventory/collections')) return collectionsEnvelope;
+      if (path.startsWith('/v1/marketplace/collections')) return marketCollectionsEnvelope;
+      if (path.startsWith('/v1/marketplace/listings')) return soldEnvelope;
+      return inventoryEnvelope;
+    });
 
     const body = await (await GET()).json();
     const packs = findCollection(body, 'packs');
@@ -81,7 +101,13 @@ describe('GET /api/market/collections (indexer entries)', () => {
     expect(packs?.name).toBe('Wilder Packs');
     expect(packs?.totalSupply).toBe(7589);
     expect(packs?.image).toBe('https://example.com/pack.png');
-    expect(packs?.floorPrice).toBeNull();
+    // Order-book stats, WILD-denominated.
+    expect(packs?.floorPrice).toBe(2);
+    expect(packs?.floorSymbol).toBe('WILD');
+    expect(packs?.listedCount).toBe(3);
+    expect(packs?.owners).toBe(1200);
+    expect(packs?.totalVolume).toBe(5); // 3 + 2 WILD sold
+    expect(packs?.topOfferEth).toBeNull(); // no offers/bids in the marketplace
     expect(packs?.priceEth).toBeUndefined();
   });
 
