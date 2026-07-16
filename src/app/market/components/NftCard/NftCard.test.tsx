@@ -21,10 +21,22 @@ describe('NftCard', () => {
     expect(screen.getByText('Wilder Wheel #42')).toBeInTheDocument();
   });
 
-  it('calls onOpen with the token identifier when clicked', async () => {
+  it('calls onOpen with the card key when clicked', async () => {
     const onOpen = vi.fn();
     render(<NftCard nft={nft} ethUsd={null} animationDelayMs={0} onOpen={onOpen} />);
     await userEvent.click(screen.getByRole('button'));
-    expect(onOpen).toHaveBeenCalledWith('42');
+    expect(onOpen).toHaveBeenCalledWith('0xabc-42');
+  });
+
+  it('shows a bundle quantity badge for multi-unit listings', () => {
+    const bundle: MarketNft = { ...nft, listingId: '7', amount: 3 };
+    render(<NftCard nft={bundle} ethUsd={null} animationDelayMs={0} onOpen={() => {}} />);
+    expect(screen.getByText('×3')).toBeInTheDocument();
+  });
+
+  it('omits the quantity badge for single-unit listings', () => {
+    const single: MarketNft = { ...nft, listingId: '7', amount: 1 };
+    render(<NftCard nft={single} ethUsd={null} animationDelayMs={0} onOpen={() => {}} />);
+    expect(screen.queryByText('×1')).not.toBeInTheDocument();
   });
 });

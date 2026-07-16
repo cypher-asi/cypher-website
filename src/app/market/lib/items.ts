@@ -1,9 +1,17 @@
 import type { MarketNft } from '@/lib/opensea';
 import type { SelectedTraits } from '../types';
 
-/** Stable React key / dedupe identity for an NFT. */
+/**
+ * Stable React key / dedupe identity for an NFT card. Includes the listing id
+ * when present so that multiple listings of the same ERC-1155 token — a
+ * floor-priced card plus any multi-unit "bundle" listings — stay distinct cards
+ * instead of collapsing into one. ERC-721 / unlisted cards have no listing id
+ * and fall back to contract + token.
+ */
 export function itemKey(nft: MarketNft): string {
-  return `${nft.contract}-${nft.identifier}`;
+  return nft.listingId
+    ? `${nft.contract}-${nft.identifier}-${nft.listingId}`
+    : `${nft.contract}-${nft.identifier}`;
 }
 
 /**
