@@ -93,6 +93,16 @@ export const INDEXER_GRID_LIMIT = 50;
 export const INDEXER_PAGE_LIMIT = 200;
 
 /**
+ * Active listings pulled in one shot for the "listed" grid. The grid collapses
+ * single-unit listings to one floor card per token and shows bundles separately,
+ * which needs the whole active set at once (correct floor-dedupe can't be done
+ * across offset pages). This equals the listings endpoint's own per-request max,
+ * so it's a single call; the marketplace is far below it today. If a collection
+ * ever exceeds it, the grid shows the cheapest CAP listings and the route logs a
+ * truncation warning — page the endpoint here if that ever becomes real. */
+export const INDEXER_MARKET_LISTINGS_CAP = 200;
+
+/**
  * Whether more inventory pages remain after the page just fetched. Exact when
  * the envelope carries `total`; otherwise falls back to the full-page
  * heuristic (a page shorter than `limit` means the collection is exhausted).
@@ -141,5 +151,67 @@ export function normalizeIndexerAsset(
     traits: (metadata?.attributes ?? [])
       .filter((a) => Boolean(a.trait_type))
       .map((a) => ({ type: a.trait_type, value: String(a.value) })),
+  };
+}
+
+/** A row from `GET /v1/marketplace/listings` (the order-book read API). */
+export type MarketplaceListing = {
+  id: string;
+  listingId: string;
+  sellerAddress: string;
+  collectionAddress: string;
+  tokenId: string;
+  amount: number;
+  chainId: number;
+  paymentToken: string;
+  priceRaw: string;
+  priceFormatted: string | null;
+  status: string;
+  buyerAddress: string | null;
+  createdAt: string;
+  expiresAt: string | null;
+  nft: {
+    tokenUri: string | null;
+    metadata: {
+      name?: string | null;
+      image?: string | null;
+      description?: string | null;
+      animationUrl?: string | null;
+    } | null;
+  } | null;
+};
+
+export type MarketplaceListingsResponse = {
+  items: MarketplaceListing[];
+  total: number;
+  limit: number;
+  offset: number;
+};
+
+/**
+ * Convert an active marketplace listing to the shared `MarketNft` shape, carrying
+ * the WILD price + listing fields the ETH path doesn't have. `priceEth` stays null
+ * (Z-Chain settles in WILD); the card/modal read `priceWild` instead.
+ */
+export function normalizeMarketplaceListing(
+  listing: MarketplaceListing,
+  collectionSlug: string,
+  chain: string
+): MarketNft {
+  const metadata = listing.nft?.metadata;
+  return {
+    identifier: listing.tokenId,
+    name: metadata?.name || `#${listing.tokenId}`,
+    image: resolveMediaUrl(metadata?.image),
+    collectionSlug,
+    contract: listing.collectionAddress,
+    chain,
+    priceEth: null,
+    traits: [],
+    listingId: listing.listingId,
+    priceWild: { raw: listing.priceRaw, formatted: listing.priceFormatted },
+    sellerAddress: listing.sellerAddress.toLowerCase(),
+    status: listing.status,
+    amount: listing.amount,
   };
 }

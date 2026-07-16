@@ -112,6 +112,17 @@ export type MarketNft = {
   priceEth: number | null;
   /** Traits, when the list endpoint provides them (used for client filtering). */
   traits: Array<{ type: string; value: string }>;
+  // --- Z-Chain marketplace listing fields (present only for an active listing) ---
+  /** NFTMarketplace listingId — for buy/cancel — when this token is listed. */
+  listingId?: string;
+  /** WILD price of the active listing: raw uint256 string + human-readable. */
+  priceWild?: { raw: string; formatted: string | null };
+  /** Seller (lowercased) of the active listing — used to show Cancel vs Buy. */
+  sellerAddress?: string;
+  /** Listing status (active/sold/cancelled), when indexer-sourced. */
+  status?: string;
+  /** Listing quantity: N for ERC-1155, 1 for ERC-721. */
+  amount?: number;
 };
 
 export function normalizeNft(

@@ -8,8 +8,11 @@ import {
   hasMoreInventory,
   indexerFetch,
   normalizeIndexerAsset,
+  normalizeMarketplaceListing,
   INDEXER_GRID_LIMIT,
+  INDEXER_MARKET_LISTINGS_CAP,
   type IndexerInventoryResponse,
+  type MarketplaceListingsResponse,
 } from '@/lib/indexer';
 import {
   fetchNftsByContract,
@@ -55,11 +58,12 @@ export async function GET(request: Request) {
   const entry = slug ? getEntryBySlug(slug) : undefined;
   if (!entry) return NextResponse.json(empty);
 
-  // Z-Chain collections are indexer-backed and browse-only: no listings, no
-  // prices, no listed/unlisted distinction. Paginated via a numeric offset
-  // carried in the `next` cursor; `next: null` terminates the infinite query.
+  // Z-Chain collections are indexer-backed. `listed` drives the grid from the
+  // marketplace order book (WILD-priced); `unlisted` is the collection inventory
+  // minus tokens with an active listing. Paginated via a numeric offset carried
+  // in the `next` cursor; `next: null` terminates the infinite query.
   if (getEntrySource(entry) === 'indexer') {
-    return handleIndexer(entry, next, fetchFailed, searchParams.get('attributes'));
+    return handleIndexer(entry, next, fetchFailed, searchParams.get('attributes'), status);
   }
 
   if (status === 'listed') {
@@ -140,26 +144,82 @@ async function handleIndexer(
   entry: WilderCollectionEntry,
   next: string | null,
   fetchFailed: () => NextResponse,
-  attributes: string | null
+  attributes: string | null,
+  status: 'listed' | 'unlisted'
 ) {
   const parsed = next ? parseInt(next, 10) : 0;
   const offset = Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+  const contract = entry.contract ?? '';
 
-  // `attributes` is a JSON trait filter (e.g. {"Rarity":["Rare","Common"]});
-  // the indexer applies it server-side across the whole collection.
-  const data = await indexerFetch<IndexerInventoryResponse>(
-    `/v1/inventory?collections=${encodeURIComponent(entry.contract ?? '')}` +
+  if (status === 'listed') {
+    // Drive the grid from active order-book listings (each carries a WILD price),
+    // cheapest first. Single-unit listings collapse to one floor-priced card per
+    // token — mirroring the ETH grid — while multi-unit "bundle" listings each
+    // stay a distinct card so their quantity + total price are visible. Correct
+    // floor-dedupe needs the whole active set at once, so this fetches up to the
+    // cap in one shot rather than paging; `next` is always null.
+    const data = await indexerFetch<MarketplaceListingsResponse>(
+      `/v1/marketplace/listings?collection=${encodeURIComponent(contract)}` +
+        `&status=active&sort=price_asc&limit=${INDEXER_MARKET_LISTINGS_CAP}`,
+      10
+    );
+    if (!data) return fetchFailed();
+
+    if ((data.total ?? 0) > data.items.length) {
+      // Loud signal rather than a silently short grid: the collection has more
+      // active listings than the cap, so the tail (priciest) is not shown.
+      console.warn(
+        `[market] ${entry.slug}: ${data.total} active listings exceed cap ` +
+          `${INDEXER_MARKET_LISTINGS_CAP}; grid truncated to cheapest ${data.items.length}.`
+      );
+    }
+
+    // price_asc guarantees the first listing seen for a token is its floor.
+    const floorByToken = new Map<string, (typeof data.items)[number]>();
+    const bundles: typeof data.items = [];
+    for (const listing of data.items) {
+      if ((listing.amount ?? 1) > 1) {
+        bundles.push(listing);
+      } else if (!floorByToken.has(listing.tokenId)) {
+        floorByToken.set(listing.tokenId, listing);
+      }
+    }
+
+    const items = [...floorByToken.values(), ...bundles]
+      .sort((a, b) => {
+        const pa = BigInt(a.priceRaw);
+        const pb = BigInt(b.priceRaw);
+        return pa < pb ? -1 : pa > pb ? 1 : 0;
+      })
+      .map((listing) => normalizeMarketplaceListing(listing, entry.slug, entry.chain));
+
+    return NextResponse.json({ items, next: null, error: false });
+  }
+
+  // status === 'unlisted': the collection inventory minus tokens that currently
+  // have an active listing (best-effort; price is always null).
+  // `attributes` is a JSON trait filter (e.g. {"Rarity":["Rare"]}) applied
+  // server-side across the whole collection.
+  const inventory = await indexerFetch<IndexerInventoryResponse>(
+    `/v1/inventory?collections=${encodeURIComponent(contract)}` +
       `&limit=${INDEXER_GRID_LIMIT}&offset=${offset}` +
       (attributes ? `&attributes=${encodeURIComponent(attributes)}` : '')
   );
-  if (!data) return fetchFailed();
+  if (!inventory) return fetchFailed();
 
-  const items = data.items.map((asset) =>
-    normalizeIndexerAsset(asset, entry.slug, entry.chain)
+  // One pass over the active listings tells us which tokens to exclude.
+  const listed = await indexerFetch<MarketplaceListingsResponse>(
+    `/v1/marketplace/listings?collection=${encodeURIComponent(contract)}&status=active&limit=200`,
+    10
   );
+  const listedTokenIds = new Set((listed?.items ?? []).map((l) => l.tokenId));
+
+  const items = inventory.items
+    .filter((asset) => !listedTokenIds.has(asset.tokenId))
+    .map((asset) => normalizeIndexerAsset(asset, entry.slug, entry.chain));
   const nextCursor =
-    data.items.length > 0 && hasMoreInventory(data, offset, INDEXER_GRID_LIMIT)
-      ? String(offset + data.items.length)
+    inventory.items.length > 0 && hasMoreInventory(inventory, offset, INDEXER_GRID_LIMIT)
+      ? String(offset + inventory.items.length)
       : null;
   return NextResponse.json({ items, next: nextCursor, error: false });
 }
