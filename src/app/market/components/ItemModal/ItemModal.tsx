@@ -209,7 +209,7 @@ export function ItemModal({
                 </span>
               </div>
 
-              {nft.amount != null && nft.amount > 1 && (
+              {nft.fungible && nft.amount != null && (
                 <div className={styles.priceRow}>
                   <span className={styles.priceLabel}>Quantity</span>
                   <span className={styles.priceValue}>{nft.amount}</span>
