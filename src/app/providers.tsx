@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { CompanyKey } from '@/lib/companies/types';
 import { pageview, setAnalyticsProvider } from '@/features/analytics';
 import { createMixpanelProvider } from '@/features/analytics/mixpanel';
+import { AuthProvider } from '@/features/auth/AuthProvider';
 
 function createQueryClient(): QueryClient {
   return new QueryClient({
@@ -46,5 +47,11 @@ export function Providers({
     if (pathname) pageview(pathname, company);
   }, [pathname, company]);
 
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+  // ZERO login is Wilder World only — the AuthProvider (session restore + global
+  // login modal) mounts for that brand alone, never on cypher/zode/etc.
+  return (
+    <QueryClientProvider client={queryClient}>
+      {company === 'wilderworld' ? <AuthProvider>{children}</AuthProvider> : children}
+    </QueryClientProvider>
+  );
 }
