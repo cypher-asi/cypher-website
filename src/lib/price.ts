@@ -32,3 +32,13 @@ export function formatUsd(
     maximumFractionDigits: fractionDigits,
   });
 }
+
+/**
+ * Format a WILD-denominated price for display. Z-Chain listings settle in WILD
+ * and there is no WILD/USD feed, so we show the token amount directly (e.g.
+ * "1.5 WILD"). `formatted` is the indexer's human-readable `priceFormatted`.
+ */
+export function formatWild(formatted: string | null | undefined): string | null {
+  if (formatted == null || formatted === '') return null;
+  return `${formatted} WILD (Z Chain)`;
+}
