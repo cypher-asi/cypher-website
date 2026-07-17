@@ -24,15 +24,18 @@ export function CardActionButton({ nft, onOpen, className }: Props) {
   const openLogin = useAuthStore((s) => s.openLogin);
   const start = useTradeStore((s) => s.start);
 
-  if (!nft.listingId) return null;
+  // Owned (Yours view) → List; a listing → Buy (others') / Cancel (yours);
+  // nothing to act on otherwise.
+  const listable = nft.owned === true;
+  if (!nft.listingId && !listable) return null;
 
   const isOwn =
     !!user?.zeroWalletAddress &&
     !!nft.sellerAddress &&
     user.zeroWalletAddress.toLowerCase() === nft.sellerAddress.toLowerCase();
-  // Always Buy/Cancel — never "Connect". If not signed in, the click opens login
-  // (they press Buy again once connected).
-  const label = isOwn ? 'Cancel' : 'Buy';
+  // Never "Connect"; if not signed in, the click opens login (press again once in).
+  const label = listable ? 'List' : isOwn ? 'Cancel' : 'Buy';
+  const action = listable ? 'list' : isOwn ? 'cancel' : 'buy';
 
   const onClick = (e: MouseEvent) => {
     e.stopPropagation();
@@ -40,7 +43,7 @@ export function CardActionButton({ nft, onOpen, className }: Props) {
       openLogin();
       return;
     }
-    start(isOwn ? 'cancel' : 'buy', nft);
+    start(action, nft);
     onOpen(itemKey(nft));
   };
 

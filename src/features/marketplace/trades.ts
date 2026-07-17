@@ -13,10 +13,25 @@
  * into `bigint` before calling. Fail-loud: an inactive listing throws rather
  * than sending a doomed transaction.
  */
-import { getContract, prepareContractCall, readContract } from 'thirdweb';
+import {
+  getContract,
+  prepareContractCall,
+  prepareEvent,
+  parseEventLogs,
+  readContract,
+  waitForReceipt,
+} from 'thirdweb';
 import { getCustodialSigner, sendCustodialCalls, type CustodialSigner } from './custody';
 import type { ZeroIdentity } from './auth';
 import { MarketplaceError } from './http';
+
+// The marketplace `Listed` event — `listingId` is the first indexed field, so
+// parsing it from the list tx receipt gives the new listing's id (the contract
+// assigns it via nextListingId++), which the client needs for an instant grid.
+const LISTED_EVENT = prepareEvent({
+  signature:
+    'event Listed(uint256 indexed listingId, address indexed seller, address indexed nftContract, uint256 tokenId, uint256 amount, uint256 price, uint8 tokenType)',
+});
 
 // Human-readable ABI fragments. Marketplace fragments verified against
 // trading-contracts/contracts/NFTMarketplace.sol; approvals are the standard
@@ -55,7 +70,10 @@ function marketplaceContract(signer: CustodialSigner) {
  * List an NFT for a fixed price: approve the marketplace as operator, then
  * escrow-and-list. Returns the transaction hash.
  */
-export async function executeList(identity: ZeroIdentity, params: ListParams): Promise<string> {
+export async function executeList(
+  identity: ZeroIdentity,
+  params: ListParams,
+): Promise<{ transactionHash: string; listingId: string | null }> {
   const signer = await getCustodialSigner(identity);
   const marketplace = marketplaceContract(signer);
   const nft = getContract({
@@ -75,7 +93,28 @@ export async function executeList(identity: ZeroIdentity, params: ListParams): P
     params: [params.nftContract, params.tokenId, params.amount, params.price],
   });
 
-  return sendCustodialCalls(signer, [approve, list]);
+  const transactionHash = await sendCustodialCalls(signer, [approve, list]);
+
+  // Best-effort: read the new listingId from the Listed event so the client can
+  // show the listing instantly. A parse miss just falls back to null (the client
+  // then relies on the indexer refresh) — never fail the (already-settled) list.
+  let listingId: string | null = null;
+  try {
+    const receipt = await waitForReceipt({
+      client: signer.client,
+      chain: signer.chain,
+      transactionHash: transactionHash as `0x${string}`,
+    });
+    const events = parseEventLogs({ logs: receipt.logs, events: [LISTED_EVENT] });
+    const listed = events.find(
+      (e) => e.address.toLowerCase() === signer.config.marketplaceAddress.toLowerCase(),
+    );
+    if (listed) listingId = listed.args.listingId.toString();
+  } catch {
+    /* leave listingId null — the client falls back to the indexer refresh */
+  }
+
+  return { transactionHash, listingId };
 }
 
 /**

@@ -222,6 +222,37 @@
 .tradeAction:hover {
   opacity: 0.9;
 }
+.tradeAction:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* List form fields */
+.tradeField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-self: stretch;
+}
+.tradeLabel {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary);
+}
+.tradeInput {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  background: #000;
+  border: 1px solid #26262b;
+  color: #fff;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.tradeInput:focus {
+  border-color: #ff6434;
+}
 
 .tradePanel {
   display: flex;
