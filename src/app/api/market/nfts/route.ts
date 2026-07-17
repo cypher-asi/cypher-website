@@ -166,7 +166,11 @@ async function handleIndexer(
     if (!owner) return NextResponse.json({ items: [], next: null, error: false });
     const inv = await indexerFetch<IndexerInventoryResponse>(
       `/v1/inventory?collections=${encodeURIComponent(contract)}` +
-        `&wallet=${encodeURIComponent(owner)}&limit=${INDEXER_GRID_LIMIT}&offset=${offset}`
+        `&wallet=${encodeURIComponent(owner)}&limit=${INDEXER_GRID_LIMIT}&offset=${offset}`,
+      // Short cache so "Yours" reflects a list/cancel within ~10s (matches the
+      // listed grid) instead of the 300s default — the wallet's own holdings
+      // are the surface that must feel live after an action.
+      10
     );
     if (!inv) return fetchFailed();
 
