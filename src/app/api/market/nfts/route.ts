@@ -42,7 +42,11 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const slug = searchParams.get('slug');
   const next = searchParams.get('next');
-  const status = searchParams.get('status') === 'unlisted' ? 'unlisted' : 'listed';
+  const statusParam = searchParams.get('status');
+  const status: 'listed' | 'unlisted' | 'yours' =
+    statusParam === 'unlisted' ? 'unlisted' : statusParam === 'yours' ? 'yours' : 'listed';
+  // "Yours" reads the connected wallet's holdings (public on-chain data).
+  const owner = searchParams.get('owner');
 
   const empty: { items: MarketNft[]; next: string | null; error: boolean } = {
     items: [],
@@ -64,8 +68,11 @@ export async function GET(request: Request) {
   // minus tokens with an active listing. Paginated via a numeric offset carried
   // in the `next` cursor; `next: null` terminates the infinite query.
   if (getEntrySource(entry) === 'indexer') {
-    return handleIndexer(entry, next, fetchFailed, searchParams.get('attributes'), status);
+    return handleIndexer(entry, next, fetchFailed, searchParams.get('attributes'), status, owner);
   }
+
+  // "Yours" is a Z-Chain-only holdings view; ETH/OpenSea collections have none.
+  if (status === 'yours') return NextResponse.json(empty);
 
   if (status === 'listed') {
     const page = await fetchBestListingsPage(entry.slug, next);
@@ -146,11 +153,32 @@ async function handleIndexer(
   next: string | null,
   fetchFailed: () => NextResponse,
   attributes: string | null,
-  status: 'listed' | 'unlisted'
+  status: 'listed' | 'unlisted' | 'yours',
+  owner: string | null
 ) {
   const parsed = next ? parseInt(next, 10) : 0;
   const offset = Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
   const contract = entry.contract ?? '';
+
+  if (status === 'yours') {
+    // The connected wallet's holdings in this collection — the items it can list.
+    // Holdings are public on-chain data, so the wallet is passed in the query.
+    if (!owner) return NextResponse.json({ items: [], next: null, error: false });
+    const inv = await indexerFetch<IndexerInventoryResponse>(
+      `/v1/inventory?collections=${encodeURIComponent(contract)}` +
+        `&wallet=${encodeURIComponent(owner)}&limit=${INDEXER_GRID_LIMIT}&offset=${offset}`
+    );
+    if (!inv) return fetchFailed();
+
+    const items = inv.items.map((asset) =>
+      normalizeIndexerAsset(asset, entry.slug, entry.chain, true)
+    );
+    const nextCursor =
+      inv.items.length > 0 && hasMoreInventory(inv, offset, INDEXER_GRID_LIMIT)
+        ? String(offset + inv.items.length)
+        : null;
+    return NextResponse.json({ items, next: nextCursor, error: false });
+  }
 
   if (status === 'listed') {
     // Drive the grid from active order-book listings (each carries a WILD price),

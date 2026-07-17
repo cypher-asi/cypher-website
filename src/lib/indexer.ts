@@ -136,9 +136,11 @@ export function resolveMediaUrl(uri: string | null | undefined): string | null {
 export function normalizeIndexerAsset(
   asset: IndexerAsset,
   collectionSlug: string,
-  chain: string
+  chain: string,
+  owned = false
 ): MarketNft {
   const metadata = asset.metadata;
+  const balance = Number(asset.balance);
   return {
     identifier: asset.tokenId,
     name: metadata?.name || `#${asset.tokenId}`,
@@ -151,6 +153,8 @@ export function normalizeIndexerAsset(
     traits: (metadata?.attributes ?? [])
       .filter((a) => Boolean(a.trait_type))
       .map((a) => ({ type: a.trait_type, value: String(a.value) })),
+    // "Yours" view: the connected user holds this and can list it.
+    ...(owned ? { owned: true, balance: Number.isFinite(balance) ? balance : 1 } : {}),
   };
 }
 

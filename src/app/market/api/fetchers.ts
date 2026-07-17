@@ -47,10 +47,13 @@ export async function fetchNftsPage(
   slug: string,
   availability: Availability,
   next: string | null,
-  attributes?: SelectedTraits
+  attributes?: SelectedTraits,
+  owner?: string | null
 ): Promise<NftsPage> {
   const params = new URLSearchParams({ slug, status: availability });
   if (next) params.set('next', next);
+  // "Yours" reads the connected wallet's holdings.
+  if (availability === 'yours' && owner) params.set('owner', owner);
   // Server-side trait filter for indexer collections: forward only the
   // selected values (drop empty types) as a JSON attribute filter.
   const active = attributes
