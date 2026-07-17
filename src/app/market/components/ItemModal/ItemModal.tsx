@@ -2,12 +2,16 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useQueryClient, type InfiniteData } from '@tanstack/react-query';
 import { ArrowUpRight, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import type { MarketNft } from '@/lib/opensea';
 import { getEntryBySlug, getEntrySource } from '@/lib/wilderCollections';
 import { formatUsd, formatEth, formatWild } from '@/lib/price';
 import { FadeInImage } from '@/components/FadeInImage';
 import { useItemQuery } from '../../hooks/useItemQuery';
+import { TradeSection } from './TradeSection';
+import { useTradeStore } from '@/features/marketplace/tradeStore';
+import type { NftsPage } from '../../api/fetchers';
 import styles from '../../ItemModal.module.css';
 
 type Props = {
@@ -46,7 +50,45 @@ export function ItemModal({
   const [loaderVisible, setLoaderVisible] = useState(false);
   const loaderStartRef = useRef(0);
 
+  const queryClient = useQueryClient();
+  const isTradePending = useTradeStore((s) => s.phase) === 'pending';
+  const slugRef = useRef(slug);
+  slugRef.current = slug;
+
   useEffect(() => setMounted(true), []);
+
+  // On close, drop a just-settled listing from the grid — covers every dismissal
+  // path (Done, X, Escape, backdrop) — then clear the trade flow so reopening an
+  // item starts fresh (a card action can prime the flow before the modal mounts).
+  useEffect(
+    () => () => {
+      const { phase, nft: traded } = useTradeStore.getState();
+      if (phase === 'success' && traded?.listingId) {
+        const listingId = traded.listingId;
+        queryClient.setQueriesData<InfiniteData<NftsPage>>(
+          { queryKey: ['market', 'nfts', slugRef.current] },
+          (old) =>
+            old
+              ? {
+                  ...old,
+                  pages: old.pages.map((p) => ({
+                    ...p,
+                    items: p.items.filter((i) => i.listingId !== listingId),
+                  })),
+                }
+              : old,
+        );
+      }
+      useTradeStore.getState().reset();
+    },
+    [queryClient],
+  );
+
+  // A trade in flight can't be abandoned mid-way — the tx is already mining.
+  const requestClose = () => {
+    if (useTradeStore.getState().phase === 'pending') return;
+    onClose();
+  };
 
   // Reset media state when the active NFT changes.
   useEffect(() => {
@@ -56,6 +98,7 @@ export function ItemModal({
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (useTradeStore.getState().phase === 'pending') return;
       if (e.key === 'Escape') onClose();
       if (e.key === 'ArrowLeft' && hasPrev) onPrev();
       if (e.key === 'ArrowRight' && hasNext) onNext();
@@ -104,19 +147,20 @@ export function ItemModal({
   const isError = status === 'error';
 
   return createPortal(
-    <div className={styles.overlay} onClick={onClose} role="dialog" aria-modal="true">
+    <div className={styles.overlay} onClick={requestClose} role="dialog" aria-modal="true">
       <button
         className={styles.close}
         onClick={(e) => {
           e.stopPropagation();
-          onClose();
+          requestClose();
         }}
+        disabled={isTradePending}
         aria-label="Close"
       >
         <X size={22} />
       </button>
 
-      {hasPrev && (
+      {hasPrev && !isTradePending && (
         <button
           className={`${styles.nav} ${styles.navPrev}`}
           onClick={(e) => {
@@ -128,7 +172,7 @@ export function ItemModal({
           <ChevronLeft size={28} />
         </button>
       )}
-      {hasNext && (
+      {hasNext && !isTradePending && (
         <button
           className={`${styles.nav} ${styles.navNext}`}
           onClick={(e) => {
@@ -215,6 +259,8 @@ export function ItemModal({
                   <span className={styles.priceValue}>{nft.amount}</span>
                 </div>
               )}
+
+              <TradeSection nft={nft} name={name} onClose={requestClose} />
 
               {!hideOpenSea && (
                 <a

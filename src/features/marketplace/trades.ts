@@ -16,6 +16,7 @@
 import { getContract, prepareContractCall, readContract } from 'thirdweb';
 import { getCustodialSigner, sendCustodialCalls, type CustodialSigner } from './custody';
 import type { ZeroIdentity } from './auth';
+import { MarketplaceError } from './http';
 
 // Human-readable ABI fragments. Marketplace fragments verified against
 // trading-contracts/contracts/NFTMarketplace.sol; approvals are the standard
@@ -31,6 +32,7 @@ const SET_APPROVAL_FOR_ALL_METHOD = 'function setApprovalForAll(address operator
 const ERC20_APPROVE_METHOD = 'function approve(address spender, uint256 amount) returns (bool)';
 
 // Tuple indices of the `listings` getter return (see the Listing struct).
+const LISTING_SELLER_INDEX = 0;
 const LISTING_PRICE_INDEX = 4;
 const LISTING_ACTIVE_INDEX = 6;
 
@@ -84,7 +86,12 @@ export async function executeBuy(identity: ZeroIdentity, listingId: bigint): Pro
   const signer = await getCustodialSigner(identity);
   const marketplace = marketplaceContract(signer);
 
-  const price = await readActiveListingPrice(marketplace, listingId);
+  const { price, seller } = await readActiveListing(marketplace, listingId);
+  // Defence in depth (the UI hides Buy on your own listing): buying your own
+  // listing only burns the marketplace fee, so reject it server-side too.
+  if (seller.toLowerCase() === identity.zeroWalletAddress.toLowerCase()) {
+    throw new MarketplaceError(400, 'You cannot buy your own listing — cancel it instead.');
+  }
 
   const wild = getContract({
     client: signer.client,
@@ -122,11 +129,11 @@ export async function executeCancel(identity: ZeroIdentity, listingId: bigint): 
   return sendCustodialCalls(signer, [cancel]);
 }
 
-/** Read a listing's price from the contract; throw if it is not active. */
-async function readActiveListingPrice(
+/** Read a listing's price + seller from the contract; throw if it is not active. */
+async function readActiveListing(
   marketplace: ReturnType<typeof marketplaceContract>,
   listingId: bigint,
-): Promise<bigint> {
+): Promise<{ price: bigint; seller: string }> {
   const listing = await readContract({
     contract: marketplace,
     method: LISTINGS_METHOD,
@@ -134,7 +141,14 @@ async function readActiveListingPrice(
   });
 
   if (!listing[LISTING_ACTIVE_INDEX]) {
-    throw new Error(`Listing ${listingId} is not active`);
+    // Expected race: the grid can show a listing that just sold or was cancelled.
+    throw new MarketplaceError(
+      409,
+      'This listing is no longer available — it may have just sold or been cancelled.',
+    );
   }
-  return listing[LISTING_PRICE_INDEX] as bigint;
+  return {
+    price: listing[LISTING_PRICE_INDEX] as bigint,
+    seller: listing[LISTING_SELLER_INDEX] as string,
+  };
 }

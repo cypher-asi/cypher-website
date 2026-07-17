@@ -22,6 +22,22 @@ export class ValidationError extends Error {
   }
 }
 
+/**
+ * An expected, user-facing marketplace condition — e.g. the listing is no longer
+ * active (sold/cancelled since the grid loaded), or an attempted self-buy. Its
+ * message is safe to show the user; it maps to the given status, not the opaque
+ * 500 reserved for genuine internal failures.
+ */
+export class MarketplaceError extends Error {
+  constructor(
+    public statusCode: number,
+    message: string,
+  ) {
+    super(message);
+    this.name = 'MarketplaceError';
+  }
+}
+
 /** Parse the request body as a JSON object, or throw {@link ValidationError}. */
 export async function readJsonObject(request: Request): Promise<Record<string, unknown>> {
   let raw: unknown;
@@ -73,6 +89,9 @@ export function marketplaceErrorResponse(err: unknown): NextResponse {
   }
   if (err instanceof ValidationError) {
     return NextResponse.json({ error: err.message }, { status: 400 });
+  }
+  if (err instanceof MarketplaceError) {
+    return NextResponse.json({ error: err.message }, { status: err.statusCode });
   }
   // Execution / config / unknown failure: fail loud in the logs, opaque to the
   // client (we never leak internal error detail or secrets).
