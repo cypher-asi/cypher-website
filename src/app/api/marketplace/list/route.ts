@@ -28,8 +28,13 @@ export async function POST(request: Request): Promise<NextResponse> {
     const amount = parseUint(body.amount, 'amount', 1);
     const price = parseUint(body.price, 'price', 1);
 
-    const transactionHash = await executeList(identity, { nftContract, tokenId, amount, price });
-    return NextResponse.json({ ok: true, transactionHash });
+    const { transactionHash, listingId } = await executeList(identity, {
+      nftContract,
+      tokenId,
+      amount,
+      price,
+    });
+    return NextResponse.json({ ok: true, transactionHash, listingId });
   } catch (err) {
     return marketplaceErrorResponse(err);
   }

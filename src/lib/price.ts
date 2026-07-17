@@ -42,3 +42,18 @@ export function formatWild(formatted: string | null | undefined): string | null 
   if (formatted == null || formatted === '') return null;
   return `${formatted} WILD (Z Chain)`;
 }
+
+/**
+ * Parse a WILD amount entered as a decimal string (e.g. "5", "5.875") to raw
+ * 18-decimal wei. Returns null if malformed, over 18 decimals, or not > 0.
+ */
+export function parseWildToWei(input: string): string | null {
+  const trimmed = input.trim();
+  if (trimmed === '' || trimmed === '.' || !/^\d*\.?\d*$/.test(trimmed)) return null;
+  const [whole, frac = ''] = trimmed.split('.');
+  if (frac.length > 18) return null;
+  const wei =
+    BigInt(whole || '0') * BigInt(10) ** BigInt(18) +
+    BigInt((frac + '0'.repeat(18)).slice(0, 18) || '0');
+  return wei > BigInt(0) ? wei.toString() : null;
+}
