@@ -10,6 +10,7 @@ import { useMarketStore } from './store/marketStore';
 import { useCollectionsQuery } from './hooks/useCollectionsQuery';
 import { useEthPriceQuery } from './hooks/useEthPriceQuery';
 import { useMarketNftsQuery } from './hooks/useMarketNftsQuery';
+import { useAuthStore } from '@/features/auth/store';
 import { useMarketTraitsQuery } from './hooks/useMarketTraitsQuery';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { useInfiniteScroll } from './hooks/useInfiniteScroll';
@@ -76,6 +77,11 @@ export default function MarketBrowser({ industries }: Props) {
   const isIndexerSource =
     activeEntry != null && getEntrySource(activeEntry) === 'indexer';
 
+  // "Yours" (your holdings) is only offered on a Z-Chain collection with a
+  // connected wallet.
+  const walletAddress = useAuthStore((s) => s.user?.zeroWalletAddress ?? null);
+  const showYours = walletAddress != null && isIndexerSource;
+
   // Indexer collections filter server-side across the whole collection, so the
   // trait selections drive the query. ETH keeps filtering client-side over the
   // loaded page, so it passes no attributes here.
@@ -89,11 +95,18 @@ export default function MarketBrowser({ industries }: Props) {
   } = useMarketNftsQuery(
     activeSlug,
     availability,
-    isIndexerSource ? selectedTraits : undefined
+    isIndexerSource ? selectedTraits : undefined,
+    availability === 'yours' ? walletAddress : null
   );
 
   const items = nftsData?.items ?? [];
   const batchBase = nftsData?.batchBase ?? 0;
+
+  // If "Yours" stops being available (disconnect, or switching to an ETH
+  // collection) while it's the active filter, fall back to Listed.
+  useEffect(() => {
+    if (availability === 'yours' && !showYours) setAvailability('listed');
+  }, [availability, showYours, setAvailability]);
 
   const staticTraits = useMemo(() => getStaticTraits(activeSlug), [activeSlug]);
   const { data: indexerTraits } = useMarketTraitsQuery(isIndexerSource ? activeSlug : '');
@@ -228,6 +241,7 @@ export default function MarketBrowser({ industries }: Props) {
       activeSlug={activeSlug}
       availability={availability}
       showAvailability={true}
+      showYours={showYours}
       traitCategories={traitCategories}
       selectedTraits={selectedTraits}
       openTraitGroups={openTraitGroups}
@@ -248,10 +262,15 @@ export default function MarketBrowser({ industries }: Props) {
               ? 'Nothing in this collection is listed for sale right now. Try the Unlisted filter to browse the collection.'
               : 'Nothing in this collection is listed for sale right now. Try the Unlisted filter or browse on OpenSea.',
           }
-        : {
-            title: 'No unlisted items found',
-            body: 'Every token in this collection appears to be listed. Switch back to the Listed filter to see them.',
-          }
+        : availability === 'yours'
+          ? {
+              title: "You don't own anything here yet",
+              body: 'Items you own in this collection will show up here, ready to list for sale.',
+            }
+          : {
+              title: 'No unlisted items found',
+              body: 'Every token in this collection appears to be listed. Switch back to the Listed filter to see them.',
+            }
       : {
           title: 'No items match your filters',
           body: 'Try clearing or adjusting the selected trait filters.',

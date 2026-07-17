@@ -22,7 +22,8 @@ export type MarketNftsData = {
 export function useMarketNftsQuery(
   slug: string,
   availability: Availability,
-  attributes?: SelectedTraits
+  attributes?: SelectedTraits,
+  owner?: string | null
 ): UseInfiniteQueryResult<MarketNftsData> {
   const active = attributes
     ? Object.fromEntries(
@@ -30,12 +31,15 @@ export function useMarketNftsQuery(
       )
     : {};
   const activeFilters = Object.keys(active).length > 0 ? active : null;
+  // "Yours" is keyed by the connected wallet so switching account refetches, and
+  // only runs once there is a wallet.
+  const ownerKey = availability === 'yours' ? (owner ?? null) : null;
   return useInfiniteQuery({
-    queryKey: ['market', 'nfts', slug, availability, activeFilters],
-    enabled: slug.length > 0,
+    queryKey: ['market', 'nfts', slug, availability, activeFilters, ownerKey],
+    enabled: slug.length > 0 && (availability !== 'yours' || !!owner),
     initialPageParam: null as string | null,
     queryFn: ({ pageParam }) =>
-      fetchNftsPage(slug, availability, pageParam, activeFilters ?? undefined),
+      fetchNftsPage(slug, availability, pageParam, activeFilters ?? undefined, owner),
     getNextPageParam: (lastPage: NftsPage) => lastPage.next ?? undefined,
     select: (data) => {
       const items = dedupeItems(data.pages.flatMap((page) => page.items));

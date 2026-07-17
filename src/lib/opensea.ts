@@ -125,6 +125,10 @@ export type MarketNft = {
   amount?: number;
   /** From a fungible (ERC-1155) collection — drives explicit ×N quantity on cards. */
   fungible?: boolean;
+  /** The connected user owns this (Z-Chain holdings, "Yours" view) — it can be listed. */
+  owned?: boolean;
+  /** Quantity held (ERC-1155), used to cap the list amount in the "Yours" view. */
+  balance?: number;
 };
 
 export function normalizeNft(

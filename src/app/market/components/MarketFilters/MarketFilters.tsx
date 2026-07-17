@@ -7,6 +7,8 @@ type Props = {
   activeSlug: string;
   availability: Availability;
   showAvailability: boolean;
+  /** "Yours" tab — shown only when a wallet is connected (Z-Chain collections). */
+  showYours: boolean;
   traitCategories: readonly TraitCategory[];
   selectedTraits: SelectedTraits;
   openTraitGroups: Record<string, boolean>;
@@ -21,6 +23,7 @@ export function MarketFilters({
   activeSlug,
   availability,
   showAvailability,
+  showYours,
   traitCategories,
   selectedTraits,
   openTraitGroups,
@@ -62,6 +65,18 @@ export function MarketFilters({
           >
             Unlisted
           </button>
+          {showYours && (
+            <button
+              type="button"
+              className={`${styles.statusBtn} ${
+                availability === 'yours' ? styles.statusBtnActive : ''
+              }`}
+              onClick={() => onAvailabilityChange('yours')}
+              aria-pressed={availability === 'yours'}
+            >
+              Yours
+            </button>
+          )}
         </div>
       )}
       <div key={activeSlug} className={styles.filterSwap}>

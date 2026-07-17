@@ -13,6 +13,7 @@ function setup(overrides: Partial<Parameters<typeof MarketFilters>[0]> = {}) {
     activeSlug: 'wilder',
     availability: 'listed' as const,
     showAvailability: true,
+    showYours: false,
     traitCategories,
     selectedTraits: {},
     openTraitGroups: { Color: true },
@@ -53,6 +54,7 @@ describe('MarketFilters', () => {
         activeSlug="wilder"
         availability="listed"
         showAvailability
+        showYours={false}
         traitCategories={traitCategories}
         selectedTraits={{}}
         openTraitGroups={{}}
@@ -69,6 +71,7 @@ describe('MarketFilters', () => {
         activeSlug="wilder"
         availability="listed"
         showAvailability
+        showYours={false}
         traitCategories={traitCategories}
         selectedTraits={{ Color: ['Red'] }}
         openTraitGroups={{}}
