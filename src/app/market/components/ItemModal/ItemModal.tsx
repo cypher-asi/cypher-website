@@ -2,16 +2,17 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useQueryClient, type InfiniteData } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { ArrowUpRight, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import type { MarketNft } from '@/lib/opensea';
 import { getEntryBySlug, getEntrySource } from '@/lib/wilderCollections';
 import { formatUsd, formatEth, formatWild } from '@/lib/price';
 import { FadeInImage } from '@/components/FadeInImage';
+import { useAuthStore } from '@/features/auth/store';
 import { useItemQuery } from '../../hooks/useItemQuery';
 import { TradeSection } from './TradeSection';
 import { useTradeStore } from '@/features/marketplace/tradeStore';
-import type { NftsPage } from '../../api/fetchers';
+import { syncTrade } from '../../lib/tradeSync';
 import styles from '../../ItemModal.module.css';
 
 type Props = {
@@ -54,30 +55,20 @@ export function ItemModal({
   const isTradePending = useTradeStore((s) => s.phase) === 'pending';
   const slugRef = useRef(slug);
   slugRef.current = slug;
+  const walletAddress = useAuthStore((s) => s.user?.zeroWalletAddress ?? null);
+  const sellerRef = useRef(walletAddress);
+  sellerRef.current = walletAddress;
 
   useEffect(() => setMounted(true), []);
 
-  // On close, drop a just-settled listing from the grid — covers every dismissal
-  // path (Done, X, Escape, backdrop) — then clear the trade flow so reopening an
-  // item starts fresh (a card action can prime the flow before the modal mounts).
+  // On close, reflect a settled trade in the market caches — add/remove/decrement
+  // covering every dismissal path (Done, X, Escape, backdrop) — then clear the
+  // flow so reopening an item starts fresh (a card action can prime it first).
   useEffect(
     () => () => {
-      const { phase, nft: traded } = useTradeStore.getState();
-      if (phase === 'success' && traded?.listingId) {
-        const listingId = traded.listingId;
-        queryClient.setQueriesData<InfiniteData<NftsPage>>(
-          { queryKey: ['market', 'nfts', slugRef.current] },
-          (old) =>
-            old
-              ? {
-                  ...old,
-                  pages: old.pages.map((p) => ({
-                    ...p,
-                    items: p.items.filter((i) => i.listingId !== listingId),
-                  })),
-                }
-              : old,
-        );
+      const { phase, action, nft: traded, listResult } = useTradeStore.getState();
+      if (phase === 'success' && traded && action) {
+        syncTrade(queryClient, slugRef.current, sellerRef.current, action, traded, listResult);
       }
       useTradeStore.getState().reset();
     },
