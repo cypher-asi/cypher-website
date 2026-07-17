@@ -443,6 +443,25 @@
   color: var(--color-text-secondary);
 }
 
+/* Buy / Cancel on a listed card — compact, right-aligned (not full-width). */
+.cardAction {
+  align-self: flex-end;
+  margin-top: 0.5rem;
+  padding: 0.4rem 1.4rem;
+  appearance: none;
+  background: #ff6434;
+  border: none;
+  color: #000;
+  font-family: var(--font-display);
+  font-size: 0.76rem;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.cardAction:hover {
+  opacity: 0.9;
+}
+
 /* ----------------------------------------------------------------------------
    List view (OpenSea-style rows)
    --------------------------------------------------------------------------- */
@@ -594,6 +613,24 @@
 .buyLink:hover {
   border-color: #ff6434;
   background: rgba(255, 100, 52, 0.08);
+}
+
+/* Buy / Cancel / Connect on a listed list-view row. */
+.rowActionBtn {
+  appearance: none;
+  padding: 0.35rem 0.75rem;
+  background: #ff6434;
+  border: none;
+  color: #000;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.rowActionBtn:hover {
+  opacity: 0.9;
 }
 
 /* List loading skeleton rows. */
