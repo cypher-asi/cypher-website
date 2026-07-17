@@ -117,9 +117,13 @@ async function buildIndexerCollection(
   const [collections, inventory, marketCollections, sold] = await Promise.all([
     indexerFetch<IndexerCollectionsResponse>('/v1/inventory/collections'),
     indexerFetch<IndexerInventoryResponse>(`/v1/inventory?collections=${contractParam}`),
-    indexerFetch<MarketplaceCollectionsResponse>('/v1/marketplace/collections'),
+    // Floor / listed count and volume change on every list/cancel/sale, so cache
+    // these two briefly (~10s) rather than the 300s default — otherwise the stats
+    // panel trails the grid by minutes. Collection metadata above stays long-lived.
+    indexerFetch<MarketplaceCollectionsResponse>('/v1/marketplace/collections', 10),
     indexerFetch<MarketplaceListingsResponse>(
-      `/v1/marketplace/listings?collection=${contractParam}&status=sold&limit=${INDEXER_PAGE_LIMIT}`
+      `/v1/marketplace/listings?collection=${contractParam}&status=sold&limit=${INDEXER_PAGE_LIMIT}`,
+      10
     ),
   ]);
 
