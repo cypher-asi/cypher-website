@@ -51,7 +51,7 @@ export function NftCard({ nft, ethUsd, animationDelayMs, onOpen, showListedBadge
             className={styles.cardQty}
             title={nft.amount > 1 ? `Bundle of ${nft.amount}` : 'Single unit'}
           >
-            ×{nft.amount}
+            {nft.amount > 1 ? `Bundle ×${nft.amount}` : `Single ×${nft.amount}`}
           </span>
         )}
         {nft.image ? (

@@ -57,7 +57,7 @@ export function NftRow({ nft, ethUsd, onOpen, showListedBadge = false }: Props) 
             className={styles.rowQty}
             title={nft.amount > 1 ? `Bundle of ${nft.amount}` : 'Single unit'}
           >
-            ×{nft.amount}
+            {nft.amount > 1 ? `Bundle ×${nft.amount}` : `Single ×${nft.amount}`}
           </span>
         )}
       </div>
