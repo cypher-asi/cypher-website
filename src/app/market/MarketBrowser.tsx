@@ -331,30 +331,36 @@ export default function MarketBrowser({ industries }: Props) {
       <div className={styles.layout}>
         <aside className={styles.rail} ref={railRef}>
           {walletAddress && isIndexerSource && (
-            <CollapsiblePanel title="Your Wallets" measureDeps={[walletAddress]}>
-              <WalletPanel address={walletAddress} />
-            </CollapsiblePanel>
+            <div className={styles.railGroup}>
+              <p className={styles.railGroupLabel}>User</p>
+              <CollapsiblePanel title="Your Wallets" measureDeps={[walletAddress]}>
+                <WalletPanel address={walletAddress} />
+              </CollapsiblePanel>
+            </div>
           )}
 
-          {!isMobile && (
-            <CollapsiblePanel title="Filters" measureDeps={[activeSlug, openTraitGroups]}>
-              {filters}
-            </CollapsiblePanel>
-          )}
+          <div className={styles.railGroup}>
+            <p className={styles.railGroupLabel}>Collection</p>
+            {!isMobile && (
+              <CollapsiblePanel title="Filters" measureDeps={[activeSlug, openTraitGroups]}>
+                {filters}
+              </CollapsiblePanel>
+            )}
 
-          <CollapsiblePanel title={collectionName} measureDeps={[activeSlug, activeMeta]}>
-            <CollectionInfoPanel
-              launched={activeMeta?.launched ?? activeEntry?.launched ?? null}
-              floorPrice={activeMeta?.floorPrice ?? null}
-              topOfferEth={activeMeta?.topOfferEth ?? null}
-              totalVolume={activeMeta?.totalVolume ?? null}
-              listedCount={activeMeta?.listedCount ?? null}
-              owners={activeMeta?.owners ?? null}
-              ethUsd={ethUsd}
-              wildDenominated={isIndexerSource}
-              openseaSlug={isIndexerSource ? undefined : activeEntry?.slug}
-            />
-          </CollapsiblePanel>
+            <CollapsiblePanel title={collectionName} measureDeps={[activeSlug, activeMeta]}>
+              <CollectionInfoPanel
+                launched={activeMeta?.launched ?? activeEntry?.launched ?? null}
+                floorPrice={activeMeta?.floorPrice ?? null}
+                topOfferEth={activeMeta?.topOfferEth ?? null}
+                totalVolume={activeMeta?.totalVolume ?? null}
+                listedCount={activeMeta?.listedCount ?? null}
+                owners={activeMeta?.owners ?? null}
+                ethUsd={ethUsd}
+                wildDenominated={isIndexerSource}
+                openseaSlug={isIndexerSource ? undefined : activeEntry?.slug}
+              />
+            </CollapsiblePanel>
+          </div>
 
           <CustomScrollbar targetRef={railRef} showOnHoverOnly />
         </aside>

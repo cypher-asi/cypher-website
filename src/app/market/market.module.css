@@ -900,6 +900,27 @@
   transform: rotate(180deg);
 }
 
+/* Rail groups: cluster panels under a quiet super-heading (e.g. "User" vs
+   "Collection") so the two scopes read apart as the rail grows. The label is
+   dimmer + smaller than the panel titles so it heads them, not competes. */
+.railGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.railGroupLabel {
+  margin: 0 0 -0.55rem;
+  padding-left: 0.15rem;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  opacity: 0.55;
+}
+
 /* ----- Filter panel ----- */
 .filtersHead {
   display: flex;
