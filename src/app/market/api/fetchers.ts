@@ -76,6 +76,24 @@ export async function fetchNftsPage(
   return { items: parsed.items ?? [], next: parsed.next ?? null };
 }
 
+/** A page of the connected wallet's holdings across all tradeable Z-Chain
+ *  collections (the consolidated "Your Holdings" view). */
+export async function fetchHoldingsPage(owner: string, next: string | null): Promise<NftsPage> {
+  const params = new URLSearchParams({ owner });
+  if (next) params.set('next', next);
+  const data = await getJson(`/api/market/holdings?${params.toString()}`);
+  const parsed = (data ?? {}) as { items?: MarketNft[]; next?: string | null; error?: boolean };
+  if (parsed.error) throw new MarketFetchError('Holdings data unavailable');
+  return { items: parsed.items ?? [], next: parsed.next ?? null };
+}
+
+/** Total held items across the tradeable collections — the wallet-panel badge. */
+export async function fetchHoldingsCount(owner: string): Promise<number> {
+  const data = await getJson(`/api/market/holdings?owner=${encodeURIComponent(owner)}&count=1`);
+  const parsed = (data ?? {}) as { total?: number };
+  return typeof parsed.total === 'number' ? parsed.total : 0;
+}
+
 export async function fetchTraits(slug: string): Promise<TraitCategory[]> {
   const data = await getJson(`/api/market/traits?slug=${encodeURIComponent(slug)}`);
   const categories =

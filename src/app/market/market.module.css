@@ -1085,6 +1085,71 @@
   text-align: left;
 }
 
+/* "Holdings N" button — opens the consolidated all-assets grid. Styled like an
+   info row but interactive, so it reads as a tappable stat. */
+.walletHoldingsBtn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--color-border);
+  background: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.walletHoldingsBtn:hover {
+  border-color: #ff6434;
+  background: rgba(255, 100, 52, 0.06);
+}
+
+.walletHoldingsValue {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* "Your Holdings" view header (back + title) above the consolidated grid. */
+.holdingsHead {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.holdingsBack {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  appearance: none;
+  background: none;
+  border: 1px solid var(--color-border);
+  padding: 0.35rem 0.6rem 0.35rem 0.45rem;
+  color: var(--color-text-secondary);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.holdingsBack:hover {
+  color: var(--color-text-primary);
+  border-color: #ff6434;
+}
+
+.holdingsTitle {
+  margin: 0;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--color-text-primary);
+}
+
 .info {
   display: flex;
   flex-direction: column;
