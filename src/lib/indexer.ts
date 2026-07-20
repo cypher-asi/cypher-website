@@ -10,6 +10,15 @@ import type { MarketNft } from './opensea';
 
 export const INDEXER_REVALIDATE = 300;
 
+// Cache window for the fetches that back live-state surfaces — the Listed grid,
+// Yours, and the floor/listed/volume stats. The order-book processor indexes
+// ~1-2s behind chain head, so a short window keeps these feeling live after a
+// list/buy/cancel without hammering the indexer, and it aligns with the client
+// staleTimes so a hard refresh and a post-trade refetch converge on the same
+// state. Collection metadata (name/supply/owners) and trait aggregation change
+// on mints/transfers, not trades, so they keep their longer windows.
+export const INDEXER_LIVE_REVALIDATE = 5;
+
 // Trait aggregation walks the whole collection (many indexer calls), so cache
 // those page fetches for much longer — traits change rarely, and this keeps the
 // expensive walk to ~once/hour per collection instead of on every cold view.
