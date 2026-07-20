@@ -234,11 +234,8 @@ async function handleIndexer(
 
   if (status === 'listed') {
     // Drive the grid from active order-book listings (each carries a WILD price),
-    // cheapest first. Single-unit listings collapse to one floor-priced card per
-    // token — mirroring the ETH grid — while multi-unit "bundle" listings each
-    // stay a distinct card so their quantity + total price are visible. Correct
-    // floor-dedupe needs the whole active set at once, so this fetches up to the
-    // cap in one shot rather than paging; `next` is always null.
+    // cheapest first. Correct grouping needs the whole active set at once, so this
+    // fetches up to the cap in one shot rather than paging; `next` is always null.
     const data = await indexerFetch<MarketplaceListingsResponse>(
       `/v1/marketplace/listings?collection=${encodeURIComponent(contract)}` +
         `&status=active&sort=price_asc&limit=${INDEXER_MARKET_LISTINGS_CAP}` +
@@ -258,18 +255,33 @@ async function handleIndexer(
       );
     }
 
-    // price_asc guarantees the first listing seen for a token is its floor.
-    const floorByToken = new Map<string, (typeof data.items)[number]>();
-    const bundles: typeof data.items = [];
-    for (const listing of data.items) {
-      if ((listing.amount ?? 1) > 1) {
-        bundles.push(listing);
-      } else if (!floorByToken.has(listing.tokenId)) {
-        floorByToken.set(listing.tokenId, listing);
+    // Which listings become cards:
+    //  - Fungible collection: it's an order book (every unit is the same tokenId),
+    //    so show EVERY active listing. Collapsing single-unit listings to one floor
+    //    card would hide the rest of the book and make the grid disagree with the
+    //    "Listed" count — there'd be no way to see or buy the non-floor listings.
+    //  - Non-fungible (ERC-721): a token can hold at most one active listing at a
+    //    time (escrow), so collapse to one floor card per token — a harmless
+    //    safeguard against a duplicate row — and keep any multi-unit bundle as its
+    //    own card. price_asc means the first listing seen for a token is its floor.
+    let grouped: typeof data.items;
+    if (entry.fungible) {
+      grouped = data.items;
+    } else {
+      const floorByToken = new Map<string, (typeof data.items)[number]>();
+      const bundles: typeof data.items = [];
+      for (const listing of data.items) {
+        if ((listing.amount ?? 1) > 1) {
+          bundles.push(listing);
+        } else if (!floorByToken.has(listing.tokenId)) {
+          floorByToken.set(listing.tokenId, listing);
+        }
       }
+      grouped = [...floorByToken.values(), ...bundles];
     }
 
-    const items = [...floorByToken.values(), ...bundles]
+    const items = grouped
+      .slice()
       .sort((a, b) => {
         const pa = BigInt(a.priceRaw);
         const pb = BigInt(b.priceRaw);
