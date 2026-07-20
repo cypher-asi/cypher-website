@@ -10,14 +10,16 @@ import type { MarketNft } from './opensea';
 
 export const INDEXER_REVALIDATE = 300;
 
-// Cache window for the fetches that back live-state surfaces — the Listed grid,
-// Yours, and the floor/listed/volume stats. The order-book processor indexes
-// ~1-2s behind chain head, so a short window keeps these feeling live after a
-// list/buy/cancel without hammering the indexer, and it aligns with the client
-// staleTimes so a hard refresh and a post-trade refetch converge on the same
-// state. Collection metadata (name/supply/owners) and trait aggregation change
-// on mints/transfers, not trades, so they keep their longer windows.
-export const INDEXER_LIVE_REVALIDATE = 5;
+// Cache setting for the fetches that back live-state surfaces — the Listed grid,
+// Yours, and the floor/listed/volume stats. These must read LIVE (no Data Cache):
+// the order-book processor indexes a beat behind chain head, so after a trade the
+// client invalidates and *polls* these reads until the new state lands — a cached
+// read (even a few seconds of stale-while-revalidate) would keep serving pre-trade
+// data and defeat the poll. `0` = no-store in `indexerFetch`. Normal browsing is
+// throttled by the client-side staleTime instead. Collection metadata
+// (name/supply/owners) and trait aggregation change on mints/transfers, not
+// trades, so they keep their longer cache windows.
+export const INDEXER_LIVE_REVALIDATE = 0;
 
 // Trait aggregation walks the whole collection (many indexer calls), so cache
 // those page fetches for much longer — traits change rarely, and this keeps the
@@ -39,7 +41,9 @@ export async function indexerFetch<T>(
   try {
     const res = await fetch(`${baseUrl}${path}`, {
       headers: { 'x-api-key': key, accept: 'application/json' },
-      next: { revalidate },
+      // revalidate <= 0 → read live (no Data Cache); the trade-reflecting surfaces
+      // pass 0 so a post-trade poll always sees the freshly-indexed state.
+      ...(revalidate > 0 ? { next: { revalidate } } : { cache: 'no-store' as const }),
     });
     if (!res.ok) return null;
     return (await res.json()) as T;
