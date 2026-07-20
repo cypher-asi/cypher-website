@@ -159,3 +159,76 @@ describe('GET /api/market/nfts (indexer unlisted branch)', () => {
     expect(body).toEqual({ items: [], next: null, error: true });
   });
 });
+
+describe('GET /api/market/nfts (indexer listed branch — fungible grouping)', () => {
+  const PACKS = 'packs'; // fungible: true in wilderCollections
+  const WEAPONS = 'pack-weapons'; // non-fungible
+
+  function makeListing(
+    tokenId: string,
+    listingId: string,
+    priceRaw: string,
+    amount = 1
+  ) {
+    return {
+      id: `listing-${listingId}`,
+      listingId,
+      sellerAddress: '0xseller',
+      collectionAddress: CONTRACT,
+      tokenId,
+      amount,
+      chainId: 9369,
+      paymentToken: '0xwild',
+      priceRaw,
+      priceFormatted: null,
+      status: 'active',
+      buyerAddress: null,
+      createdAt: '2026-01-01T00:00:00.000Z',
+      expiresAt: null,
+      nft: { tokenUri: null, metadata: { name: 'Pack', image: null } },
+    };
+  }
+
+  function listed(slug: string) {
+    return new Request(`http://localhost/api/market/nfts?slug=${slug}&status=listed`);
+  }
+
+  it('fungible: shows every active listing of the same token, cheapest first', async () => {
+    // Three single-unit listings of one tokenId at different prices.
+    mockedFetch.mockResolvedValue({
+      items: [
+        makeListing('1', 'a', '300000000000000000000'),
+        makeListing('1', 'b', '500000000000000000000'),
+        makeListing('1', 'c', '400000000000000000000'),
+      ],
+      total: 3,
+      limit: 200,
+      offset: 0,
+    });
+    const body = await (await GET(listed(PACKS))).json();
+    // All three shown (not collapsed to the floor), and ascending by price.
+    expect(body.items).toHaveLength(3);
+    expect(body.items.map((i: { priceWild: { raw: string } }) => i.priceWild.raw)).toEqual([
+      '300000000000000000000',
+      '400000000000000000000',
+      '500000000000000000000',
+    ]);
+    // Distinct listingIds so each is its own card.
+    expect(new Set(body.items.map((i: { listingId: string }) => i.listingId)).size).toBe(3);
+  });
+
+  it('non-fungible: collapses multiple listings of one token to the floor card', async () => {
+    mockedFetch.mockResolvedValue({
+      items: [
+        makeListing('7', 'a', '300000000000000000000'),
+        makeListing('7', 'b', '500000000000000000000'),
+      ],
+      total: 2,
+      limit: 200,
+      offset: 0,
+    });
+    const body = await (await GET(listed(WEAPONS))).json();
+    expect(body.items).toHaveLength(1);
+    expect(body.items[0].priceWild.raw).toBe('300000000000000000000');
+  });
+});
