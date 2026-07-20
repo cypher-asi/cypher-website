@@ -13,8 +13,8 @@ import styles from '../../ItemModal.module.css';
 type Props = {
   nft: MarketNft;
   name: string;
-  /** Closes the modal. On a successful buy/cancel, ItemModal removes the settled
-   *  listing from the grid as it unmounts. */
+  /** Closes the modal. The grids reconcile with the settled trade via
+   *  useTradeReconciler at the market level, not on this modal's close. */
   onClose: () => void;
 };
 

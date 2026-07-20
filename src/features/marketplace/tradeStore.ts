@@ -10,18 +10,16 @@ type Phase = 'idle' | 'confirm' | 'pending' | 'success' | 'error';
 /** Price (WILD wei) + amount collected in the list confirm step. */
 export type ListParams = { priceWei: string; amount: string };
 
-/** The settled list outcome, used to sync the grids optimistically. */
-export type ListResult = { listingId: string | null; priceWei: string; amount: string };
-
 interface TradeState {
   phase: Phase;
   action: TradeAction | null;
-  /** The listing being acted on — set for the whole flow. */
+  /** The item being acted on — set for the whole flow. Carries the collection
+   *  slug + token identity the reconciler needs to invalidate the right grids. */
   nft: MarketNft | null;
+  /** The settled transaction hash — the zscan link, and the reconciler's key for
+   *  invalidating exactly once per trade. */
   txHash: string | null;
   error: string | null;
-  /** Set on a successful list — drives the optimistic add to Listed. */
-  listResult: ListResult | null;
 
   /** Enter the confirm step for an action on a listing (from a card or the modal). */
   start: (action: TradeAction, nft: MarketNft) => void;
@@ -31,11 +29,12 @@ interface TradeState {
   reset: () => void;
   /**
    * Run the confirmed trade. `list` requires the price/amount collected in the
-   * confirm step; buy/cancel ignore it. Resolves to the settled item on success
-   * (for the caller to remove from the grid), or null on failure — the phase
-   * carries the outcome either way.
+   * confirm step; buy/cancel ignore it. On success the phase advances to
+   * 'success' with the settled txHash, which the trade reconciler observes to
+   * refetch the authoritative grids + stats; on failure the phase carries the
+   * error. The grids are never mutated here.
    */
-  execute: (listParams?: ListParams) => Promise<MarketNft | null>;
+  execute: (listParams?: ListParams) => Promise<void>;
 }
 
 function message(error: unknown): string {
@@ -48,25 +47,23 @@ export const useTradeStore = create<TradeState>((set, get) => ({
   nft: null,
   txHash: null,
   error: null,
-  listResult: null,
 
   start: (action, nft) =>
-    set({ phase: 'confirm', action, nft, txHash: null, error: null, listResult: null }),
+    set({ phase: 'confirm', action, nft, txHash: null, error: null }),
   back: () => set({ phase: 'idle', error: null }),
   reset: () =>
-    set({ phase: 'idle', action: null, nft: null, txHash: null, error: null, listResult: null }),
+    set({ phase: 'idle', action: null, nft: null, txHash: null, error: null }),
 
   execute: async (listParams) => {
     const { action, nft, phase } = get();
     // Idempotency: ignore a second confirm while a trade is already in flight.
-    if (phase === 'pending') return null;
-    if (!action || !nft) return null;
+    if (phase === 'pending') return;
+    if (!action || !nft) return;
     // list needs the confirm-step inputs; buy/cancel need an existing listingId.
-    if (action === 'list' ? !listParams : !nft.listingId) return null;
+    if (action === 'list' ? !listParams : !nft.listingId) return;
     set({ phase: 'pending', error: null });
     try {
       let txHash: string;
-      let listResult: ListResult | null = null;
       if (action === 'list') {
         const res = await listItem({
           nftContract: nft.contract,
@@ -75,21 +72,14 @@ export const useTradeStore = create<TradeState>((set, get) => ({
           price: listParams!.priceWei,
         });
         txHash = res.transactionHash;
-        listResult = {
-          listingId: res.listingId,
-          priceWei: listParams!.priceWei,
-          amount: listParams!.amount,
-        };
       } else if (action === 'buy') {
         txHash = await buyListing(nft.listingId!);
       } else {
         txHash = await cancelListing(nft.listingId!);
       }
-      set({ phase: 'success', txHash, listResult });
-      return nft;
+      set({ phase: 'success', txHash });
     } catch (error) {
       set({ phase: 'error', error: message(error) });
-      return null;
     }
   },
 }));
