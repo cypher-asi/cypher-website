@@ -3,7 +3,6 @@ import { formatUsd, formatEth } from '@/lib/price';
 import styles from '../../market.module.css';
 
 type Props = {
-  name: string;
   launched: string | null;
   floorPrice: number | null;
   topOfferEth: number | null;
@@ -37,7 +36,6 @@ const price = (value: number | null, ethUsd: number | null, wild: boolean): stri
 };
 
 export function CollectionInfoPanel({
-  name,
   launched,
   floorPrice,
   topOfferEth,
@@ -50,7 +48,6 @@ export function CollectionInfoPanel({
 }: Props) {
   return (
     <>
-      <p className={styles.railHeading}>{name}</p>
       <div className={styles.info}>
         <InfoRow label="Launched" value={launched ?? '—'} />
         <InfoRow label="Floor Price" value={price(floorPrice, ethUsd, wildDenominated)} />

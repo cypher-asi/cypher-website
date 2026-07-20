@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { WilderIndustry } from '@/lib/wilderCollections';
 import { getEntrySource } from '@/lib/wilderCollections';
 import { getStaticTraits } from '@/lib/wilderTraits';
-import { AnimatedPanel } from '@/components/AnimatedPanel';
+import { CollapsiblePanel } from './components/CollapsiblePanel';
 import { CustomScrollbar } from '@/components/CustomScrollbar';
 import { useMarketStore } from './store/marketStore';
 import { useCollectionsQuery } from './hooks/useCollectionsQuery';
@@ -331,32 +331,19 @@ export default function MarketBrowser({ industries }: Props) {
       <div className={styles.layout}>
         <aside className={styles.rail} ref={railRef}>
           {walletAddress && isIndexerSource && (
-            <AnimatedPanel
-              className={styles.panel}
-              bodyClassName={styles.panelBody}
-              measureDeps={[walletAddress]}
-            >
+            <CollapsiblePanel title="Your Wallets" measureDeps={[walletAddress]}>
               <WalletPanel address={walletAddress} />
-            </AnimatedPanel>
+            </CollapsiblePanel>
           )}
 
           {!isMobile && (
-            <AnimatedPanel
-              className={styles.panel}
-              bodyClassName={styles.panelBody}
-              measureDeps={[activeSlug, openTraitGroups]}
-            >
+            <CollapsiblePanel title="Filters" measureDeps={[activeSlug, openTraitGroups]}>
               {filters}
-            </AnimatedPanel>
+            </CollapsiblePanel>
           )}
 
-          <AnimatedPanel
-            className={styles.panel}
-            bodyClassName={styles.panelBody}
-            measureDeps={[activeSlug, activeMeta]}
-          >
+          <CollapsiblePanel title={collectionName} measureDeps={[activeSlug, activeMeta]}>
             <CollectionInfoPanel
-              name={collectionName}
               launched={activeMeta?.launched ?? activeEntry?.launched ?? null}
               floorPrice={activeMeta?.floorPrice ?? null}
               topOfferEth={activeMeta?.topOfferEth ?? null}
@@ -367,7 +354,7 @@ export default function MarketBrowser({ industries }: Props) {
               wildDenominated={isIndexerSource}
               openseaSlug={isIndexerSource ? undefined : activeEntry?.slug}
             />
-          </AnimatedPanel>
+          </CollapsiblePanel>
 
           <CustomScrollbar targetRef={railRef} showOnHoverOnly />
         </aside>

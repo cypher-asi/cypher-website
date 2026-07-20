@@ -13,6 +13,7 @@ export function FiltersDrawer({ onClose, children }: Props) {
       <div className={styles.drawerBackdrop} onClick={onClose} />
       <div className={styles.drawerPanel}>
         <div className={styles.drawerHead}>
+          <p className={styles.railHeading}>Filters</p>
           <button
             type="button"
             className={styles.drawerClose}

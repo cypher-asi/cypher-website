@@ -30,10 +30,8 @@ export function WalletPanel({ address }: Props) {
 
   return (
     <>
-      <p className={styles.railHeading}>Wallets</p>
-
       <div className={styles.walletSection}>
-        <p className={styles.walletSectionLabel}>ZERO (Z Chain)</p>
+        <p className={styles.walletSectionLabel}>Z Wallet (Z Chain)</p>
         <div className={styles.info}>
           <div className={styles.infoRow}>
             <span className={styles.infoLabel}>WILD Balance</span>
@@ -47,7 +45,7 @@ export function WalletPanel({ address }: Props) {
       </div>
 
       <div className={styles.walletSection}>
-        <p className={styles.walletSectionLabel}>Self Custody (Ethereum)</p>
+        <p className={styles.walletSectionLabel}>Self Custody Wallet (Ethereum)</p>
         <div className={styles.walletEmpty}>
           Link an external Ethereum wallet to your ZERO account. Coming soon.
         </div>

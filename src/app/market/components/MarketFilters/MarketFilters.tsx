@@ -35,14 +35,15 @@ export function MarketFilters({
 }: Props) {
   return (
     <>
-      <div className={styles.filtersHead}>
-        <p className={styles.railHeading}>Filters</p>
-        {selectedCount > 0 && (
+      {/* The "Filters" title now lives on the collapsible panel header (rail) or
+          the drawer head (mobile); only the Clear action remains here. */}
+      {selectedCount > 0 && (
+        <div className={styles.filtersHead}>
           <button className={styles.clearBtn} onClick={onClear}>
             Clear ({selectedCount})
           </button>
-        )}
-      </div>
+        </div>
+      )}
       {showAvailability && (
         <div className={styles.statusFilter} role="group" aria-label="Availability">
           <button
