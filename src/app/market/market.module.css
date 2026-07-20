@@ -490,6 +490,9 @@
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
+  /* Fill the card so the action can pin to the bottom — keeps the button aligned
+     across cards whether or not they have a price row (grid stretches the row). */
+  flex: 1;
 }
 
 .cardName {
@@ -513,7 +516,7 @@
 /* Buy / Cancel on a listed card — compact, right-aligned (not full-width). */
 .cardAction {
   align-self: flex-end;
-  margin-top: 0.5rem;
+  margin-top: auto;
   padding: 0.4rem 1.4rem;
   appearance: none;
   background: #ff6434;
