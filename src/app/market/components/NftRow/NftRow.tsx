@@ -55,9 +55,20 @@ export function NftRow({ nft, ethUsd, onOpen, showListedBadge = false }: Props) 
         {nft.fungible && nft.amount != null && (
           <span
             className={styles.rowQty}
-            title={nft.amount > 1 ? `Bundle of ${nft.amount}` : 'Single unit'}
+            title={
+              nft.owned
+                ? `${nft.amount} held`
+                : nft.amount > 1
+                  ? `Bundle of ${nft.amount}`
+                  : 'Single unit'
+            }
           >
-            {nft.amount > 1 ? `Bundle ×${nft.amount}` : `Single ×${nft.amount}`}
+            {/* Held stacks show a plain count; "Single/Bundle" is for a listing. */}
+            {nft.owned
+              ? `×${nft.amount}`
+              : nft.amount > 1
+                ? `Bundle ×${nft.amount}`
+                : `Single ×${nft.amount}`}
           </span>
         )}
       </div>

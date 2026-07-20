@@ -1,11 +1,15 @@
 'use client';
 
+import { ChevronRight } from 'lucide-react';
 import { useWildBalanceQuery } from '../../hooks/useWildBalanceQuery';
+import { useHoldingsCountQuery } from '../../hooks/useHoldingsCountQuery';
 import styles from '../../market.module.css';
 
 type Props = {
   /** The connected ZERO wallet (Z-Chain). */
   address: string;
+  /** Open the consolidated holdings grid (all tradeable Z-Chain assets). */
+  onOpenHoldings: () => void;
 };
 
 /**
@@ -19,8 +23,9 @@ type Props = {
  * Z-Chain WILD specifically. When users can later link an Ethereum wallet, it
  * slots in as a second section below without restructuring.
  */
-export function WalletPanel({ address }: Props) {
+export function WalletPanel({ address, onOpenHoldings }: Props) {
   const { data, isLoading } = useWildBalanceQuery(address);
+  const { data: holdingsCount } = useHoldingsCountQuery(address);
   const short = `${address.slice(0, 6)}…${address.slice(-4)}`;
   const balance = isLoading
     ? '…'
@@ -42,6 +47,13 @@ export function WalletPanel({ address }: Props) {
             <span className={styles.infoValue}>{short}</span>
           </div>
         </div>
+        <button type="button" className={styles.walletHoldingsBtn} onClick={onOpenHoldings}>
+          <span className={styles.infoLabel}>Holdings</span>
+          <span className={styles.walletHoldingsValue}>
+            {holdingsCount != null ? holdingsCount.toLocaleString() : '…'}
+            <ChevronRight size={14} aria-hidden />
+          </span>
+        </button>
       </div>
 
       <div className={styles.walletSection}>

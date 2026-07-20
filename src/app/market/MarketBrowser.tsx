@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ChevronLeft } from 'lucide-react';
 import type { WilderIndustry } from '@/lib/wilderCollections';
 import { getEntrySource } from '@/lib/wilderCollections';
 import { getStaticTraits } from '@/lib/wilderTraits';
@@ -10,6 +11,7 @@ import { useMarketStore } from './store/marketStore';
 import { useCollectionsQuery } from './hooks/useCollectionsQuery';
 import { useEthPriceQuery } from './hooks/useEthPriceQuery';
 import { useMarketNftsQuery } from './hooks/useMarketNftsQuery';
+import { useHoldingsQuery } from './hooks/useHoldingsQuery';
 import { useAuthStore } from '@/features/auth/store';
 import { useMarketTraitsQuery } from './hooks/useMarketTraitsQuery';
 import { useMediaQuery } from './hooks/useMediaQuery';
@@ -88,22 +90,29 @@ export default function MarketBrowser({ industries }: Props) {
   const walletAddress = useAuthStore((s) => s.user?.zeroWalletAddress ?? null);
   const showYours = walletAddress != null && isIndexerSource;
 
+  // "Your Holdings" — a consolidated view of all tradeable Z-Chain assets, opened
+  // from the wallet panel. A local view flag, not a collection.
+  const [holdingsOpen, setHoldingsOpen] = useState(false);
+
   // Indexer collections filter server-side across the whole collection, so the
   // trait selections drive the query. ETH keeps filtering client-side over the
   // loaded page, so it passes no attributes here.
-  const {
-    data: nftsData,
-    isLoading,
-    isError,
-    hasNextPage = false,
-    isFetchingNextPage,
-    fetchNextPage,
-  } = useMarketNftsQuery(
+  const nftsQuery = useMarketNftsQuery(
     activeSlug,
     availability,
     isIndexerSource ? selectedTraits : undefined,
     availability === 'yours' ? walletAddress : null
   );
+  const holdingsQuery = useHoldingsQuery(walletAddress, holdingsOpen);
+
+  // The grid reads from whichever view is active; both queries share a shape.
+  const gridQuery = holdingsOpen ? holdingsQuery : nftsQuery;
+  const nftsData = gridQuery.data;
+  const isLoading = gridQuery.isLoading;
+  const isError = gridQuery.isError;
+  const hasNextPage = gridQuery.hasNextPage ?? false;
+  const isFetchingNextPage = gridQuery.isFetchingNextPage;
+  const fetchNextPage = gridQuery.fetchNextPage;
 
   const items = nftsData?.items ?? [];
   const batchBase = nftsData?.batchBase ?? 0;
@@ -121,8 +130,8 @@ export default function MarketBrowser({ industries }: Props) {
   // loaded page client-side.
   const filtered = useMemo(
     () =>
-      isIndexerSource ? items : filterByTraits(items, selectedTraits),
-    [isIndexerSource, items, selectedTraits]
+      holdingsOpen || isIndexerSource ? items : filterByTraits(items, selectedTraits),
+    [holdingsOpen, isIndexerSource, items, selectedTraits]
   );
   const selectedCount = countSelectedTraits(selectedTraits);
 
@@ -160,6 +169,27 @@ export default function MarketBrowser({ industries }: Props) {
     },
     [availability, setAvailability]
   );
+
+  /* ----- Holdings view: open from the wallet panel, exit back to a grid --- */
+  const openHoldings = useCallback(() => {
+    setHoldingsOpen(true);
+    setActiveDrawer(null); // in case it was opened from the mobile wallet drawer
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, [setActiveDrawer]);
+
+  // Picking a collection leaves the holdings view for that collection.
+  const selectCollection = useCallback(
+    (slug: string) => {
+      setHoldingsOpen(false);
+      navigateCollection(slug);
+    },
+    [navigateCollection]
+  );
+
+  // Holdings is wallet-scoped: dropping the wallet exits the view.
+  useEffect(() => {
+    if (holdingsOpen && !walletAddress) setHoldingsOpen(false);
+  }, [holdingsOpen, walletAddress]);
 
   /* ----- Nav dropdown: close on outside click / Escape ------------------- */
   useEffect(() => {
@@ -244,7 +274,8 @@ export default function MarketBrowser({ industries }: Props) {
   const floorSuggestsListings =
     availability === 'listed' && (activeMeta?.floorPrice ?? 0) > 0;
   const showUnavailable =
-    isError || (items.length === 0 && floorSuggestsListings && !hasActiveFilters);
+    isError ||
+    (!holdingsOpen && items.length === 0 && floorSuggestsListings && !hasActiveFilters);
 
   const filters = (
     <MarketFilters
@@ -282,7 +313,12 @@ export default function MarketBrowser({ industries }: Props) {
   // A trait filter is active but nothing came back (server- or client-side): a
   // real "no matches", whichever availability tab we're on. Otherwise fall back
   // to the per-tab "nothing here" copy.
-  const emptyCopy = hasActiveFilters
+  const emptyCopy = holdingsOpen
+    ? {
+        title: 'No tradeable assets yet',
+        body: 'Items you hold across the Z-Chain collections show up here, ready to list for sale.',
+      }
+    : hasActiveFilters
     ? {
         title: 'No items match your filters',
         body: 'Try clearing or adjusting the selected trait filters.',
@@ -317,7 +353,7 @@ export default function MarketBrowser({ industries }: Props) {
             open={collectionMenuOpen}
             menuRef={collRef}
             onToggle={() => setCollectionMenuOpen(!collectionMenuOpen)}
-            onSelect={navigateCollection}
+            onSelect={selectCollection}
           />
           <div className={styles.headerAuth}>
             <ZeroAuthButton />
@@ -330,7 +366,7 @@ export default function MarketBrowser({ industries }: Props) {
           openNavGroup={openNavGroup}
           navRef={navRef}
           onToggleNavGroup={setOpenNavGroup}
-          onSelect={navigateCollection}
+          onSelect={selectCollection}
         />
 
         <MarketToolbar
@@ -355,20 +391,24 @@ export default function MarketBrowser({ industries }: Props) {
                 <div className={styles.railGroup}>
                   <p className={styles.railGroupLabel}>User</p>
                   <CollapsiblePanel title="Your Wallets" measureDeps={[walletAddress]}>
-                    <WalletPanel address={walletAddress} />
+                    <WalletPanel address={walletAddress} onOpenHoldings={openHoldings} />
                   </CollapsiblePanel>
                 </div>
               )}
 
-              <div className={styles.railGroup}>
-                <p className={styles.railGroupLabel}>Collection</p>
-                <CollapsiblePanel title="Filters" measureDeps={[activeSlug, openTraitGroups]}>
-                  {filters}
-                </CollapsiblePanel>
-                <CollapsiblePanel title={collectionName} measureDeps={[activeSlug, activeMeta]}>
-                  {collectionInfo}
-                </CollapsiblePanel>
-              </div>
+              {/* The collection filters + stats don't apply to the cross-collection
+                  holdings view, so hide that group while it's open. */}
+              {!holdingsOpen && (
+                <div className={styles.railGroup}>
+                  <p className={styles.railGroupLabel}>Collection</p>
+                  <CollapsiblePanel title="Filters" measureDeps={[activeSlug, openTraitGroups]}>
+                    {filters}
+                  </CollapsiblePanel>
+                  <CollapsiblePanel title={collectionName} measureDeps={[activeSlug, activeMeta]}>
+                    {collectionInfo}
+                  </CollapsiblePanel>
+                </div>
+              )}
             </>
           )}
 
@@ -376,6 +416,19 @@ export default function MarketBrowser({ industries }: Props) {
         </aside>
 
         <div className={styles.main}>
+          {holdingsOpen && (
+            <div className={styles.holdingsHead}>
+              <button
+                type="button"
+                className={styles.holdingsBack}
+                onClick={() => setHoldingsOpen(false)}
+              >
+                <ChevronLeft size={16} aria-hidden />
+                Back
+              </button>
+              <h2 className={styles.holdingsTitle}>Your Holdings</h2>
+            </div>
+          )}
           {showSkeleton ? (
             <MarketSkeleton viewMode={viewMode} gridSize={gridSize} />
           ) : showUnavailable ? (
@@ -405,7 +458,7 @@ export default function MarketBrowser({ industries }: Props) {
                   items={filtered}
                   ethUsd={ethUsd}
                   onOpen={openModal}
-                  showListedBadge={availability === 'yours'}
+                  showListedBadge={holdingsOpen || availability === 'yours'}
                 />
               ) : (
                 <NftGrid
@@ -414,7 +467,7 @@ export default function MarketBrowser({ industries }: Props) {
                   ethUsd={ethUsd}
                   batchBase={batchBase}
                   onOpen={openModal}
-                  showListedBadge={availability === 'yours'}
+                  showListedBadge={holdingsOpen || availability === 'yours'}
                 />
               )}
               {hasNextPage && (
@@ -441,7 +494,9 @@ export default function MarketBrowser({ industries }: Props) {
           onClose={() => setActiveDrawer(null)}
         >
           {activeDrawer === 'wallet'
-            ? walletAddress && <WalletPanel address={walletAddress} />
+            ? walletAddress && (
+                <WalletPanel address={walletAddress} onOpenHoldings={openHoldings} />
+              )
             : activeDrawer === 'collection'
               ? collectionInfo
               : filters}
@@ -451,7 +506,9 @@ export default function MarketBrowser({ industries }: Props) {
       {modalNft && (
         <ItemModal
           nft={modalNft}
-          slug={activeSlug}
+          // Holdings span collections, so key the item's detail/trade to its own
+          // collection, not the (last) active grid slug.
+          slug={holdingsOpen ? modalNft.collectionSlug : activeSlug}
           ethUsd={ethUsd}
           hasPrev={modalIndex > 0}
           hasNext={modalIndex < filtered.length - 1 || hasNextPage}

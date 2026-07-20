@@ -36,16 +36,21 @@ function collectFreshItems(
   collectionSlug: string,
   since: number
 ): { refetched: boolean; items: MarketNft[] } {
-  const queries = queryClient
-    .getQueryCache()
-    .findAll({ queryKey: ['market', 'nfts', collectionSlug] });
+  const cache = queryClient.getQueryCache();
+  // The item's own collection grid, plus the cross-collection holdings view (a
+  // list from Holdings has to satisfy against the holdings query, not a per-slug
+  // one). The holdings count query carries a number, not pages, so it's skipped.
+  const queries = [
+    ...cache.findAll({ queryKey: ['market', 'nfts', collectionSlug] }),
+    ...cache.findAll({ queryKey: ['market', 'holdings'] }),
+  ];
   let refetched = false;
   const items: MarketNft[] = [];
   for (const query of queries) {
     if (query.state.dataUpdatedAt <= since) continue;
-    refetched = true;
     const data = query.state.data as InfiniteData<NftsPage> | undefined;
     if (!data?.pages) continue;
+    refetched = true;
     for (const page of data.pages) {
       if (Array.isArray(page.items)) items.push(...page.items);
     }
@@ -124,6 +129,7 @@ export function useTradeReconciler(): void {
         for (const slug of slugs) invalidateCollection(slug);
         if (slugs.size > 0) {
           void queryClient.invalidateQueries({ queryKey: ['market', 'collections'] });
+          void queryClient.invalidateQueries({ queryKey: ['market', 'holdings'] });
         }
       }, POLL_INTERVAL_MS);
     };
@@ -164,6 +170,8 @@ export function useTradeReconciler(): void {
       invalidateCollection(nft.collectionSlug);
       // Floor / listed count / volume.
       void queryClient.invalidateQueries({ queryKey: ['market', 'collections'] });
+      // The consolidated holdings view + its count (a listed item leaves holdings).
+      void queryClient.invalidateQueries({ queryKey: ['market', 'holdings'] });
       // WILD balance moves on a buy (paid) or a sale of your listing (received);
       // it's a live chain read, so one refresh after settle is enough (no poll).
       void queryClient.invalidateQueries({ queryKey: ['market', 'wildBalance'] });
