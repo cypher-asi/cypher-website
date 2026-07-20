@@ -870,11 +870,41 @@
   margin: 0;
 }
 
+/* Collapsible panel header: the title bar (title + chevron) that stays visible
+   when the panel is collapsed. Transparent button so it reads as the heading. */
+.panelToggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.panelChevron {
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
+  transition: transform 0.2s ease, color 0.15s ease;
+}
+
+.panelToggle:hover .panelChevron {
+  color: var(--color-text-primary);
+}
+
+/* Points down when collapsed (expand); rotates up when open (collapse). */
+.panelChevronOpen {
+  transform: rotate(180deg);
+}
+
 /* ----- Filter panel ----- */
 .filtersHead {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
 }
 
 .clearBtn {
@@ -1148,7 +1178,8 @@
 
   .drawerHead {
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
+    justify-content: space-between;
     padding: 0.6rem 0.75rem;
     border-bottom: 1px solid var(--color-border);
   }
