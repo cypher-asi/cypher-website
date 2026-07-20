@@ -10,6 +10,7 @@ import {
   normalizeIndexerAsset,
   normalizeMarketplaceListing,
   INDEXER_GRID_LIMIT,
+  INDEXER_LIVE_REVALIDATE,
   INDEXER_MARKET_LISTINGS_CAP,
   INDEXER_PAGE_LIMIT,
   type IndexerInventoryResponse,
@@ -170,10 +171,9 @@ async function handleIndexer(
         // Forward the trait filter (same as the Unlisted branch) so "Yours"
         // filtering works — inventory is trait-aware; the query just needs it.
         (attributes ? `&attributes=${encodeURIComponent(attributes)}` : ''),
-      // Short cache so "Yours" reflects a list/cancel within ~10s (matches the
-      // listed grid) instead of the 300s default — the wallet's own holdings
-      // are the surface that must feel live after an action.
-      10
+      // Live surface: the wallet's own holdings must reflect a list/cancel within
+      // seconds, so cache briefly rather than the 300s default.
+      INDEXER_LIVE_REVALIDATE
     );
     if (!inv) return fetchFailed();
 
@@ -200,7 +200,7 @@ async function handleIndexer(
         // Forward the trait filter so the Listed grid filters server-side, like
         // Unlisted. Harmless before the indexer supports it (param ignored).
         (attributes ? `&attributes=${encodeURIComponent(attributes)}` : ''),
-      10
+      INDEXER_LIVE_REVALIDATE
     );
     if (!data) return fetchFailed();
 
@@ -246,7 +246,9 @@ async function handleIndexer(
   if (entry.fungible) {
     const inv = await indexerFetch<IndexerInventoryResponse>(
       `/v1/inventory?collections=${encodeURIComponent(contract)}&limit=${INDEXER_PAGE_LIMIT}` +
-        (attributes ? `&attributes=${encodeURIComponent(attributes)}` : '')
+        (attributes ? `&attributes=${encodeURIComponent(attributes)}` : ''),
+      // Live: a list/cancel shifts how much unlisted supply remains.
+      INDEXER_LIVE_REVALIDATE
     );
     if (!inv) return fetchFailed();
 
@@ -266,14 +268,17 @@ async function handleIndexer(
   const inventory = await indexerFetch<IndexerInventoryResponse>(
     `/v1/inventory?collections=${encodeURIComponent(contract)}` +
       `&limit=${INDEXER_GRID_LIMIT}&offset=${offset}` +
-      (attributes ? `&attributes=${encodeURIComponent(attributes)}` : '')
+      (attributes ? `&attributes=${encodeURIComponent(attributes)}` : ''),
+    // Live: a token that gets listed leaves inventory (escrow), so this must
+    // reflect a list/cancel within seconds — not the 300s default.
+    INDEXER_LIVE_REVALIDATE
   );
   if (!inventory) return fetchFailed();
 
   // One pass over the active listings tells us which tokens to exclude.
   const listed = await indexerFetch<MarketplaceListingsResponse>(
     `/v1/marketplace/listings?collection=${encodeURIComponent(contract)}&status=active&limit=200`,
-    10
+    INDEXER_LIVE_REVALIDATE
   );
   const listedTokenIds = new Set((listed?.items ?? []).map((l) => l.tokenId));
 

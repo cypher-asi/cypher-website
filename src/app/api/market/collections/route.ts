@@ -9,6 +9,7 @@ import {
   indexerFetch,
   resolveMediaUrl,
   wildFromRaw,
+  INDEXER_LIVE_REVALIDATE,
   INDEXER_PAGE_LIMIT,
   type IndexerInventoryResponse,
   type MarketplaceCollectionsResponse,
@@ -118,12 +119,15 @@ async function buildIndexerCollection(
     indexerFetch<IndexerCollectionsResponse>('/v1/inventory/collections'),
     indexerFetch<IndexerInventoryResponse>(`/v1/inventory?collections=${contractParam}`),
     // Floor / listed count and volume change on every list/cancel/sale, so cache
-    // these two briefly (~10s) rather than the 300s default — otherwise the stats
-    // panel trails the grid by minutes. Collection metadata above stays long-lived.
-    indexerFetch<MarketplaceCollectionsResponse>('/v1/marketplace/collections', 10),
+    // these two briefly rather than the 300s default — otherwise the stats panel
+    // trails the grid. Collection metadata above stays long-lived.
+    indexerFetch<MarketplaceCollectionsResponse>(
+      '/v1/marketplace/collections',
+      INDEXER_LIVE_REVALIDATE
+    ),
     indexerFetch<MarketplaceListingsResponse>(
       `/v1/marketplace/listings?collection=${contractParam}&status=sold&limit=${INDEXER_PAGE_LIMIT}`,
-      10
+      INDEXER_LIVE_REVALIDATE
     ),
   ]);
 
