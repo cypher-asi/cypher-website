@@ -229,12 +229,16 @@ export default function MarketBrowser({ industries }: Props) {
 
   /* ----- Derived view flags ---------------------------------------------- */
   const showSkeleton = activeSlug === '' || isLoading;
+  const hasActiveFilters = selectedCount > 0;
   // A live floor price means the collection has at least one active listing, so
   // an empty "listed" result there is almost certainly a fetch hiccup rather
-  // than a truly empty collection. Don't claim "no listed items" in that case.
+  // than a truly empty collection. But an empty *filtered* result is a legitimate
+  // "no matches" — a trait can exclude every listing while the collection still
+  // has a floor — so a filtered-empty grid is never "unavailable".
   const floorSuggestsListings =
     availability === 'listed' && (activeMeta?.floorPrice ?? 0) > 0;
-  const showUnavailable = isError || (items.length === 0 && floorSuggestsListings);
+  const showUnavailable =
+    isError || (items.length === 0 && floorSuggestsListings && !hasActiveFilters);
 
   const filters = (
     <MarketFilters
@@ -253,28 +257,30 @@ export default function MarketBrowser({ industries }: Props) {
     />
   );
 
-  const emptyCopy =
-    items.length === 0
-      ? availability === 'listed'
+  // A trait filter is active but nothing came back (server- or client-side): a
+  // real "no matches", whichever availability tab we're on. Otherwise fall back
+  // to the per-tab "nothing here" copy.
+  const emptyCopy = hasActiveFilters
+    ? {
+        title: 'No items match your filters',
+        body: 'Try clearing or adjusting the selected trait filters.',
+      }
+    : availability === 'listed'
+      ? {
+          title: 'No items currently listed',
+          body: isIndexerSource
+            ? 'Nothing in this collection is listed for sale right now. Try the Unlisted filter to browse the collection.'
+            : 'Nothing in this collection is listed for sale right now. Try the Unlisted filter or browse on OpenSea.',
+        }
+      : availability === 'yours'
         ? {
-            title: 'No items currently listed',
-            body: isIndexerSource
-              ? 'Nothing in this collection is listed for sale right now. Try the Unlisted filter to browse the collection.'
-              : 'Nothing in this collection is listed for sale right now. Try the Unlisted filter or browse on OpenSea.',
+            title: "You don't own anything here yet",
+            body: 'Items you own in this collection will show up here, ready to list for sale.',
           }
-        : availability === 'yours'
-          ? {
-              title: "You don't own anything here yet",
-              body: 'Items you own in this collection will show up here, ready to list for sale.',
-            }
-          : {
-              title: 'No unlisted items found',
-              body: 'Every token in this collection appears to be listed. Switch back to the Listed filter to see them.',
-            }
-      : {
-          title: 'No items match your filters',
-          body: 'Try clearing or adjusting the selected trait filters.',
-        };
+        : {
+            title: 'No unlisted items found',
+            body: 'Every token in this collection appears to be listed. Switch back to the Listed filter to see them.',
+          };
 
   return (
     <>
