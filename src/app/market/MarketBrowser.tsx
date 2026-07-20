@@ -23,7 +23,7 @@ import { CollectionNav } from './components/CollectionNav';
 import { MobileCollectionMenu } from './components/MobileCollectionMenu';
 import { MarketToolbar } from './components/MarketToolbar';
 import { MarketFilters } from './components/MarketFilters';
-import { FiltersDrawer } from './components/FiltersDrawer';
+import { RailDrawer } from './components/RailDrawer';
 import { CollectionInfoPanel } from './components/CollectionInfoPanel';
 import { WalletPanel } from './components/WalletPanel';
 import { NftGrid } from './components/NftGrid';
@@ -52,7 +52,7 @@ export default function MarketBrowser({ industries }: Props) {
   const gridSize = useMarketStore((s) => s.gridSize);
   const viewMode = useMarketStore((s) => s.viewMode);
   const modalId = useMarketStore((s) => s.modalId);
-  const filtersOpen = useMarketStore((s) => s.filtersOpen);
+  const activeDrawer = useMarketStore((s) => s.activeDrawer);
   const collectionMenuOpen = useMarketStore((s) => s.collectionMenuOpen);
   const openNavGroup = useMarketStore((s) => s.openNavGroup);
 
@@ -62,7 +62,7 @@ export default function MarketBrowser({ industries }: Props) {
   const toggleTraitGroup = useMarketStore((s) => s.toggleTraitGroup);
   const setGridSize = useMarketStore((s) => s.setGridSize);
   const setViewMode = useMarketStore((s) => s.setViewMode);
-  const setFiltersOpen = useMarketStore((s) => s.setFiltersOpen);
+  const setActiveDrawer = useMarketStore((s) => s.setActiveDrawer);
   const setCollectionMenuOpen = useMarketStore((s) => s.setCollectionMenuOpen);
   const setOpenNavGroup = useMarketStore((s) => s.setOpenNavGroup);
 
@@ -197,23 +197,23 @@ export default function MarketBrowser({ industries }: Props) {
     };
   }, [collectionMenuOpen, setCollectionMenuOpen]);
 
-  /* ----- Mobile filters drawer: close on Escape -------------------------- */
+  /* ----- Mobile rail drawer: close on Escape ----------------------------- */
   useEffect(() => {
-    if (!filtersOpen) return;
+    if (!activeDrawer) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setFiltersOpen(false);
+      if (e.key === 'Escape') setActiveDrawer(null);
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [filtersOpen, setFiltersOpen]);
+  }, [activeDrawer, setActiveDrawer]);
 
   /* ----- Tidy up mobile-only overlays when leaving the mobile layout ----- */
   useEffect(() => {
     if (!isMobile) {
-      setFiltersOpen(false);
+      setActiveDrawer(null);
       setCollectionMenuOpen(false);
     }
-  }, [isMobile, setFiltersOpen, setCollectionMenuOpen]);
+  }, [isMobile, setActiveDrawer, setCollectionMenuOpen]);
 
   /* ----- Item modal navigation ------------------------------------------- */
   // Identify the open item by its full card key, not the bare token id: a 1155
@@ -260,6 +260,22 @@ export default function MarketBrowser({ industries }: Props) {
       onToggleTrait={toggleTrait}
       onToggleGroup={toggleTraitGroup}
       onClear={clearTraits}
+    />
+  );
+
+  // Shared between the desktop rail (in a collapsible panel) and the mobile
+  // collection drawer.
+  const collectionInfo = (
+    <CollectionInfoPanel
+      launched={activeMeta?.launched ?? activeEntry?.launched ?? null}
+      floorPrice={activeMeta?.floorPrice ?? null}
+      topOfferEth={activeMeta?.topOfferEth ?? null}
+      totalVolume={activeMeta?.totalVolume ?? null}
+      listedCount={activeMeta?.listedCount ?? null}
+      owners={activeMeta?.owners ?? null}
+      ethUsd={ethUsd}
+      wildDenominated={isIndexerSource}
+      openseaSlug={isIndexerSource ? undefined : activeEntry?.slug}
     />
   );
 
@@ -321,8 +337,9 @@ export default function MarketBrowser({ industries }: Props) {
           gridSize={gridSize}
           viewMode={viewMode}
           selectedCount={selectedCount}
-          filtersOpen={filtersOpen}
-          onOpenFilters={() => setFiltersOpen(true)}
+          showWallet={showYours}
+          activeDrawer={activeDrawer}
+          onOpenDrawer={setActiveDrawer}
           onGridSize={setGridSize}
           onShowList={() => setViewMode('list')}
         />
@@ -330,37 +347,30 @@ export default function MarketBrowser({ industries }: Props) {
 
       <div className={styles.layout}>
         <aside className={styles.rail} ref={railRef}>
-          {walletAddress && isIndexerSource && (
-            <div className={styles.railGroup}>
-              <p className={styles.railGroupLabel}>User</p>
-              <CollapsiblePanel title="Your Wallets" measureDeps={[walletAddress]}>
-                <WalletPanel address={walletAddress} />
-              </CollapsiblePanel>
-            </div>
+          {/* On small screens the rail panels move into toolbar-triggered drawers
+              (below), so the rail itself only renders on the desktop layout. */}
+          {!isMobile && (
+            <>
+              {walletAddress && isIndexerSource && (
+                <div className={styles.railGroup}>
+                  <p className={styles.railGroupLabel}>User</p>
+                  <CollapsiblePanel title="Your Wallets" measureDeps={[walletAddress]}>
+                    <WalletPanel address={walletAddress} />
+                  </CollapsiblePanel>
+                </div>
+              )}
+
+              <div className={styles.railGroup}>
+                <p className={styles.railGroupLabel}>Collection</p>
+                <CollapsiblePanel title="Filters" measureDeps={[activeSlug, openTraitGroups]}>
+                  {filters}
+                </CollapsiblePanel>
+                <CollapsiblePanel title={collectionName} measureDeps={[activeSlug, activeMeta]}>
+                  {collectionInfo}
+                </CollapsiblePanel>
+              </div>
+            </>
           )}
-
-          <div className={styles.railGroup}>
-            <p className={styles.railGroupLabel}>Collection</p>
-            {!isMobile && (
-              <CollapsiblePanel title="Filters" measureDeps={[activeSlug, openTraitGroups]}>
-                {filters}
-              </CollapsiblePanel>
-            )}
-
-            <CollapsiblePanel title={collectionName} measureDeps={[activeSlug, activeMeta]}>
-              <CollectionInfoPanel
-                launched={activeMeta?.launched ?? activeEntry?.launched ?? null}
-                floorPrice={activeMeta?.floorPrice ?? null}
-                topOfferEth={activeMeta?.topOfferEth ?? null}
-                totalVolume={activeMeta?.totalVolume ?? null}
-                listedCount={activeMeta?.listedCount ?? null}
-                owners={activeMeta?.owners ?? null}
-                ethUsd={ethUsd}
-                wildDenominated={isIndexerSource}
-                openseaSlug={isIndexerSource ? undefined : activeEntry?.slug}
-              />
-            </CollapsiblePanel>
-          </div>
 
           <CustomScrollbar targetRef={railRef} showOnHoverOnly />
         </aside>
@@ -419,8 +429,23 @@ export default function MarketBrowser({ industries }: Props) {
         </div>
       </div>
 
-      {isMobile && filtersOpen && (
-        <FiltersDrawer onClose={() => setFiltersOpen(false)}>{filters}</FiltersDrawer>
+      {isMobile && activeDrawer && (
+        <RailDrawer
+          title={
+            activeDrawer === 'wallet'
+              ? 'Your Wallets'
+              : activeDrawer === 'collection'
+                ? collectionName
+                : 'Filters'
+          }
+          onClose={() => setActiveDrawer(null)}
+        >
+          {activeDrawer === 'wallet'
+            ? walletAddress && <WalletPanel address={walletAddress} />
+            : activeDrawer === 'collection'
+              ? collectionInfo
+              : filters}
+        </RailDrawer>
       )}
 
       {modalNft && (

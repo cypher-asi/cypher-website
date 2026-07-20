@@ -1,1 +1,0 @@
-export { FiltersDrawer } from './FiltersDrawer';
