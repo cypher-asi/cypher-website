@@ -2,17 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useQueryClient } from '@tanstack/react-query';
 import { ArrowUpRight, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import type { MarketNft } from '@/lib/opensea';
 import { getEntryBySlug, getEntrySource } from '@/lib/wilderCollections';
 import { formatUsd, formatEth, formatWild } from '@/lib/price';
 import { FadeInImage } from '@/components/FadeInImage';
-import { useAuthStore } from '@/features/auth/store';
 import { useItemQuery } from '../../hooks/useItemQuery';
 import { TradeSection } from './TradeSection';
 import { useTradeStore } from '@/features/marketplace/tradeStore';
-import { syncTrade } from '../../lib/tradeSync';
 import styles from '../../ItemModal.module.css';
 
 type Props = {
@@ -51,29 +48,15 @@ export function ItemModal({
   const [loaderVisible, setLoaderVisible] = useState(false);
   const loaderStartRef = useRef(0);
 
-  const queryClient = useQueryClient();
   const isTradePending = useTradeStore((s) => s.phase) === 'pending';
-  const slugRef = useRef(slug);
-  slugRef.current = slug;
-  const walletAddress = useAuthStore((s) => s.user?.zeroWalletAddress ?? null);
-  const sellerRef = useRef(walletAddress);
-  sellerRef.current = walletAddress;
 
   useEffect(() => setMounted(true), []);
 
-  // On close, reflect a settled trade in the market caches — add/remove/decrement
-  // covering every dismissal path (Done, X, Escape, backdrop) — then clear the
-  // flow so reopening an item starts fresh (a card action can prime it first).
-  useEffect(
-    () => () => {
-      const { phase, action, nft: traded, listResult } = useTradeStore.getState();
-      if (phase === 'success' && traded && action) {
-        syncTrade(queryClient, slugRef.current, sellerRef.current, action, traded, listResult);
-      }
-      useTradeStore.getState().reset();
-    },
-    [queryClient],
-  );
+  // Clear the trade flow when the modal unmounts so reopening an item starts
+  // fresh (a card action can prime it first). Reconciling a settled trade with
+  // the grids is handled by useTradeReconciler at the market level, so it no
+  // longer depends on this modal's lifecycle.
+  useEffect(() => () => useTradeStore.getState().reset(), []);
 
   // A trade in flight can't be abandoned mid-way — the tx is already mining.
   const requestClose = () => {

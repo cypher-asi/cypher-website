@@ -15,6 +15,7 @@ import { useMarketTraitsQuery } from './hooks/useMarketTraitsQuery';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { useInfiniteScroll } from './hooks/useInfiniteScroll';
 import { useMarketUrlSync } from './hooks/useMarketUrlSync';
+import { useTradeReconciler } from './hooks/useTradeReconciler';
 import { countSelectedTraits, filterByTraits, itemKey } from './lib/items';
 import { ZeroAuthButton } from '@/features/auth/ZeroAuthButton';
 import type { Availability } from './types';
@@ -69,6 +70,10 @@ export default function MarketBrowser({ industries }: Props) {
     validSlugs,
     firstSlug
   );
+
+  // Refetch the grids + stats whenever a trade settles (mounted here, not in the
+  // modal, so it survives every modal dismissal path).
+  useTradeReconciler();
 
   /* ----- Server data (TanStack Query) ------------------------------------ */
   const { data: meta } = useCollectionsQuery();
