@@ -196,7 +196,10 @@ async function handleIndexer(
     // cap in one shot rather than paging; `next` is always null.
     const data = await indexerFetch<MarketplaceListingsResponse>(
       `/v1/marketplace/listings?collection=${encodeURIComponent(contract)}` +
-        `&status=active&sort=price_asc&limit=${INDEXER_MARKET_LISTINGS_CAP}`,
+        `&status=active&sort=price_asc&limit=${INDEXER_MARKET_LISTINGS_CAP}` +
+        // Forward the trait filter so the Listed grid filters server-side, like
+        // Unlisted. Harmless before the indexer supports it (param ignored).
+        (attributes ? `&attributes=${encodeURIComponent(attributes)}` : ''),
       10
     );
     if (!data) return fetchFailed();

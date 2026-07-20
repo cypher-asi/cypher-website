@@ -181,6 +181,7 @@ export type MarketplaceListing = {
       image?: string | null;
       description?: string | null;
       animationUrl?: string | null;
+      attributes?: IndexerAttribute[] | null;
     } | null;
   } | null;
 };
@@ -234,7 +235,11 @@ export function normalizeMarketplaceListing(
     contract: listing.collectionAddress,
     chain,
     priceEth: null,
-    traits: [],
+    // Traits now come through from the listings endpoint (same metadata as the
+    // inventory-sourced views), so the Listed grid shows + filters on them.
+    traits: (metadata?.attributes ?? [])
+      .filter((a) => Boolean(a.trait_type))
+      .map((a) => ({ type: a.trait_type, value: String(a.value) })),
     listingId: listing.listingId,
     priceWild: { raw: listing.priceRaw, formatted: listing.priceFormatted },
     sellerAddress: listing.sellerAddress.toLowerCase(),
