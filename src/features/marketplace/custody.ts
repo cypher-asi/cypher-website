@@ -55,19 +55,34 @@ export interface CustodialSigner {
   config: MarketplaceConfig;
 }
 
+export interface ReadContext {
+  client: ThirdwebClient;
+  chain: Chain;
+  config: MarketplaceConfig;
+}
+
+/**
+ * Client + chain + config for read-only chain calls — no custodial account, so
+ * no auth round-trip. getCustodialSigner builds its signing account on top of
+ * the same context.
+ */
+export function getReadContext(): ReadContext {
+  const config = getMarketplaceConfig();
+  const client = createThirdwebClient({
+    clientId: config.thirdwebClientId,
+    secretKey: config.thirdwebSecretKey,
+  });
+  const chain = defineChain({ id: config.chainId, rpc: config.rpcUrl });
+  return { client, chain, config };
+}
+
 /**
  * Reconstruct the user's custodial smart-account signer. Throws if the
  * reconstructed account is not the user's real ZERO wallet (i.e. the
  * `accountAddress` override didn't take).
  */
 export async function getCustodialSigner(identity: ZeroIdentity): Promise<CustodialSigner> {
-  const config = getMarketplaceConfig();
-
-  const client = createThirdwebClient({
-    clientId: config.thirdwebClientId,
-    secretKey: config.thirdwebSecretKey,
-  });
-  const chain = defineChain({ id: config.chainId, rpc: config.rpcUrl });
+  const { client, chain, config } = getReadContext();
 
   const wallet = inAppWallet({
     smartAccount: {

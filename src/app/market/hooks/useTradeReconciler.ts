@@ -164,6 +164,9 @@ export function useTradeReconciler(): void {
       invalidateCollection(nft.collectionSlug);
       // Floor / listed count / volume.
       void queryClient.invalidateQueries({ queryKey: ['market', 'collections'] });
+      // WILD balance moves on a buy (paid) or a sale of your listing (received);
+      // it's a live chain read, so one refresh after settle is enough (no poll).
+      void queryClient.invalidateQueries({ queryKey: ['market', 'wildBalance'] });
 
       const now = Date.now();
       const id = useProcessingStore.getState().mark({
