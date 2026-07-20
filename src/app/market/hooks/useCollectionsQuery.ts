@@ -4,9 +4,8 @@ import { fetchCollections } from '../api/fetchers';
 
 /**
  * Collection stats keyed by slug. Floor / listed / volume shift on every trade,
- * so keep this short-lived — a trade invalidates it immediately, and otherwise it
- * refreshes within ~5s (matching the server cache window) rather than trailing
- * the grid.
+ * so keep this short-lived — a trade invalidates + polls it immediately, and this
+ * staleTime throttles ordinary browsing (the server reads stats no-store).
  */
 export function useCollectionsQuery(): UseQueryResult<Record<string, MarketCollection>> {
   return useQuery({

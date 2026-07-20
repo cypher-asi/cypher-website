@@ -41,9 +41,10 @@ export function useMarketNftsQuery(
     queryFn: ({ pageParam }) =>
       fetchNftsPage(slug, availability, pageParam, activeFilters ?? undefined, owner),
     getNextPageParam: (lastPage: NftsPage) => lastPage.next ?? undefined,
-    // Grid tabs are live surfaces — a trade invalidates them immediately, and
-    // otherwise they refresh within ~5s (matching the server cache window) so a
-    // hard refresh and a post-trade refetch converge on the same state.
+    // Grid tabs are live surfaces (the server reads them no-store). A trade
+    // invalidates + polls them immediately; this staleTime is the throttle for
+    // ordinary browsing so re-renders within 5s reuse the cache instead of
+    // re-hitting the indexer.
     staleTime: 5_000,
     select: (data) => {
       const items = dedupeItems(data.pages.flatMap((page) => page.items));

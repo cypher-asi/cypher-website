@@ -15,6 +15,12 @@ import type { NftsPage } from '../api/fetchers';
  *  stuck trade doesn't spin indefinitely. */
 const PROCESSING_TIMEOUT_MS = 20_000;
 
+/** How often to re-invalidate (poll) the grids while a trade is settling. A single
+ *  invalidate can't converge: the indexed state lands a beat after the tx settles,
+ *  so the first refetch races ahead of it. We re-invalidate until the marker is
+ *  satisfied or times out. Paired with the no-store live reads so each poll is fresh. */
+const POLL_INTERVAL_MS = 2_000;
+
 function sameToken(item: MarketNft, marker: ProcessingMarker): boolean {
   return (
     item.contract.toLowerCase() === marker.contract.toLowerCase() &&
@@ -47,7 +53,12 @@ function collectFreshItems(
   return { refetched, items };
 }
 
-/** Whether the freshly-indexed state now reflects the trade. */
+/** Whether the freshly-indexed state now reflects the trade.
+ *  Note: `items` is scoped to the marker's own collection but not to a specific
+ *  availability tab. That's safe today because only one grid is mounted at a time,
+ *  so only that tab's query refetches (its `dataUpdatedAt` moves past `since`);
+ *  inactive tabs are excluded by the freshness gate in collectFreshItems. If the
+ *  UI ever mounts multiple grids of one collection at once, scope this per tab. */
 function isSatisfied(marker: ProcessingMarker, items: MarketNft[]): boolean {
   if (marker.action === 'list') {
     // The listed item is escrowed, so it leaves the held/unlisted set; or, where
@@ -66,11 +77,12 @@ function isSatisfied(marker: ProcessingMarker, items: MarketNft[]): boolean {
  * The marketplace is escrow-based, so every tab (Listed, Unlisted, Yours) and the
  * stats panel derive from authoritative, disjoint indexer reads. Rather than
  * hand-mirroring where an item should move after a buy/list/cancel, we:
- *   1. invalidate those reads once per settled transaction (deduped by txHash),
- *      so they refetch the real indexed state (~1-2s behind chain head), and
+ *   1. invalidate those reads on the settled transaction (deduped by txHash) and
+ *      then poll them (re-invalidate every POLL_INTERVAL_MS) until the indexed
+ *      state — which lands a beat behind chain head — reflects the trade, and
  *   2. drop a per-item "processing" marker so the acted card shows a spinner over
  *      that gap, cleared the moment the refetched state reflects the trade — or,
- *      failing that, flipped to a fail-loud "refresh" hint at a timeout.
+ *      failing that, flipped to a fail-loud "refresh" hint at PROCESSING_TIMEOUT_MS.
  *
  * Mounted once at the market level (not in the modal), so it observes the success
  * transition regardless of how the modal is dismissed — Done, X, Escape, backdrop,
@@ -84,6 +96,37 @@ export function useTradeReconciler(): void {
 
   useEffect(() => {
     const timers = new Map<string, ReturnType<typeof setTimeout>>();
+    let pollTimer: ReturnType<typeof setInterval> | null = null;
+
+    // Markers still waiting on the indexer (a timed-out marker stops driving polls).
+    const activeMarkers = () =>
+      Object.values(useProcessingStore.getState().markers).filter((m) => !m.timedOut);
+
+    const invalidateCollection = (slug: string) => {
+      void queryClient.invalidateQueries({ queryKey: ['market', 'nfts', slug] });
+    };
+
+    // Run a poll while any marker is still waiting; stop once all are satisfied or
+    // timed out. Each tick re-invalidates the collections that still have a marker,
+    // so their (no-store) reads refetch the freshly-indexed state.
+    const managePoll = () => {
+      const markers = activeMarkers();
+      if (markers.length === 0) {
+        if (pollTimer) {
+          clearInterval(pollTimer);
+          pollTimer = null;
+        }
+        return;
+      }
+      if (pollTimer) return;
+      pollTimer = setInterval(() => {
+        const slugs = new Set(activeMarkers().map((m) => m.collectionSlug));
+        for (const slug of slugs) invalidateCollection(slug);
+        if (slugs.size > 0) {
+          void queryClient.invalidateQueries({ queryKey: ['market', 'collections'] });
+        }
+      }, POLL_INTERVAL_MS);
+    };
 
     const clearMarker = (id: string) => {
       const timer = timers.get(id);
@@ -92,6 +135,7 @@ export function useTradeReconciler(): void {
         timers.delete(id);
       }
       useProcessingStore.getState().clear(id);
+      managePoll();
     };
 
     // Clear any marker whose collection has refetched to the settled state.
@@ -117,9 +161,7 @@ export function useTradeReconciler(): void {
 
       // Prefix match: invalidates every availability / filter / owner permutation
       // for this collection, so Listed, Unlisted and Yours all refetch.
-      void queryClient.invalidateQueries({
-        queryKey: ['market', 'nfts', nft.collectionSlug],
-      });
+      invalidateCollection(nft.collectionSlug);
       // Floor / listed count / volume.
       void queryClient.invalidateQueries({ queryKey: ['market', 'collections'] });
 
@@ -140,8 +182,12 @@ export function useTradeReconciler(): void {
         setTimeout(() => {
           timers.delete(id);
           useProcessingStore.getState().markTimedOut(id);
+          // A timed-out marker no longer drives polling — stop if it was the last.
+          managePoll();
         }, PROCESSING_TIMEOUT_MS)
       );
+      // Start polling until the indexed state reflects this trade.
+      managePoll();
     };
 
     // Catch a trade that settled before this subscribed (e.g. a remount).
@@ -155,6 +201,12 @@ export function useTradeReconciler(): void {
       unsubCache();
       for (const timer of timers.values()) clearTimeout(timer);
       timers.clear();
+      if (pollTimer) clearInterval(pollTimer);
+      // Leaving the market abandons any in-flight spinner. Clear the markers so a
+      // remount (a cold load that already shows the true state) doesn't strand a
+      // marker whose timeout timer was just torn down.
+      const { markers, clear } = useProcessingStore.getState();
+      for (const id of Object.keys(markers)) clear(id);
     };
   }, [queryClient]);
 }
