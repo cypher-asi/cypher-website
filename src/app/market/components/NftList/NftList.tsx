@@ -7,9 +7,11 @@ type Props = {
   items: readonly MarketNft[];
   ethUsd: number | null;
   onOpen: (id: string) => void;
+  /** Badge the wallet's own listings as "Listed" — only meaningful on Yours. */
+  showListedBadge?: boolean;
 };
 
-export function NftList({ items, ethUsd, onOpen }: Props) {
+export function NftList({ items, ethUsd, onOpen, showListedBadge = false }: Props) {
   return (
     <div className={styles.listView}>
       <div className={styles.listHeader}>
@@ -20,7 +22,13 @@ export function NftList({ items, ethUsd, onOpen }: Props) {
         <span className={styles.colAction} />
       </div>
       {items.map((nft) => (
-        <NftRow key={itemKey(nft)} nft={nft} ethUsd={ethUsd} onOpen={onOpen} />
+        <NftRow
+          key={itemKey(nft)}
+          nft={nft}
+          ethUsd={ethUsd}
+          onOpen={onOpen}
+          showListedBadge={showListedBadge}
+        />
       ))}
     </div>
   );

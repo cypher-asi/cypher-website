@@ -10,9 +10,11 @@ type Props = {
   nft: MarketNft;
   ethUsd: number | null;
   onOpen: (id: string) => void;
+  /** On Yours, flag the wallet's own listings so held vs listed reads at a glance. */
+  showListedBadge?: boolean;
 };
 
-export function NftRow({ nft, ethUsd, onOpen }: Props) {
+export function NftRow({ nft, ethUsd, onOpen, showListedBadge = false }: Props) {
   const price =
     (nft.priceWild ? formatWild(nft.priceWild.formatted) : null) ??
     formatUsd(nft.priceEth, ethUsd) ??
@@ -47,6 +49,9 @@ export function NftRow({ nft, ethUsd, onOpen }: Props) {
           )}
         </div>
         <span className={styles.rowName}>{nft.name}</span>
+        {showListedBadge && nft.listingId && nft.owned !== true && (
+          <span className={styles.rowListedBadge}>Listed</span>
+        )}
         {nft.fungible && nft.amount != null && (
           <span
             className={styles.rowQty}
@@ -62,8 +67,8 @@ export function NftRow({ nft, ethUsd, onOpen }: Props) {
       <span className={`${styles.colTraits} ${styles.rowMuted}`}>{nft.traits.length}</span>
       <span className={`${styles.colPrice} ${styles.rowPrice}`}>{price}</span>
       <span className={styles.colAction}>
-        {nft.listingId ? (
-          // Z-Chain listing → real Buy/Cancel via the trade flow.
+        {nft.listingId || nft.owned ? (
+          // Z-Chain listing → Buy/Cancel; an owned held item (Yours) → List.
           <CardActionButton nft={nft} onOpen={onOpen} className={styles.rowActionBtn} />
         ) : nft.chain === 'zchain' ? null : (
           <a

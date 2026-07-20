@@ -14,9 +14,11 @@ type Props = {
   ethUsd: number | null;
   animationDelayMs: number;
   onOpen: (id: string) => void;
+  /** On Yours, flag the wallet's own listings so held vs listed reads at a glance. */
+  showListedBadge?: boolean;
 };
 
-export function NftCard({ nft, ethUsd, animationDelayMs, onOpen }: Props) {
+export function NftCard({ nft, ethUsd, animationDelayMs, onOpen, showListedBadge = false }: Props) {
   // Z-Chain listings settle in WILD (no USD feed); ETH listings show USD.
   const price = nft.priceWild ? formatWild(nft.priceWild.formatted) : formatUsd(nft.priceEth, ethUsd);
   // A settling trade on this card shows a spinner over the image until the grids
@@ -41,6 +43,9 @@ export function NftCard({ nft, ethUsd, animationDelayMs, onOpen }: Props) {
       }}
     >
       <div className={styles.cardImageWrap}>
+        {showListedBadge && nft.listingId && nft.owned !== true && (
+          <span className={styles.cardListedBadge}>Listed</span>
+        )}
         {nft.fungible && nft.amount != null && (
           <span
             className={styles.cardQty}

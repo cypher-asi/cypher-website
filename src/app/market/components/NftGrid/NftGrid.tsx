@@ -10,9 +10,19 @@ type Props = {
   ethUsd: number | null;
   batchBase: number;
   onOpen: (id: string) => void;
+  /** Badge the wallet's own listings as "Listed" — only meaningful on Yours,
+   *  where held and listed items sit side by side. */
+  showListedBadge?: boolean;
 };
 
-export function NftGrid({ items, gridSize, ethUsd, batchBase, onOpen }: Props) {
+export function NftGrid({
+  items,
+  gridSize,
+  ethUsd,
+  batchBase,
+  onOpen,
+  showListedBadge = false,
+}: Props) {
   const gridClass = `${styles.grid} ${
     gridSize === 'lg' ? styles.gridLg : gridSize === 'sm' ? styles.gridSm : ''
   }`;
@@ -30,6 +40,7 @@ export function NftGrid({ items, gridSize, ethUsd, batchBase, onOpen }: Props) {
             ethUsd={ethUsd}
             animationDelayMs={delayMs}
             onOpen={onOpen}
+            showListedBadge={showListedBadge}
           />
         );
       })}
