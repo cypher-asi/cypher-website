@@ -25,6 +25,7 @@ import { MarketToolbar } from './components/MarketToolbar';
 import { MarketFilters } from './components/MarketFilters';
 import { FiltersDrawer } from './components/FiltersDrawer';
 import { CollectionInfoPanel } from './components/CollectionInfoPanel';
+import { WalletPanel } from './components/WalletPanel';
 import { NftGrid } from './components/NftGrid';
 import { NftList } from './components/NftList';
 import { MarketSkeleton } from './components/MarketSkeleton';
@@ -329,6 +330,16 @@ export default function MarketBrowser({ industries }: Props) {
 
       <div className={styles.layout}>
         <aside className={styles.rail} ref={railRef}>
+          {walletAddress && isIndexerSource && (
+            <AnimatedPanel
+              className={styles.panel}
+              bodyClassName={styles.panelBody}
+              measureDeps={[walletAddress]}
+            >
+              <WalletPanel address={walletAddress} />
+            </AnimatedPanel>
+          )}
+
           {!isMobile && (
             <AnimatedPanel
               className={styles.panel}

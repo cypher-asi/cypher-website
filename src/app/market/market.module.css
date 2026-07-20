@@ -1000,6 +1000,39 @@
 }
 
 /* ----- Info panel ----- */
+/* A labelled wallet section (currently the ZERO wallet; an ETH wallet can slot
+   in as a second section later). Groups its sub-label tight to its stat box. */
+.walletSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+/* Divider between wallet sections (ZERO vs a linked self-custody wallet) so the
+   two read as distinct, not one continuous list. */
+.walletSection + .walletSection {
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.walletSectionLabel {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* Placeholder box for a wallet type that isn't available yet (e.g. a linked
+   Ethereum wallet), so the "Wallets" section reads as more than the ZERO wallet. */
+.walletEmpty {
+  border: 1px dashed var(--color-border);
+  padding: 0.7rem;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+  text-align: left;
+}
+
 .info {
   display: flex;
   flex-direction: column;
