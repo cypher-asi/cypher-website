@@ -4,6 +4,7 @@ import { type MouseEvent } from 'react';
 import type { MarketNft } from '@/lib/opensea';
 import { useAuthStore } from '@/features/auth/store';
 import { useTradeStore } from '@/features/marketplace/tradeStore';
+import { useProcessing } from '@/features/marketplace/processingStore';
 import { itemKey } from '../../lib/items';
 
 type Props = {
@@ -23,6 +24,9 @@ export function CardActionButton({ nft, onOpen, className }: Props) {
   const user = useAuthStore((s) => s.user);
   const openLogin = useAuthStore((s) => s.openLogin);
   const start = useTradeStore((s) => s.start);
+  // A trade is already settling on this item — disable so it can't be double-acted
+  // while in flight (a hard refresh clears the marker if the indexer ever stalls).
+  const processing = useProcessing(nft) != null;
 
   // Owned (Yours view) → List; a listing → Buy (others') / Cancel (yours);
   // nothing to act on otherwise.
@@ -48,7 +52,7 @@ export function CardActionButton({ nft, onOpen, className }: Props) {
   };
 
   return (
-    <button type="button" className={className} onClick={onClick}>
+    <button type="button" className={className} onClick={onClick} disabled={processing}>
       {label}
     </button>
   );

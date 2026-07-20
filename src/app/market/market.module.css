@@ -418,6 +418,42 @@
   background: linear-gradient(135deg, #17171a, #0e0e10);
 }
 
+/* Per-item "processing" veneer, shown over the image while a settled trade waits
+   for the indexer to catch up (or, on timeout, a fail-loud refresh hint). */
+.cardProcessing {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.6rem;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.66);
+  backdrop-filter: blur(1px);
+}
+
+.cardProcessingSpin {
+  color: #ff6434;
+  animation: processingSpin 0.9s linear infinite;
+}
+
+.cardProcessingText {
+  color: #fff;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.35;
+}
+
+@keyframes processingSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .cardBody {
   padding: 0.6rem 0.7rem;
   display: flex;
@@ -460,6 +496,10 @@
 }
 .cardAction:hover {
   opacity: 0.9;
+}
+.cardAction:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 /* ----------------------------------------------------------------------------
