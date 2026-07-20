@@ -28,19 +28,19 @@ describe('NftCard', () => {
     expect(onOpen).toHaveBeenCalledWith('0xabc-42');
   });
 
-  it('shows the quantity badge for fungible listings, including ×1', () => {
+  it('labels fungible listings by quantity (Single / Bundle)', () => {
     const bundle: MarketNft = { ...nft, listingId: '7', amount: 3, fungible: true };
     render(<NftCard nft={bundle} ethUsd={null} animationDelayMs={0} onOpen={() => {}} />);
-    expect(screen.getByText('×3')).toBeInTheDocument();
+    expect(screen.getByText('Bundle ×3')).toBeInTheDocument();
 
     const single: MarketNft = { ...nft, listingId: '8', amount: 1, fungible: true };
     render(<NftCard nft={single} ethUsd={null} animationDelayMs={0} onOpen={() => {}} />);
-    expect(screen.getByText('×1')).toBeInTheDocument();
+    expect(screen.getByText('Single ×1')).toBeInTheDocument();
   });
 
   it('omits the quantity badge for non-fungible (ERC-721) listings', () => {
     const single: MarketNft = { ...nft, listingId: '7', amount: 1 };
     render(<NftCard nft={single} ethUsd={null} animationDelayMs={0} onOpen={() => {}} />);
-    expect(screen.queryByText('×1')).not.toBeInTheDocument();
+    expect(screen.queryByText('Single ×1')).not.toBeInTheDocument();
   });
 });
