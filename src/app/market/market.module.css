@@ -382,6 +382,18 @@
   letter-spacing: 0.02em;
 }
 
+/* "Listed" badge on a Yours list row — the wallet's own active listing. */
+.rowListedBadge {
+  flex-shrink: 0;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  background: #ff6434;
+  color: #000;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
 /* Bundle quantity badge (ERC-1155 multi-unit listings). */
 .cardQty {
   position: absolute;
@@ -395,6 +407,24 @@
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.02em;
+  line-height: 1.3;
+  pointer-events: none;
+}
+
+/* "Listed" badge on a Yours card — the wallet's own active listing (top-left, so
+   it never collides with the top-right quantity badge). */
+.cardListedBadge {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 1;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: #ff6434;
+  color: #000;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
   line-height: 1.3;
   pointer-events: none;
 }

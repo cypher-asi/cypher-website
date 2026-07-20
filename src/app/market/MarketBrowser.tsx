@@ -387,7 +387,12 @@ export default function MarketBrowser({ industries }: Props) {
           ) : (
             <>
               {viewMode === 'list' ? (
-                <NftList items={filtered} ethUsd={ethUsd} onOpen={openModal} />
+                <NftList
+                  items={filtered}
+                  ethUsd={ethUsd}
+                  onOpen={openModal}
+                  showListedBadge={availability === 'yours'}
+                />
               ) : (
                 <NftGrid
                   items={filtered}
@@ -395,6 +400,7 @@ export default function MarketBrowser({ industries }: Props) {
                   ethUsd={ethUsd}
                   batchBase={batchBase}
                   onOpen={openModal}
+                  showListedBadge={availability === 'yours'}
                 />
               )}
               {hasNextPage && (

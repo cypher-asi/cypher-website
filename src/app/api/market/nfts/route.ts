@@ -162,24 +162,52 @@ async function handleIndexer(
   const contract = entry.contract ?? '';
 
   if (status === 'yours') {
-    // The connected wallet's holdings in this collection — the items it can list.
-    // Holdings are public on-chain data, so the wallet is passed in the query.
+    // "Yours" is the wallet's full portfolio in this collection: the items it
+    // still holds (available to list) plus its own active listings (escrowed, so
+    // they've left inventory — shown with a "Listed" badge and cancellable). Escrow
+    // makes the two sets disjoint, so fetch both and concatenate, held first.
+    // Holdings and own listings are public on-chain data, keyed by the wallet.
     if (!owner) return NextResponse.json({ items: [], next: null, error: false });
-    const inv = await indexerFetch<IndexerInventoryResponse>(
-      `/v1/inventory?collections=${encodeURIComponent(contract)}` +
-        `&wallet=${encodeURIComponent(owner)}&limit=${INDEXER_GRID_LIMIT}&offset=${offset}` +
-        // Forward the trait filter (same as the Unlisted branch) so "Yours"
-        // filtering works — inventory is trait-aware; the query just needs it.
-        (attributes ? `&attributes=${encodeURIComponent(attributes)}` : ''),
-      // Live surface: the wallet's own holdings must reflect a list/cancel within
-      // seconds, so cache briefly rather than the 300s default.
-      INDEXER_LIVE_REVALIDATE
-    );
-    if (!inv) return fetchFailed();
 
-    const items = inv.items.map((asset) =>
+    const [inv, listed] = await Promise.all([
+      indexerFetch<IndexerInventoryResponse>(
+        `/v1/inventory?collections=${encodeURIComponent(contract)}` +
+          `&wallet=${encodeURIComponent(owner)}&limit=${INDEXER_GRID_LIMIT}&offset=${offset}` +
+          // Forward the trait filter (same as the Unlisted branch) so "Yours"
+          // filtering works — inventory is trait-aware; the query just needs it.
+          (attributes ? `&attributes=${encodeURIComponent(attributes)}` : ''),
+        // Live surface: the wallet's own holdings must reflect a list/cancel within
+        // seconds, so cache briefly rather than the 300s default.
+        INDEXER_LIVE_REVALIDATE
+      ),
+      // The wallet's own active listings — trait-filtered exactly like inventory,
+      // or a filtered Yours would show unfiltered listings. Fetched whole (up to
+      // the cap, cheapest first) and attached to page 0 only; later pages carry
+      // just the next slice of held items.
+      offset === 0
+        ? indexerFetch<MarketplaceListingsResponse>(
+            `/v1/marketplace/listings?collection=${encodeURIComponent(contract)}` +
+              `&seller=${encodeURIComponent(owner)}&status=active&sort=price_asc` +
+              `&limit=${INDEXER_MARKET_LISTINGS_CAP}` +
+              (attributes ? `&attributes=${encodeURIComponent(attributes)}` : ''),
+            INDEXER_LIVE_REVALIDATE
+          )
+        : null,
+    ]);
+    if (!inv || (offset === 0 && !listed)) return fetchFailed();
+
+    // Held items are `owned` → they resolve to a List action. Own listings keep
+    // their listingId and are deliberately NOT marked owned, so the shared action
+    // logic resolves them to Cancel; the "Listed" badge is a pure client render.
+    const held = inv.items.map((asset) =>
       normalizeIndexerAsset(asset, entry.slug, entry.chain, true)
     );
+    const listings = (listed?.items ?? []).map((listing) =>
+      normalizeMarketplaceListing(listing, entry.slug, entry.chain, entry.fungible ?? false)
+    );
+    const items = [...held, ...listings];
+
+    // Paginate on the inventory offset only; the listings set is complete on page 0.
     const nextCursor =
       inv.items.length > 0 && hasMoreInventory(inv, offset, INDEXER_GRID_LIMIT)
         ? String(offset + inv.items.length)
