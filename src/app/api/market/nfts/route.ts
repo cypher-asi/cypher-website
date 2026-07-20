@@ -194,7 +194,21 @@ async function handleIndexer(
           )
         : null,
     ]);
+    // Fail loud on page 0 if either half is missing: degrading to held-only would
+    // silently drop the wallet's own listings — reintroducing the "I listed it and
+    // it vanished" bug this view exists to fix. (Later pages carry no listings by
+    // design, so `listed === null` there is expected, not a failure.)
     if (!inv || (offset === 0 && !listed)) return fetchFailed();
+
+    if (listed && (listed.total ?? 0) > listed.items.length) {
+      // Same loud signal as the Listed grid: a wallet with more active listings
+      // than the cap loses the tail (priciest) from Yours, so it can't cancel them
+      // here. Not reachable at today's volumes, but never truncate silently.
+      console.warn(
+        `[market] ${entry.slug}: wallet has ${listed.total} active listings exceeding ` +
+          `cap ${INDEXER_MARKET_LISTINGS_CAP}; "Yours" shows the cheapest ${listed.items.length}.`
+      );
+    }
 
     // Held items are `owned` → they resolve to a List action. Own listings keep
     // their listingId and are deliberately NOT marked owned, so the shared action
@@ -208,6 +222,9 @@ async function handleIndexer(
     const items = [...held, ...listings];
 
     // Paginate on the inventory offset only; the listings set is complete on page 0.
+    // Assumes the inventory envelope's `total` is wallet-scoped (it's a wallet
+    // query); if it were collection-wide the `inv.items.length > 0` guard still
+    // terminates on the first empty page, costing at most one wasted fetch.
     const nextCursor =
       inv.items.length > 0 && hasMoreInventory(inv, offset, INDEXER_GRID_LIMIT)
         ? String(offset + inv.items.length)
@@ -226,7 +243,7 @@ async function handleIndexer(
       `/v1/marketplace/listings?collection=${encodeURIComponent(contract)}` +
         `&status=active&sort=price_asc&limit=${INDEXER_MARKET_LISTINGS_CAP}` +
         // Forward the trait filter so the Listed grid filters server-side, like
-        // Unlisted. Harmless before the indexer supports it (param ignored).
+        // Unlisted (the listings endpoint honours `attributes`).
         (attributes ? `&attributes=${encodeURIComponent(attributes)}` : ''),
       INDEXER_LIVE_REVALIDATE
     );
@@ -305,7 +322,8 @@ async function handleIndexer(
 
   // One pass over the active listings tells us which tokens to exclude.
   const listed = await indexerFetch<MarketplaceListingsResponse>(
-    `/v1/marketplace/listings?collection=${encodeURIComponent(contract)}&status=active&limit=200`,
+    `/v1/marketplace/listings?collection=${encodeURIComponent(contract)}` +
+      `&status=active&limit=${INDEXER_MARKET_LISTINGS_CAP}`,
     INDEXER_LIVE_REVALIDATE
   );
   const listedTokenIds = new Set((listed?.items ?? []).map((l) => l.tokenId));
