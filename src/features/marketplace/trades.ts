@@ -22,6 +22,7 @@ import {
   waitForReceipt,
 } from 'thirdweb';
 import { getCustodialSigner, sendCustodialCalls, type CustodialSigner } from './custody';
+import { readWildBalance } from './wild';
 import type { ZeroIdentity } from './auth';
 import { MarketplaceError } from './http';
 
@@ -130,6 +131,14 @@ export async function executeBuy(identity: ZeroIdentity, listingId: bigint): Pro
   // listing only burns the marketplace fee, so reject it server-side too.
   if (seller.toLowerCase() === identity.zeroWalletAddress.toLowerCase()) {
     throw new MarketplaceError(400, 'You cannot buy your own listing — cancel it instead.');
+  }
+
+  // Pre-flight the WILD balance so an underfunded buy fails with a clear message
+  // rather than an opaque on-chain revert. The UI also disables Buy when short,
+  // but this covers a bypass and the race where balance drops after that check.
+  const balance = await readWildBalance(identity.zeroWalletAddress);
+  if (balance < price) {
+    throw new MarketplaceError(400, "You don't have enough WILD to buy this item.");
   }
 
   const wild = getContract({

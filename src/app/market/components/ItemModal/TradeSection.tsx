@@ -8,6 +8,7 @@ import { zscanTxUrl } from '@/lib/explorer';
 import { MARKETPLACE_FEE_PERCENT, sellerProceedsWild } from '@/features/marketplace/fee';
 import { useAuthStore } from '@/features/auth/store';
 import { useTradeStore } from '@/features/marketplace/tradeStore';
+import { useWildBalanceQuery } from '../../hooks/useWildBalanceQuery';
 import styles from '../../ItemModal.module.css';
 
 type Props = {
@@ -45,6 +46,8 @@ export function TradeSection({ nft, name, onClose }: Props) {
   const start = useTradeStore((s) => s.start);
   const back = useTradeStore((s) => s.back);
   const execute = useTradeStore((s) => s.execute);
+  // The connected wallet's WILD balance, to gate Buy on sufficient funds.
+  const { data: walletBalance } = useWildBalanceQuery(user?.zeroWalletAddress ?? null);
 
   const [priceInput, setPriceInput] = useState('');
   const [qtyInput, setQtyInput] = useState('1');
@@ -231,6 +234,16 @@ export function TradeSection({ nft, name, onClose }: Props) {
   }
 
   // ---- confirm: Buy / Cancel ----
+  // Gate Buy on funds: block the confirm when the balance is known and short of
+  // the price. While the balance is still loading we don't block — the server
+  // pre-check is the backstop, so a slow read never hides the button.
+  const priceRaw = nft.priceWild?.raw ?? null;
+  const insufficientWild =
+    action === 'buy' &&
+    walletBalance != null &&
+    priceRaw != null &&
+    BigInt(walletBalance.raw) < BigInt(priceRaw);
+
   return (
     <div className={styles.tradePanel}>
       <p className={styles.tradeText}>
@@ -247,8 +260,15 @@ export function TradeSection({ nft, name, onClose }: Props) {
           </>
         )}
       </p>
+      {insufficientWild && walletBalance && (
+        <p className={styles.tradeText}>
+          You don&apos;t have enough WILD — this costs <strong>{priceLabel}</strong> and your
+          balance is{' '}
+          {walletBalance.wild.toLocaleString(undefined, { maximumFractionDigits: 4 })} WILD.
+        </p>
+      )}
       <div className={styles.tradeButtons}>
-        <button className={styles.tradeAction} onClick={onConfirm}>
+        <button className={styles.tradeAction} onClick={onConfirm} disabled={insufficientWild}>
           {action === 'buy' ? 'Confirm purchase' : 'Cancel listing'}
         </button>
         <button className={styles.tradeSecondary} onClick={back}>
