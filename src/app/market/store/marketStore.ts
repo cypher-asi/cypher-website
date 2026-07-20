@@ -2,6 +2,9 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { Availability, GridSize, SelectedTraits, ViewMode } from '../types';
 
+/** Which rail panel is open as a mobile slide-out drawer (only one at a time). */
+export type MarketDrawer = 'filters' | 'wallet' | 'collection';
+
 type MarketUiState = {
   activeSlug: string;
   availability: Availability;
@@ -10,7 +13,7 @@ type MarketUiState = {
   gridSize: GridSize;
   viewMode: ViewMode;
   modalId: string | null;
-  filtersOpen: boolean;
+  activeDrawer: MarketDrawer | null;
   collectionMenuOpen: boolean;
   openNavGroup: string | null;
 };
@@ -25,7 +28,7 @@ type MarketUiActions = {
   setGridSize: (size: GridSize) => void;
   setViewMode: (mode: ViewMode) => void;
   setModalId: (id: string | null) => void;
-  setFiltersOpen: (open: boolean) => void;
+  setActiveDrawer: (drawer: MarketDrawer | null) => void;
   setCollectionMenuOpen: (open: boolean) => void;
   setOpenNavGroup: (id: string | null) => void;
 };
@@ -40,7 +43,7 @@ const initialState: MarketUiState = {
   gridSize: 'md',
   viewMode: 'grid',
   modalId: null,
-  filtersOpen: false,
+  activeDrawer: null,
   collectionMenuOpen: false,
   openNavGroup: null,
 };
@@ -95,7 +98,7 @@ export const useMarketStore = create<MarketStore>()(
 
       setModalId: (id) => set({ modalId: id }),
 
-      setFiltersOpen: (open) => set({ filtersOpen: open }),
+      setActiveDrawer: (drawer) => set({ activeDrawer: drawer }),
 
       setCollectionMenuOpen: (open) => set({ collectionMenuOpen: open }),
 

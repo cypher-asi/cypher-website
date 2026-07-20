@@ -212,13 +212,14 @@
   gap: 0.6rem;
 }
 
-/* Mobile-only: filter drawer trigger + flat collection dropdown. */
-.filterIconBtn,
+/* Mobile-only: the rail-drawer triggers + flat collection dropdown. */
+.toolbarActions,
 .mobileColl {
   display: none;
 }
 
-.filterIconBtn {
+.toolbarIconBtn {
+  display: inline-flex;
   position: relative;
   appearance: none;
   background: none;
@@ -231,7 +232,7 @@
   transition: color 0.15s ease, border-color 0.15s ease;
 }
 
-.filterIconBtn:hover {
+.toolbarIconBtn:hover {
   color: #fff;
   border-color: #ff6434;
 }
@@ -1146,8 +1147,10 @@
     justify-content: space-between;
   }
 
-  .filterIconBtn {
-    display: inline-flex;
+  .toolbarActions {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
   }
 
   .mobileColl {
