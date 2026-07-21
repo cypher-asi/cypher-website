@@ -24,8 +24,11 @@ const INDEXER_ENTRIES: WilderCollectionEntry[] = ALL_ENTRIES.filter(
 const ENTRY_BY_CONTRACT = new Map<string, WilderCollectionEntry>(
   INDEXER_ENTRIES.map((entry) => [(entry.contract as string).toLowerCase(), entry])
 );
+// NB: `collections[]=` (bracket) form — the indexer's query parser only reads the
+// FIRST value of a repeated `collections=` param, so the plain form would silently
+// scope holdings to a single collection. The bracket form parses into an array.
 const COLLECTIONS_QUERY = INDEXER_ENTRIES.map(
-  (entry) => `collections=${encodeURIComponent(entry.contract as string)}`
+  (entry) => `collections[]=${encodeURIComponent(entry.contract as string)}`
 ).join('&');
 
 /**
