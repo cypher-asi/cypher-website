@@ -2,8 +2,9 @@
  * Custodial trade execution — the core custodial signing rail.
  *
  * Reconstructs a ZERO user's EIP-4337 smart-account signer server-side from just
- * their `{ userId }` (Thirdweb `auth_endpoint`, ZW_THIRDWEB project) with the
- * `accountAddress` override set to their real `zeroWalletAddress`, then sends
+ * their `{ userId }` (Thirdweb `auth_endpoint`; the client id + secret must be the
+ * matched project pair — see config.ts) with the `accountAddress` override set to
+ * their real `zeroWalletAddress`, then sends
  * sponsored (gasless) calls — the user never signs a transaction.
  *
  * Proven end-to-end by the marketplace build-order §0 spike (single sponsored
