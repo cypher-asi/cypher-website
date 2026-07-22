@@ -6,14 +6,16 @@
  * a secret. None of these are `NEXT_PUBLIC_` — they never reach the browser.
  *
  * The active chain is selected by `MARKETPLACE_CHAIN_ID`. The WILD settlement
- * token is an immutable property of each chain, so it lives in code; the
- * deployed `NFTMarketplace` address is a per-deploy artifact (mainnet is not
- * deployed yet), so it lives in env.
+ * token is an immutable property of each chain, so it lives in code; the deployed
+ * `NFTMarketplace` address is a per-deploy artifact, so it lives in env.
  *
- * NOTE: `THIRDWEB_CLIENT_ID` MUST be the ZW_THIRDWEB project (the one whose
- * Thirdweb custom-auth endpoint is wired to zos-api `/thirdweb/verify-payload`),
- * NOT ww-tx-server's session-key project — the `auth_endpoint` strategy fails on
- * a project without that endpoint.
+ * NOTE: `THIRDWEB_CLIENT_ID` and `THIRDWEB_SECRET_KEY` MUST be a matched pair from
+ * the SAME Thirdweb project — the one whose account maps to the real ZERO wallet's
+ * on-chain admin. `auth_endpoint(userId)` reconstructs a signer whose admin is
+ * project-specific, so a different or mismatched project reconstructs a DIFFERENT
+ * admin and every trade fails with `eth_sendUserOperation -32507 "Invalid
+ * UserOperation signature"`. Copy the exact working values from the environment;
+ * do not substitute another project's client id.
  */
 import 'server-only';
 
