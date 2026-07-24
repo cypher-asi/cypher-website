@@ -4,7 +4,7 @@ vi.mock('@/features/marketplace/config', () => ({
   getMarketplaceConfig: () => ({ zosApiUrl: 'https://zos.example' }),
 }));
 
-import { zosAuthedFetch } from './wallet-link';
+import { zosAuthedFetch, fetchLinkedWallets } from './wallet-link';
 import { MarketplaceAuthError } from './auth';
 
 function requestWith(token?: string): Request {
@@ -39,5 +39,39 @@ describe('zosAuthedFetch', () => {
     const err = await zosAuthedFetch(requestWith('tok'), '/x').catch((e) => e);
     expect(err).toBeInstanceOf(MarketplaceAuthError);
     expect(err.statusCode).toBe(503);
+  });
+});
+
+describe('fetchLinkedWallets', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('returns external EOAs, excluding the custodial (isThirdWeb) wallet, lowercased', async () => {
+    const upstream = [
+      { id: 'custodial', publicAddress: '0xAAAA', isThirdWeb: true, canAuthenticate: true },
+      { id: 'ext1', publicAddress: '0xBbBb', isThirdWeb: false, canAuthenticate: false },
+    ];
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify(upstream), { status: 200 })));
+
+    const wallets = await fetchLinkedWallets(requestWith('tok'));
+
+    expect(wallets).toEqual([{ id: 'ext1', publicAddress: '0xbbbb', canAuthenticate: false }]);
+  });
+
+  it('throws with the upstream status on a non-ok response', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('nope', { status: 500 })));
+    const err = await fetchLinkedWallets(requestWith('tok')).catch((e) => e);
+    expect(err.statusCode).toBe(500);
+  });
+
+  it('throws 502 when the upstream body is not an array', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({ oops: true }), { status: 200 })));
+    const err = await fetchLinkedWallets(requestWith('tok')).catch((e) => e);
+    expect(err.statusCode).toBe(502);
+  });
+
+  it('throws 502 when the upstream body is not JSON', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('<html>err</html>', { status: 200 })));
+    const err = await fetchLinkedWallets(requestWith('tok')).catch((e) => e);
+    expect(err.statusCode).toBe(502);
   });
 });
