@@ -50,7 +50,7 @@ describe('fetchLinkedWallets', () => {
       { id: 'custodial', publicAddress: '0xAAAA', isThirdWeb: true, canAuthenticate: true },
       { id: 'ext1', publicAddress: '0xBbBb', isThirdWeb: false, canAuthenticate: false },
     ];
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify(upstream), { status: 200 })));
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({ wallets: upstream }), { status: 200 })));
 
     const wallets = await fetchLinkedWallets(requestWith('tok'));
 
@@ -63,8 +63,8 @@ describe('fetchLinkedWallets', () => {
     expect(err.statusCode).toBe(500);
   });
 
-  it('throws 502 when the upstream body is not an array', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({ oops: true }), { status: 200 })));
+  it('throws 502 when the wallets field is missing or not an array', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({ wallets: 'nope' }), { status: 200 })));
     const err = await fetchLinkedWallets(requestWith('tok')).catch((e) => e);
     expect(err.statusCode).toBe(502);
   });
