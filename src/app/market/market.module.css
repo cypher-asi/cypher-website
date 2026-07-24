@@ -1161,6 +1161,98 @@
   color: #ff6434;
 }
 
+/* Confirmation dialog (link / remove a wallet) — account-level actions. */
+.confirmOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.72);
+}
+
+.confirmDialog {
+  width: 100%;
+  max-width: 24rem;
+  background: #0d0d0d;
+  border: 1px solid var(--color-border);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.confirmTitle {
+  margin: 0;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.confirmBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.confirmLine {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.confirmWarn {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: #ff6434;
+}
+
+.confirmActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.25rem;
+}
+
+.confirmCancel,
+.confirmConfirm {
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--color-border);
+  background: none;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.confirmCancel {
+  color: var(--color-text-secondary);
+}
+
+.confirmCancel:hover:not(:disabled) {
+  color: var(--color-text-primary);
+  border-color: var(--color-text-secondary);
+}
+
+.confirmConfirm {
+  color: var(--color-text-primary);
+  border-color: #ff6434;
+}
+
+.confirmConfirm:hover:not(:disabled) {
+  background: rgba(255, 100, 52, 0.12);
+}
+
+.confirmCancel:disabled,
+.confirmConfirm:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 /* "Your Holdings" view header (back + title) above the consolidated grid. */
 .holdingsHead {
   display: flex;
