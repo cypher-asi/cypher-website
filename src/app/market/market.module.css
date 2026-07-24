@@ -1117,6 +1117,50 @@
   color: var(--color-text-primary);
 }
 
+/* Connect-and-link button for an external Ethereum wallet. */
+.walletLinkBtn {
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--color-border);
+  background: none;
+  color: var(--color-text-primary);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.walletLinkBtn:hover:not(:disabled) {
+  border-color: #ff6434;
+  background: rgba(255, 100, 52, 0.06);
+}
+
+.walletLinkBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* Inline "Remove" action next to a linked Ethereum wallet. */
+.walletRemoveBtn {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.walletRemoveBtn:hover:not(:disabled) {
+  color: #ff6434;
+}
+
+.walletError {
+  margin: 0;
+  font-size: 0.72rem;
+  color: #ff6434;
+}
+
 /* "Your Holdings" view header (back + title) above the consolidated grid. */
 .holdingsHead {
   display: flex;
