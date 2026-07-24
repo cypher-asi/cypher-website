@@ -57,3 +57,46 @@ export async function relayJson(res: Response): Promise<NextResponse> {
   }
   return NextResponse.json(body, { status: res.status });
 }
+
+/** A linked external EOA — excludes the ZERO custodial (EIP-4337) wallet. */
+export interface LinkedWallet {
+  id: string;
+  publicAddress: string;
+  canAuthenticate: boolean;
+}
+
+// zos-api GET /api/v2/accounts/wallets returns items WITHOUT a walletType field.
+// The ZERO custodial smart account is isThirdWeb:true; external links are
+// isThirdWeb:false — that flag is how we isolate the user's external EOAs.
+interface ZosWalletItem {
+  id: string;
+  publicAddress: string;
+  isThirdWeb: boolean;
+  canAuthenticate: boolean;
+}
+
+/**
+ * Fetch the caller's linked external EOAs from zos-api (the ZERO custodial
+ * wallet is filtered out). Throws {@link MarketplaceError} on a non-ok or
+ * malformed upstream response.
+ */
+export async function fetchLinkedWallets(request: Request): Promise<LinkedWallet[]> {
+  const res = await zosAuthedFetch(request, '/api/v2/accounts/wallets');
+  if (!res.ok) throw new MarketplaceError(res.status, 'Could not load linked wallets');
+
+  let list: unknown;
+  try {
+    list = await res.json();
+  } catch {
+    throw new MarketplaceError(502, 'Malformed response from auth service');
+  }
+  if (!Array.isArray(list)) throw new MarketplaceError(502, 'Unexpected wallets response');
+
+  return (list as ZosWalletItem[])
+    .filter((w) => w && typeof w === 'object' && !w.isThirdWeb)
+    .map((w) => ({
+      id: String(w.id),
+      publicAddress: String(w.publicAddress ?? '').toLowerCase(),
+      canAuthenticate: Boolean(w.canAuthenticate),
+    }));
+}
