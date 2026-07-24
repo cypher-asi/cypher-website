@@ -84,12 +84,13 @@ export async function fetchLinkedWallets(request: Request): Promise<LinkedWallet
   const res = await zosAuthedFetch(request, '/api/v2/accounts/wallets');
   if (!res.ok) throw new MarketplaceError(res.status, 'Could not load linked wallets');
 
-  let list: unknown;
+  let body: { wallets?: unknown };
   try {
-    list = await res.json();
+    body = (await res.json()) as { wallets?: unknown };
   } catch {
     throw new MarketplaceError(502, 'Malformed response from auth service');
   }
+  const list = body?.wallets;
   if (!Array.isArray(list)) throw new MarketplaceError(502, 'Unexpected wallets response');
 
   return (list as ZosWalletItem[])
