@@ -3,6 +3,7 @@
 import { ChevronRight } from 'lucide-react';
 import { useWildBalanceQuery } from '../../hooks/useWildBalanceQuery';
 import { useHoldingsCountQuery } from '../../hooks/useHoldingsCountQuery';
+import { EthereumWalletSection } from './EthereumWalletSection';
 import styles from '../../market.module.css';
 
 type Props = {
@@ -56,12 +57,7 @@ export function WalletPanel({ address, onOpenHoldings }: Props) {
         </button>
       </div>
 
-      <div className={styles.walletSection}>
-        <p className={styles.walletSectionLabel}>Self Custody Wallet (Ethereum)</p>
-        <div className={styles.walletEmpty}>
-          Link an external Ethereum wallet to your ZERO account. Coming soon.
-        </div>
-      </div>
+      <EthereumWalletSection />
     </>
   );
 }

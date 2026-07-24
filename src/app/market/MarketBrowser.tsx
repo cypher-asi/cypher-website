@@ -373,7 +373,7 @@ export default function MarketBrowser({ industries }: Props) {
           gridSize={gridSize}
           viewMode={viewMode}
           selectedCount={selectedCount}
-          showWallet={showYours}
+          showWallet={walletAddress != null}
           activeDrawer={activeDrawer}
           onOpenDrawer={setActiveDrawer}
           onGridSize={setGridSize}
@@ -387,7 +387,7 @@ export default function MarketBrowser({ industries }: Props) {
               (below), so the rail itself only renders on the desktop layout. */}
           {!isMobile && (
             <>
-              {walletAddress && isIndexerSource && (
+              {walletAddress && (
                 <div className={styles.railGroup}>
                   <p className={styles.railGroupLabel}>User</p>
                   <CollapsiblePanel title="Your Wallets" measureDeps={[walletAddress]}>

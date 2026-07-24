@@ -15,7 +15,7 @@ type Props = {
   gridSize: GridSize;
   viewMode: ViewMode;
   selectedCount: number;
-  /** Whether to offer the wallet (Profile) drawer — connected on a Z-Chain view. */
+  /** Whether to offer the wallet (Profile) drawer — shown whenever signed in. */
   showWallet: boolean;
   activeDrawer: MarketDrawer | null;
   onOpenDrawer: (drawer: MarketDrawer) => void;
