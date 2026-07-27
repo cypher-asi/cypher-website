@@ -26,6 +26,14 @@ export const INDEXER_LIVE_REVALIDATE = 0;
 // expensive walk to ~once/hour per collection instead of on every cold view.
 export const INDEXER_TRAITS_REVALIDATE = 3600;
 
+// ETH-mainnet holdings are read-only here (not traded on this marketplace), so
+// they need no live/no-store read — mainnet balances only change on external
+// transfers, never on an action in this app. A short Data Cache window collapses
+// the (wallet × collection) fan-out across repeated renders and across users,
+// while staying fresh enough for a holdings view. Link/unlink still invalidate
+// the client cache immediately, so a newly linked wallet's assets show at once.
+export const INDEXER_ETH_HOLDINGS_REVALIDATE = 60;
+
 export function hasIndexerConfig(): boolean {
   return Boolean(process.env.INDEXER_API_URL && process.env.INDEXER_API_KEY);
 }

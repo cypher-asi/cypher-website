@@ -21,7 +21,10 @@ export function useEthHoldingsQuery(
     initialPageParam: null as string | null,
     queryFn: ({ pageParam }) => fetchEthHoldingsPage(pageParam),
     getNextPageParam: (lastPage: NftsPage) => lastPage.next ?? undefined,
-    staleTime: 30_000,
+    // ETH holdings change only on external transfers; link/unlink invalidate this
+    // explicitly, so a long stale window avoids re-running the fan-out on refocus.
+    staleTime: 5 * 60_000,
+    refetchOnWindowFocus: false,
     select: (data) => {
       const items = dedupeItems(data.pages.flatMap((page) => page.items));
       const prior = dedupeItems(data.pages.slice(0, -1).flatMap((page) => page.items));

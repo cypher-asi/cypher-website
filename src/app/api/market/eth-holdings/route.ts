@@ -4,7 +4,7 @@ import {
   indexerFetch,
   normalizeIndexerAsset,
   INDEXER_GRID_LIMIT,
-  INDEXER_LIVE_REVALIDATE,
+  INDEXER_ETH_HOLDINGS_REVALIDATE,
   type IndexerInventoryResponse,
 } from '@/lib/indexer';
 import type { MarketNft } from '@/lib/opensea';
@@ -76,7 +76,7 @@ export async function GET(request: Request): Promise<NextResponse> {
     if (countOnly) {
       const results = await Promise.all(
         pairs.map((p) =>
-          indexerFetch<IndexerInventoryResponse>(heldUrl(p.wallet, p.entry, 1, 0), INDEXER_LIVE_REVALIDATE)
+          indexerFetch<IndexerInventoryResponse>(heldUrl(p.wallet, p.entry, 1, 0), INDEXER_ETH_HOLDINGS_REVALIDATE)
         )
       );
       if (results.some((r) => !r)) {
@@ -97,13 +97,16 @@ export async function GET(request: Request): Promise<NextResponse> {
       const { wallet, entry } = pairs[cur.index];
       const res = await indexerFetch<IndexerInventoryResponse>(
         heldUrl(wallet, entry, PAGE_SIZE - items.length, cur.offset),
-        INDEXER_LIVE_REVALIDATE
+        INDEXER_ETH_HOLDINGS_REVALIDATE
       );
       if (!res) return NextResponse.json({ ...empty, error: true }, { status: 502 });
       for (const asset of res.items) items.push(normalizeIndexerAsset(asset, entry.slug, entry.chain, true));
       const consumed = cur.offset + res.items.length;
+      // Advance to the next pair when this one is exhausted — OR when the indexer
+      // returns an empty page despite claiming more (a stale/inconsistent total),
+      // so the cursor can never stall on the same pair.
       cur =
-        consumed < (res.total ?? consumed)
+        res.items.length > 0 && consumed < (res.total ?? consumed)
           ? { index: cur.index, offset: consumed }
           : { index: cur.index + 1, offset: 0 };
     }

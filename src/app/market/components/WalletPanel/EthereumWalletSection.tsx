@@ -33,7 +33,8 @@ export function EthereumWalletSection({ onOpenHoldings }: Props) {
   const userId = useAuthStore((s) => s.user?.id ?? null);
   const { connect } = useConnectModal();
   const linkedQuery = useLinkedWalletsQuery(userId);
-  const { data: holdingsCount } = useEthHoldingsCountQuery(userId);
+  const hasLinkedWallets = (linkedQuery.data?.length ?? 0) > 0;
+  const { data: holdingsCount } = useEthHoldingsCountQuery(userId, hasLinkedWallets);
   const linkMutation = useLinkWalletMutation();
   const unlinkMutation = useUnlinkWalletMutation();
 
