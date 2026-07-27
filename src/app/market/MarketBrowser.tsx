@@ -490,7 +490,7 @@ export default function MarketBrowser({ industries }: Props) {
                   items={filtered}
                   ethUsd={ethUsd}
                   onOpen={openModal}
-                  showListedBadge={holdingsOpen || availability === 'yours'}
+                  showListedBadge={holdingsOpen || (!inHoldingsView && availability === 'yours')}
                 />
               ) : (
                 <NftGrid
@@ -499,7 +499,7 @@ export default function MarketBrowser({ industries }: Props) {
                   ethUsd={ethUsd}
                   batchBase={batchBase}
                   onOpen={openModal}
-                  showListedBadge={holdingsOpen || availability === 'yours'}
+                  showListedBadge={holdingsOpen || (!inHoldingsView && availability === 'yours')}
                 />
               )}
               {hasNextPage && (
