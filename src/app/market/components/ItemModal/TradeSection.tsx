@@ -52,8 +52,9 @@ export function TradeSection({ nft, name, onClose }: Props) {
   const [priceInput, setPriceInput] = useState('');
   const [qtyInput, setQtyInput] = useState('1');
 
-  const listable = nft.owned === true;
-  // Only a listing (Buy/Cancel) or an owned item (List) can be acted on.
+  // Only Z-Chain assets trade here — an owned ETH-mainnet holding is read-only.
+  const listable = nft.owned === true && nft.chain === 'zchain';
+  // Only a listing (Buy/Cancel) or a listable owned item (List) can be acted on.
   if (!nft.listingId && !listable) return null;
 
   const isOwn =

@@ -29,8 +29,10 @@ export function CardActionButton({ nft, onOpen, className }: Props) {
   const processing = useProcessing(nft) != null;
 
   // Owned (Yours view) → List; a listing → Buy (others') / Cancel (yours);
-  // nothing to act on otherwise.
-  const listable = nft.owned === true;
+  // nothing to act on otherwise. Only Z-Chain assets trade here, so an owned
+  // ETH-mainnet holding is shown (read-only) but never listable — trading those
+  // happens off-site for now.
+  const listable = nft.owned === true && nft.chain === 'zchain';
   if (!nft.listingId && !listable) return null;
 
   const isOwn =
