@@ -50,6 +50,8 @@ export function useLinkWalletMutation() {
     onSuccess: (result) => {
       if (result.linked) {
         queryClient.invalidateQueries({ queryKey: ['market', 'linkedWallets'] });
+        // A newly linked wallet changes the aggregated ETH holdings + badge count.
+        queryClient.invalidateQueries({ queryKey: ['market', 'ethHoldings'] });
       }
     },
   });

@@ -15,6 +15,10 @@ export function useUnlinkWalletMutation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (walletId: string) => unlinkWallet(walletId),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['market', 'linkedWallets'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['market', 'linkedWallets'] });
+      // Removing a wallet changes the aggregated ETH holdings + badge count.
+      queryClient.invalidateQueries({ queryKey: ['market', 'ethHoldings'] });
+    },
   });
 }

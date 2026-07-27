@@ -1,15 +1,22 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { ChevronRight } from 'lucide-react';
 import { useConnectModal } from 'thirdweb/react';
 import type { Wallet } from 'thirdweb/wallets';
 import { useAuthStore } from '@/features/auth/store';
 import { thirdwebClient } from '../../lib/thirdwebClient';
 import { useLinkedWalletsQuery, type LinkedWallet } from '../../hooks/useLinkedWalletsQuery';
+import { useEthHoldingsCountQuery } from '../../hooks/useEthHoldingsCountQuery';
 import { useLinkWalletMutation, type SignableAccount } from '../../hooks/useLinkWalletMutation';
 import { useUnlinkWalletMutation } from '../../hooks/useUnlinkWalletMutation';
 import { ConfirmDialog } from '../ConfirmDialog';
 import styles from '../../market.module.css';
+
+type Props = {
+  /** Open the consolidated ETH-mainnet holdings grid (across linked EOAs). */
+  onOpenHoldings: () => void;
+};
 
 function shortAddress(address: string): string {
   return `${address.slice(0, 6)}…${address.slice(-4)}`;
@@ -22,10 +29,11 @@ function shortAddress(address: string): string {
  * The connect step uses thirdweb's wallet picker (injected + WalletConnect);
  * everything persistent (the linked list + our buttons) is rendered here.
  */
-export function EthereumWalletSection() {
+export function EthereumWalletSection({ onOpenHoldings }: Props) {
   const userId = useAuthStore((s) => s.user?.id ?? null);
   const { connect } = useConnectModal();
   const linkedQuery = useLinkedWalletsQuery(userId);
+  const { data: holdingsCount } = useEthHoldingsCountQuery(userId);
   const linkMutation = useLinkWalletMutation();
   const unlinkMutation = useUnlinkWalletMutation();
 
@@ -125,6 +133,16 @@ export function EthereumWalletSection() {
         </div>
       ) : (
         <div className={styles.walletEmpty}>Link an external Ethereum wallet to see your Wilder World assets here.</div>
+      )}
+
+      {linked.length > 0 && (
+        <button type="button" className={styles.walletHoldingsBtn} onClick={onOpenHoldings}>
+          <span className={styles.infoLabel}>Holdings</span>
+          <span className={styles.walletHoldingsValue}>
+            {holdingsCount != null ? holdingsCount.toLocaleString() : '…'}
+            <ChevronRight size={14} aria-hidden />
+          </span>
+        </button>
       )}
 
       {pendingTransfer ? (

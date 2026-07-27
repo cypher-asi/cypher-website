@@ -11,6 +11,8 @@ type Props = {
   address: string;
   /** Open the consolidated holdings grid (all tradeable Z-Chain assets). */
   onOpenHoldings: () => void;
+  /** Open the consolidated ETH-mainnet holdings grid (across linked EOAs). */
+  onOpenEthHoldings: () => void;
 };
 
 /**
@@ -24,7 +26,7 @@ type Props = {
  * Z-Chain WILD specifically. When users can later link an Ethereum wallet, it
  * slots in as a second section below without restructuring.
  */
-export function WalletPanel({ address, onOpenHoldings }: Props) {
+export function WalletPanel({ address, onOpenHoldings, onOpenEthHoldings }: Props) {
   const { data, isLoading } = useWildBalanceQuery(address);
   const { data: holdingsCount } = useHoldingsCountQuery(address);
   const short = `${address.slice(0, 6)}…${address.slice(-4)}`;
@@ -57,7 +59,7 @@ export function WalletPanel({ address, onOpenHoldings }: Props) {
         </button>
       </div>
 
-      <EthereumWalletSection />
+      <EthereumWalletSection onOpenHoldings={onOpenEthHoldings} />
     </>
   );
 }
