@@ -12,6 +12,7 @@ import { useCollectionsQuery } from './hooks/useCollectionsQuery';
 import { useEthPriceQuery } from './hooks/useEthPriceQuery';
 import { useMarketNftsQuery } from './hooks/useMarketNftsQuery';
 import { useHoldingsQuery } from './hooks/useHoldingsQuery';
+import { useEthHoldingsQuery } from './hooks/useEthHoldingsQuery';
 import { useAuthStore } from '@/features/auth/store';
 import { useMarketTraitsQuery } from './hooks/useMarketTraitsQuery';
 import { useMediaQuery } from './hooks/useMediaQuery';
@@ -88,11 +89,17 @@ export default function MarketBrowser({ industries }: Props) {
   // "Yours" (your holdings) is only offered on a Z-Chain collection with a
   // connected wallet.
   const walletAddress = useAuthStore((s) => s.user?.zeroWalletAddress ?? null);
+  const userId = useAuthStore((s) => s.user?.id ?? null);
   const showYours = walletAddress != null && isIndexerSource;
 
   // "Your Holdings" — a consolidated view of all tradeable Z-Chain assets, opened
   // from the wallet panel. A local view flag, not a collection.
   const [holdingsOpen, setHoldingsOpen] = useState(false);
+  // "Your Ethereum Holdings" — the parallel consolidated view of ETH-mainnet
+  // assets across the user's linked EOAs. Mutually exclusive with holdingsOpen.
+  const [ethHoldingsOpen, setEthHoldingsOpen] = useState(false);
+  // Either consolidated holdings view (shared grid/empty/skeleton behavior).
+  const inHoldingsView = holdingsOpen || ethHoldingsOpen;
 
   // Indexer collections filter server-side across the whole collection, so the
   // trait selections drive the query. ETH keeps filtering client-side over the
@@ -104,9 +111,10 @@ export default function MarketBrowser({ industries }: Props) {
     availability === 'yours' ? walletAddress : null
   );
   const holdingsQuery = useHoldingsQuery(walletAddress, holdingsOpen);
+  const ethHoldingsQuery = useEthHoldingsQuery(userId, ethHoldingsOpen);
 
-  // The grid reads from whichever view is active; both queries share a shape.
-  const gridQuery = holdingsOpen ? holdingsQuery : nftsQuery;
+  // The grid reads from whichever view is active; all three queries share a shape.
+  const gridQuery = ethHoldingsOpen ? ethHoldingsQuery : holdingsOpen ? holdingsQuery : nftsQuery;
   const nftsData = gridQuery.data;
   const isLoading = gridQuery.isLoading;
   const isError = gridQuery.isError;
@@ -130,8 +138,8 @@ export default function MarketBrowser({ industries }: Props) {
   // loaded page client-side.
   const filtered = useMemo(
     () =>
-      holdingsOpen || isIndexerSource ? items : filterByTraits(items, selectedTraits),
-    [holdingsOpen, isIndexerSource, items, selectedTraits]
+      inHoldingsView || isIndexerSource ? items : filterByTraits(items, selectedTraits),
+    [inHoldingsView, isIndexerSource, items, selectedTraits]
   );
   const selectedCount = countSelectedTraits(selectedTraits);
 
@@ -172,15 +180,24 @@ export default function MarketBrowser({ industries }: Props) {
 
   /* ----- Holdings view: open from the wallet panel, exit back to a grid --- */
   const openHoldings = useCallback(() => {
+    setEthHoldingsOpen(false);
     setHoldingsOpen(true);
     setActiveDrawer(null); // in case it was opened from the mobile wallet drawer
     window.scrollTo({ top: 0, behavior: 'auto' });
   }, [setActiveDrawer]);
 
-  // Picking a collection leaves the holdings view for that collection.
+  const openEthHoldings = useCallback(() => {
+    setHoldingsOpen(false);
+    setEthHoldingsOpen(true);
+    setActiveDrawer(null);
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, [setActiveDrawer]);
+
+  // Picking a collection leaves either holdings view for that collection.
   const selectCollection = useCallback(
     (slug: string) => {
       setHoldingsOpen(false);
+      setEthHoldingsOpen(false);
       navigateCollection(slug);
     },
     [navigateCollection]
@@ -190,6 +207,11 @@ export default function MarketBrowser({ industries }: Props) {
   useEffect(() => {
     if (holdingsOpen && !walletAddress) setHoldingsOpen(false);
   }, [holdingsOpen, walletAddress]);
+
+  // ETH holdings is scoped to the signed-in user: signing out exits the view.
+  useEffect(() => {
+    if (ethHoldingsOpen && !userId) setEthHoldingsOpen(false);
+  }, [ethHoldingsOpen, userId]);
 
   /* ----- Nav dropdown: close on outside click / Escape ------------------- */
   useEffect(() => {
@@ -275,7 +297,7 @@ export default function MarketBrowser({ industries }: Props) {
     availability === 'listed' && (activeMeta?.floorPrice ?? 0) > 0;
   const showUnavailable =
     isError ||
-    (!holdingsOpen && items.length === 0 && floorSuggestsListings && !hasActiveFilters);
+    (!inHoldingsView && items.length === 0 && floorSuggestsListings && !hasActiveFilters);
 
   const filters = (
     <MarketFilters
@@ -313,7 +335,12 @@ export default function MarketBrowser({ industries }: Props) {
   // A trait filter is active but nothing came back (server- or client-side): a
   // real "no matches", whichever availability tab we're on. Otherwise fall back
   // to the per-tab "nothing here" copy.
-  const emptyCopy = holdingsOpen
+  const emptyCopy = ethHoldingsOpen
+    ? {
+        title: 'No Wilder World assets found',
+        body: 'Wilder World assets held in your linked Ethereum wallets show up here.',
+      }
+    : holdingsOpen
     ? {
         title: 'No tradeable assets yet',
         body: 'Items you hold across the Z-Chain collections show up here, ready to list for sale.',
@@ -391,14 +418,14 @@ export default function MarketBrowser({ industries }: Props) {
                 <div className={styles.railGroup}>
                   <p className={styles.railGroupLabel}>User</p>
                   <CollapsiblePanel title="Your Wallets" measureDeps={[walletAddress]}>
-                    <WalletPanel address={walletAddress} onOpenHoldings={openHoldings} />
+                    <WalletPanel address={walletAddress} onOpenHoldings={openHoldings} onOpenEthHoldings={openEthHoldings} />
                   </CollapsiblePanel>
                 </div>
               )}
 
               {/* The collection filters + stats don't apply to the cross-collection
-                  holdings view, so hide that group while it's open. */}
-              {!holdingsOpen && (
+                  holdings views, so hide that group while either is open. */}
+              {!inHoldingsView && (
                 <div className={styles.railGroup}>
                   <p className={styles.railGroupLabel}>Collection</p>
                   <CollapsiblePanel title="Filters" measureDeps={[activeSlug, openTraitGroups]}>
@@ -416,17 +443,22 @@ export default function MarketBrowser({ industries }: Props) {
         </aside>
 
         <div className={styles.main}>
-          {holdingsOpen && (
+          {inHoldingsView && (
             <div className={styles.holdingsHead}>
               <button
                 type="button"
                 className={styles.holdingsBack}
-                onClick={() => setHoldingsOpen(false)}
+                onClick={() => {
+                  setHoldingsOpen(false);
+                  setEthHoldingsOpen(false);
+                }}
               >
                 <ChevronLeft size={16} aria-hidden />
                 Back
               </button>
-              <h2 className={styles.holdingsTitle}>Your Holdings</h2>
+              <h2 className={styles.holdingsTitle}>
+                {ethHoldingsOpen ? 'Your Ethereum Holdings' : 'Your Holdings'}
+              </h2>
             </div>
           )}
           {showSkeleton ? (
@@ -495,7 +527,7 @@ export default function MarketBrowser({ industries }: Props) {
         >
           {activeDrawer === 'wallet'
             ? walletAddress && (
-                <WalletPanel address={walletAddress} onOpenHoldings={openHoldings} />
+                <WalletPanel address={walletAddress} onOpenHoldings={openHoldings} onOpenEthHoldings={openEthHoldings} />
               )
             : activeDrawer === 'collection'
               ? collectionInfo
@@ -508,7 +540,7 @@ export default function MarketBrowser({ industries }: Props) {
           nft={modalNft}
           // Holdings span collections, so key the item's detail/trade to its own
           // collection, not the (last) active grid slug.
-          slug={holdingsOpen ? modalNft.collectionSlug : activeSlug}
+          slug={inHoldingsView ? modalNft.collectionSlug : activeSlug}
           ethUsd={ethUsd}
           hasPrev={modalIndex > 0}
           hasNext={modalIndex < filtered.length - 1 || hasNextPage}

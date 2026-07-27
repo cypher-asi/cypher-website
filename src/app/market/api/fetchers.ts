@@ -94,6 +94,28 @@ export async function fetchHoldingsCount(owner: string): Promise<number> {
   return typeof parsed.total === 'number' ? parsed.total : 0;
 }
 
+/**
+ * The signed-in user's Wilder World ETH-mainnet holdings across their linked
+ * EOAs. No owner param — the route resolves the linked wallets from the ZERO
+ * session (the browser sends the httpOnly cookie automatically).
+ */
+export async function fetchEthHoldingsPage(next: string | null): Promise<NftsPage> {
+  const params = new URLSearchParams();
+  if (next) params.set('next', next);
+  const qs = params.toString();
+  const data = await getJson(`/api/market/eth-holdings${qs ? `?${qs}` : ''}`);
+  const parsed = (data ?? {}) as { items?: MarketNft[]; next?: string | null; error?: boolean };
+  if (parsed.error) throw new MarketFetchError('ETH holdings data unavailable');
+  return { items: parsed.items ?? [], next: parsed.next ?? null };
+}
+
+/** Total ETH-mainnet held items across linked EOAs — the wallet-panel badge. */
+export async function fetchEthHoldingsCount(): Promise<number> {
+  const data = await getJson(`/api/market/eth-holdings?count=1`);
+  const parsed = (data ?? {}) as { total?: number };
+  return typeof parsed.total === 'number' ? parsed.total : 0;
+}
+
 export async function fetchTraits(slug: string): Promise<TraitCategory[]> {
   const data = await getJson(`/api/market/traits?slug=${encodeURIComponent(slug)}`);
   const categories =

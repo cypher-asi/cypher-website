@@ -9,6 +9,7 @@ const h = vi.hoisted(() => ({
   unlinkMutate: vi.fn(),
   linkState: { isPending: false, isError: false },
   unlinkState: { isPending: false, variables: undefined as string | undefined },
+  holdingsCount: 0 as number | undefined,
 }));
 
 vi.mock('../../lib/thirdwebClient', () => ({ thirdwebClient: { id: 'test-client' } }));
@@ -17,6 +18,7 @@ vi.mock('@/features/auth/store', () => ({
   useAuthStore: (selector: (s: unknown) => unknown) => selector({ user: { id: 'user1' } }),
 }));
 vi.mock('../../hooks/useLinkedWalletsQuery', () => ({ useLinkedWalletsQuery: () => ({ data: h.linked }) }));
+vi.mock('../../hooks/useEthHoldingsCountQuery', () => ({ useEthHoldingsCountQuery: () => ({ data: h.holdingsCount }) }));
 vi.mock('../../hooks/useLinkWalletMutation', () => ({
   useLinkWalletMutation: () => ({ mutateAsync: h.linkMutateAsync, reset: h.linkReset, ...h.linkState }),
 }));
@@ -34,6 +36,7 @@ beforeEach(() => {
   h.unlinkMutate.mockReset();
   h.linkState = { isPending: false, isError: false };
   h.unlinkState = { isPending: false, variables: undefined };
+  h.holdingsCount = 0;
 });
 
 afterEach(cleanup);
@@ -47,7 +50,7 @@ describe('EthereumWalletSection', () => {
   it('lists linked wallets and removes one only after confirming', () => {
     h.linked = [{ id: 'w1', publicAddress: '0xabcdef0000000000000000000000000000001234', canAuthenticate: false }];
 
-    render(<EthereumWalletSection />);
+    render(<EthereumWalletSection onOpenHoldings={() => {}} />);
     expect(screen.getByText('0xabcd…1234')).toBeInTheDocument();
 
     // Clicking Remove opens a confirm dialog — it doesn't remove yet.
@@ -60,16 +63,34 @@ describe('EthereumWalletSection', () => {
     expect(h.unlinkMutate).toHaveBeenCalledWith('w1');
   });
 
+  it('shows the ETH holdings button with the count and opens the view', () => {
+    h.linked = [{ id: 'w1', publicAddress: '0xabcdef0000000000000000000000000000001234', canAuthenticate: false }];
+    h.holdingsCount = 7;
+    const onOpen = vi.fn();
+
+    render(<EthereumWalletSection onOpenHoldings={onOpen} />);
+    const btn = screen.getByRole('button', { name: /Holdings/ });
+    expect(btn).toHaveTextContent('7');
+    fireEvent.click(btn);
+    expect(onOpen).toHaveBeenCalled();
+  });
+
+  it('hides the ETH holdings button when no wallets are linked', () => {
+    h.linked = [];
+    render(<EthereumWalletSection onOpenHoldings={() => {}} />);
+    expect(screen.queryByRole('button', { name: /Holdings/ })).not.toBeInTheDocument();
+  });
+
   it('warns that a login wallet also signs you in', () => {
     h.linked = [{ id: 'w1', publicAddress: '0xabcdef0000000000000000000000000000001234', canAuthenticate: true }];
-    render(<EthereumWalletSection />);
+    render(<EthereumWalletSection onOpenHoldings={() => {}} />);
     fireEvent.click(screen.getByRole('button', { name: 'Remove' }));
     expect(within(screen.getByRole('dialog')).getByText(/also signs you in/i)).toBeInTheDocument();
   });
 
   it('does not show the login warning for a non-login wallet', () => {
     h.linked = [{ id: 'w2', publicAddress: '0xabcdef0000000000000000000000000000005678', canAuthenticate: false }];
-    render(<EthereumWalletSection />);
+    render(<EthereumWalletSection onOpenHoldings={() => {}} />);
     fireEvent.click(screen.getByRole('button', { name: 'Remove' }));
     expect(within(screen.getByRole('dialog')).queryByText(/also signs you in/i)).not.toBeInTheDocument();
   });
@@ -81,7 +102,7 @@ describe('EthereumWalletSection', () => {
     ];
     h.unlinkState = { isPending: true, variables: 'w1' };
 
-    render(<EthereumWalletSection />);
+    render(<EthereumWalletSection onOpenHoldings={() => {}} />);
     const buttons = screen.getAllByRole('button', { name: /Remov/ });
     // w1 shows "Removing…"; w2 stays "Remove" (both disabled while one is in flight).
     expect(buttons[0]).toHaveTextContent('Removing…');
@@ -93,7 +114,7 @@ describe('EthereumWalletSection', () => {
     connectResolvesTo('0xEOA');
     h.linkMutateAsync.mockResolvedValue({ linked: true, requiresConfirmation: false });
 
-    render(<EthereumWalletSection />);
+    render(<EthereumWalletSection onOpenHoldings={() => {}} />);
     fireEvent.click(screen.getByRole('button', { name: 'Connect & link a wallet' }));
 
     // The explainer dialog is shown, and nothing connects until confirmed.
@@ -109,7 +130,7 @@ describe('EthereumWalletSection', () => {
   it('clears a prior link error when re-opening the link dialog', () => {
     h.linkState = { isPending: false, isError: true };
 
-    render(<EthereumWalletSection />);
+    render(<EthereumWalletSection onOpenHoldings={() => {}} />);
     expect(screen.getByText(/Couldn’t link that wallet/i)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Connect & link a wallet' }));
@@ -120,7 +141,7 @@ describe('EthereumWalletSection', () => {
     connectResolvesTo('0xEOA');
     h.linkMutateAsync.mockResolvedValue({ linked: false, requiresConfirmation: true });
 
-    render(<EthereumWalletSection />);
+    render(<EthereumWalletSection onOpenHoldings={() => {}} />);
     fireEvent.click(screen.getByRole('button', { name: 'Connect & link a wallet' }));
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
 
