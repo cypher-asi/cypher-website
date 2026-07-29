@@ -207,7 +207,15 @@ export function ZeroLoginModal() {
               type="button"
               className={styles.social}
               onClick={() => {
-                window.location.href = '/api/auth/oauth/epic-games';
+                // Navigate the browser straight to zos-api (like the ZERO app /
+                // packs). zos-api sets a SameSite=Lax `oauth_state` cookie during
+                // this request and validates it on its own callback — bouncing
+                // through an app route first breaks that state round-trip. The
+                // zos-api base is public (NEXT_PUBLIC), not a secret.
+                const base = process.env.NEXT_PUBLIC_ZOS_API_URL;
+                if (!base) return;
+                const returnUrl = `${window.location.origin}/oauth/callback`;
+                window.location.href = `${base}/api/oauth/epic-games/login?returnUrl=${encodeURIComponent(returnUrl)}`;
               }}
             >
               Continue with Epic Games
