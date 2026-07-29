@@ -13,6 +13,8 @@ interface AuthState {
   error: string | null;
 
   openLogin: () => void;
+  /** Open the login modal showing an error (e.g. a failed social-login redirect). */
+  openLoginWithError: (message: string) => void;
   closeLogin: () => void;
   clearError: () => void;
 
@@ -39,6 +41,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   error: null,
 
   openLogin: () => set({ isModalOpen: true, error: null }),
+  openLoginWithError: (msg) => set({ isModalOpen: true, error: msg }),
   closeLogin: () => set({ isModalOpen: false, error: null }),
   clearError: () => set({ error: null }),
 
