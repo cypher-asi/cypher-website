@@ -17,7 +17,13 @@ export async function GET(request: Request) {
   const sessionToken = searchParams.get('sessionEstablishmentToken');
   const error = searchParams.get('error');
 
-  const redirectTo = (path: string) => NextResponse.redirect(new URL(path, request.url));
+  // Build the redirect target from the Host header, not request.url — in a Next
+  // route handler request.url reports the server bind host (e.g. localhost),
+  // which would drop the brand subdomain the browser is actually on (and the
+  // host-only session cookie is scoped to that real host).
+  const host = request.headers.get('host') ?? new URL(request.url).host;
+  const proto = request.headers.get('x-forwarded-proto') ?? (host.includes('localhost') ? 'http' : 'https');
+  const redirectTo = (path: string) => NextResponse.redirect(`${proto}://${host}${path}`);
 
   if (error || !sessionToken) {
     return redirectTo('/market?authError=social');
