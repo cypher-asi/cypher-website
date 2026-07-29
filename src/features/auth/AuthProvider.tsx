@@ -11,10 +11,23 @@ import { ZeroLoginModal } from './ZeroLoginModal';
  */
 export function AuthProvider({ children }: { children: ReactNode }) {
   const restore = useAuthStore((s) => s.restore);
+  const openLoginWithError = useAuthStore((s) => s.openLoginWithError);
 
   useEffect(() => {
     void restore();
   }, [restore]);
+
+  // A failed social-login redirect lands back here with ?authError=social. Surface
+  // it in the login modal, then strip the param so a refresh doesn't re-trigger it.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('authError') === 'social') {
+      openLoginWithError('Sign-in with Epic Games didn’t complete. Please try again.');
+      params.delete('authError');
+      const qs = params.toString();
+      window.history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}${window.location.hash}`);
+    }
+  }, [openLoginWithError]);
 
   return (
     <>
