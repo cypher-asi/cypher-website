@@ -29,8 +29,15 @@ export function ZeroLoginModal() {
   const [code, setCode] = useState('');
   const [password, setPassword] = useState('');
   const [codeSent, setCodeSent] = useState(false);
+  // Social login (Epic Games) is web-only — its OAuth redirect is unreliable on
+  // mobile browsers, matching how the ZERO app / packs gate it. Computed after
+  // mount so it's SSR-safe (navigator is client-only).
+  const [isMobile, setIsMobile] = useState(false);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    setIsMobile(/Mobi|Android/i.test(navigator.userAgent));
+  }, []);
 
   // Reset transient form state each time the modal opens.
   useEffect(() => {
@@ -189,6 +196,23 @@ export function ZeroLoginModal() {
               {submitting ? 'Signing in…' : 'Sign in'}
             </button>
           </form>
+        )}
+
+        {!isMobile && (
+          <>
+            <div className={styles.divider}>
+              <span>or</span>
+            </div>
+            <button
+              type="button"
+              className={styles.social}
+              onClick={() => {
+                window.location.href = '/api/auth/oauth/epic-games';
+              }}
+            >
+              Continue with Epic Games
+            </button>
+          </>
         )}
       </div>
     </div>,
