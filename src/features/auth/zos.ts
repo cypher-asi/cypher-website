@@ -18,7 +18,7 @@ export class AuthError extends Error {
   }
 }
 
-function zosApiUrl(): string {
+export function zosApiUrl(): string {
   const url = process.env.ZOS_API_URL;
   if (!url) throw new AuthError(500, 'ZOS_API_URL is not configured');
   return url;
@@ -73,6 +73,22 @@ export async function emailLogin(email: string, password: string): Promise<strin
     body: JSON.stringify({ email, password }),
   });
   if (!res.ok) throw new AuthError(401, 'Incorrect email or password');
+  return readAccessToken(res);
+}
+
+/**
+ * Exchange an OAuth `sessionEstablishmentToken` (from the social-login redirect)
+ * for an access token. zos-api brokers the provider handshake; we just redeem
+ * the short-lived token it hands back. The token goes in the Authorization
+ * header (not the body), and the body is empty — matching zos-api's contract.
+ */
+export async function establishOauthSession(sessionToken: string): Promise<string> {
+  const res = await zosFetch('/api/oauth/establish-session', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${sessionToken}` },
+    body: JSON.stringify({}),
+  });
+  if (!res.ok) throw new AuthError(401, 'Could not complete social sign-in');
   return readAccessToken(res);
 }
 
