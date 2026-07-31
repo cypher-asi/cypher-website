@@ -45,11 +45,22 @@ function tokenMaxAge(token: string): number {
   return FALLBACK_MAX_AGE_S;
 }
 
-export function setSessionCookie(response: NextResponse, token: string): void {
-  response.cookies.set(sessionCookieName(), token, {
-    ...baseCookieOptions,
-    maxAge: tokenMaxAge(token),
-  });
+/**
+ * Set the session cookie. By default it expires with the token (`exp`). Pass
+ * `maxAgeSeconds` to cap it shorter — e.g. a hosted hand-off flow that should
+ * only hold the session for the length of one operation. The cap never exceeds
+ * the token's own lifetime, so a short-lived token still wins.
+ */
+export function setSessionCookie(
+  response: NextResponse,
+  token: string,
+  options?: { maxAgeSeconds?: number },
+): void {
+  const maxAge =
+    options?.maxAgeSeconds != null
+      ? Math.min(Math.max(0, options.maxAgeSeconds), tokenMaxAge(token))
+      : tokenMaxAge(token);
+  response.cookies.set(sessionCookieName(), token, { ...baseCookieOptions, maxAge });
 }
 
 export function clearSessionCookie(response: NextResponse): void {
