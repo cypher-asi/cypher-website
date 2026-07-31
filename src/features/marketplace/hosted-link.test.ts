@@ -6,6 +6,9 @@ import {
   clearHandoffCookie,
   callbackUrl,
   requestOrigin,
+  parseOutcome,
+  sanitizeCode,
+  completePath,
 } from './hosted-link';
 
 const req = (cookie?: string) =>
@@ -71,5 +74,50 @@ describe('clearHandoffCookie', () => {
     const cookie = res.headers.getSetCookie().find((c) => c.startsWith(`${HANDOFF_COOKIE}=`));
     expect(cookie).toBeDefined();
     expect(cookie).toMatch(/Max-Age=0/i);
+  });
+});
+
+describe('parseOutcome', () => {
+  it('passes known outcomes through', () => {
+    expect(parseOutcome('success')).toBe('success');
+    expect(parseOutcome('cancelled')).toBe('cancelled');
+    expect(parseOutcome('error')).toBe('error');
+  });
+
+  it('coerces anything unrecognised to error', () => {
+    expect(parseOutcome('linked')).toBe('error');
+    expect(parseOutcome(null)).toBe('error');
+    expect(parseOutcome('')).toBe('error');
+  });
+});
+
+describe('sanitizeCode', () => {
+  it('keeps safe codes', () => {
+    expect(sanitizeCode('link_failed')).toBe('link_failed');
+    expect(sanitizeCode('session_missing')).toBe('session_missing');
+  });
+
+  it('strips unsafe characters', () => {
+    expect(sanitizeCode('a b&c=1')).toBe('abc1');
+    expect(sanitizeCode('../../evil')).toBe('evil');
+  });
+
+  it('returns undefined for empty/nullish/all-unsafe', () => {
+    expect(sanitizeCode(null)).toBeUndefined();
+    expect(sanitizeCode('')).toBeUndefined();
+    expect(sanitizeCode('!!!')).toBeUndefined();
+  });
+
+  it('caps the length', () => {
+    expect(sanitizeCode('x'.repeat(100))).toHaveLength(40);
+  });
+});
+
+describe('completePath', () => {
+  it('builds a relative complete URL', () => {
+    expect(completePath('success')).toBe('/api/link-wallet/complete?status=success');
+    expect(completePath('error', 'link_failed')).toBe(
+      '/api/link-wallet/complete?status=error&code=link_failed',
+    );
   });
 });
