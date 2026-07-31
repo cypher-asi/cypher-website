@@ -39,6 +39,11 @@ export default async function RootLayout({
 }) {
   const company = await getCurrentCompany();
   const h = await headers();
+  // Hosted flows meant for an embedded browser (e.g. the wallet-link page a
+  // native client loads) render standalone, without the site nav/footer. Scoped
+  // to the flow itself — the `/link-wallet-test` probe keeps the normal chrome.
+  const path = h.get('x-pathname') ?? '';
+  const isChromeless = path === '/link-wallet' || path.startsWith('/link-wallet/');
   const { homeHref, brandParam } = brandNavParams(company.key, h.get('host'));
   const parentColophon = company.footer.parentCompany
     ? parentColophonParams(company.footer.parentCompany.href, h.get('host'))
@@ -52,6 +57,19 @@ export default async function RootLayout({
   }
   if (company.fonts?.display) {
     (fontStyle as Record<string, string>)['--font-display'] = company.fonts.display;
+  }
+
+  /* Chromeless routes render standalone (no nav/footer/scrollbar) — the page
+     owns its full-screen layout. Font variables stay attached so the page can
+     use the brand typeface; the page supplies its own background. */
+  if (isChromeless) {
+    return (
+      <html lang="en" suppressHydrationWarning className={fontVariables} style={fontStyle}>
+        <body data-company={company.key} style={{ background: '#000' }}>
+          <Providers company={company.key}>{children}</Providers>
+        </body>
+      </html>
+    );
   }
 
   /* Brands with custom chrome (currently only zode) skip the shared

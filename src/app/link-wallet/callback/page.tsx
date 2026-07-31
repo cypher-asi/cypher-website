@@ -8,6 +8,8 @@
  */
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { WilderMark } from '../WilderMark';
+import styles from '../link-wallet.module.css';
 
 function CallbackMessage() {
   const status = useSearchParams().get('status');
@@ -19,18 +21,9 @@ function CallbackMessage() {
         : 'Something went wrong. You can close this window and try again.';
 
   return (
-    <main
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 24,
-        fontFamily: 'system-ui, sans-serif',
-        textAlign: 'center',
-      }}
-    >
-      <p style={{ fontSize: 16, maxWidth: 360 }}>{message}</p>
+    <main className={styles.page}>
+      <WilderMark className={styles.logo} />
+      <p className={styles.message}>{message}</p>
     </main>
   );
 }
