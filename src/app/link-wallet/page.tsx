@@ -16,6 +16,8 @@ import { MarketWeb3Provider } from '../market/MarketWeb3Provider';
 import { thirdwebClient } from '../market/lib/thirdwebClient';
 import { linkWalletFlow, type SignableAccount } from '../market/hooks/useLinkWalletMutation';
 import { completePath } from '@/features/marketplace/hosted-link';
+import { WilderMark } from './WilderMark';
+import styles from './link-wallet.module.css';
 
 type Phase = 'idle' | 'working' | 'transfer';
 
@@ -98,43 +100,37 @@ function LinkFlow() {
   const busy = phase === 'working';
 
   return (
-    <main
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 16,
-        padding: 24,
-        fontFamily: 'system-ui, sans-serif',
-        textAlign: 'center',
-      }}
-    >
-      <h1 style={{ fontSize: 20, margin: 0 }}>Link an Ethereum wallet</h1>
+    <main className={styles.page}>
+      <WilderMark className={styles.logo} />
+      <h1 className={styles.title}>Link an Ethereum wallet</h1>
 
       {phase === 'transfer' ? (
         <>
-          <p style={{ maxWidth: 360, opacity: 0.75, fontSize: 14, lineHeight: 1.5 }}>
+          <p className={styles.subtitle}>
             This wallet is linked to another ZERO account. Move it to this account?
           </p>
-          <button type="button" style={buttonStyle} onClick={handleConfirmTransfer}>
+          <button type="button" className={styles.primary} onClick={handleConfirmTransfer}>
             Move it here
           </button>
-          <button type="button" style={linkStyle} onClick={handleCancel}>
+          <button type="button" className={styles.cancel} onClick={handleCancel}>
             Cancel
           </button>
         </>
       ) : (
         <>
-          <p style={{ maxWidth: 360, opacity: 0.75, fontSize: 14, lineHeight: 1.5 }}>
-            Connect your wallet and sign a message to link it to your ZERO account. No transaction,
-            no gas.
+          <p className={styles.subtitle}>
+            This links the wallet to your <strong>ZERO account</strong>, associating it across the
+            Wilder World and ZERO ecosystem — not just this session. You can remove it
+            anytime.
           </p>
-          <button type="button" style={buttonStyle} onClick={handleConnect} disabled={busy}>
+          <p className={styles.subtitle}>
+            Next, you’ll connect the wallet and sign a message to prove it’s yours (no transaction,
+            no gas).
+          </p>
+          <button type="button" className={styles.primary} onClick={handleConnect} disabled={busy}>
             {busy ? 'Linking…' : 'Connect & link a wallet'}
           </button>
-          <button type="button" style={linkStyle} onClick={handleCancel} disabled={busy}>
+          <button type="button" className={styles.cancel} onClick={handleCancel} disabled={busy}>
             Cancel
           </button>
         </>
@@ -142,23 +138,6 @@ function LinkFlow() {
     </main>
   );
 }
-
-const buttonStyle: React.CSSProperties = {
-  padding: '12px 24px',
-  fontSize: 16,
-  borderRadius: 8,
-  border: '1px solid currentColor',
-  background: 'transparent',
-  cursor: 'pointer',
-};
-
-const linkStyle: React.CSSProperties = {
-  border: 'none',
-  background: 'transparent',
-  fontSize: 14,
-  opacity: 0.6,
-  cursor: 'pointer',
-};
 
 export default function LinkWalletPage() {
   return (

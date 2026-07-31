@@ -1,0 +1,100 @@
+/* Wilder-branded styling for the standalone hosted wallet-link pages (rendered
+   chromeless in an embedded browser). Matches the marketplace dark aesthetic:
+   near-black radial background, brand orange (#ff6434), D-DIN, uppercase. */
+
+.page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 32px 24px;
+  text-align: center;
+  background: radial-gradient(ellipse at center, #0c0c0c 0%, #000 60%);
+  color: #fff;
+  font-family: var(--font-ddin), system-ui, sans-serif;
+}
+
+.logo {
+  width: 46px;
+  height: auto;
+  margin-bottom: 6px;
+}
+
+.title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.subtitle {
+  margin: 0;
+  max-width: 380px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.subtitle strong {
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Primary action — brand orange with the clipped bottom-right corner that the
+   Wilder buttons use. */
+.primary {
+  margin-top: 8px;
+  padding: 13px 32px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #fff;
+  background: #ff6434;
+  border: none;
+  cursor: pointer;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 11px), calc(100% - 11px) 100%, 0 100%);
+  transition: background 0.15s ease;
+}
+
+.primary:hover:not(:disabled) {
+  background: #ff7a50;
+}
+
+.primary:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.cancel {
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.cancel:hover:not(:disabled) {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.cancel:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.message {
+  max-width: 360px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.8);
+}
