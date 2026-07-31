@@ -85,3 +85,27 @@ export function callbackUrl(request: Request, outcome: LinkOutcome, code?: strin
   if (code) params.set('code', code);
   return `${requestOrigin(request)}${CALLBACK_PATH}?${params.toString()}`;
 }
+
+const OUTCOMES: readonly LinkOutcome[] = ['success', 'cancelled', 'error'];
+
+/** Coerce a raw status to a known outcome; anything unrecognised is an error. */
+export function parseOutcome(raw: string | null | undefined): LinkOutcome {
+  return OUTCOMES.includes(raw as LinkOutcome) ? (raw as LinkOutcome) : 'error';
+}
+
+/**
+ * Keep only a short, safe code (letters, digits, underscore), or undefined. The
+ * code ends up in the callback query the host reads, so it is never trusted raw.
+ */
+export function sanitizeCode(raw: string | null | undefined): string | undefined {
+  if (!raw) return undefined;
+  const cleaned = raw.replace(/[^a-zA-Z0-9_]/g, '').slice(0, 40);
+  return cleaned.length ? cleaned : undefined;
+}
+
+/** Relative URL the client page navigates to on a terminal state. */
+export function completePath(outcome: LinkOutcome, code?: string): string {
+  const params = new URLSearchParams({ status: outcome });
+  if (code) params.set('code', code);
+  return `/api/link-wallet/complete?${params.toString()}`;
+}
