@@ -80,9 +80,15 @@ export function requestOrigin(request: Request): string {
  * only from our own fixed path + a whitelisted status/code — never from any
  * caller-supplied redirect target, so there is no open-redirect surface.
  */
-export function callbackUrl(request: Request, outcome: LinkOutcome, code?: string): string {
+export function callbackUrl(
+  request: Request,
+  outcome: LinkOutcome,
+  code?: string,
+  flow?: string,
+): string {
   const params = new URLSearchParams({ status: outcome });
   if (code) params.set('code', code);
+  if (flow) params.set('flow', flow);
   return `${requestOrigin(request)}${CALLBACK_PATH}?${params.toString()}`;
 }
 
@@ -103,9 +109,14 @@ export function sanitizeCode(raw: string | null | undefined): string | undefined
   return cleaned.length ? cleaned : undefined;
 }
 
-/** Relative URL the client page navigates to on a terminal state. */
-export function completePath(outcome: LinkOutcome, code?: string): string {
+/**
+ * Relative URL the client page navigates to on a terminal state. `flow` marks
+ * which hosted flow finished (e.g. `manage`), so the callback fallback page can
+ * show the right message. The host reads `status` regardless.
+ */
+export function completePath(outcome: LinkOutcome, code?: string, flow?: string): string {
   const params = new URLSearchParams({ status: outcome });
   if (code) params.set('code', code);
+  if (flow) params.set('flow', flow);
   return `/api/link-wallet/complete?${params.toString()}`;
 }

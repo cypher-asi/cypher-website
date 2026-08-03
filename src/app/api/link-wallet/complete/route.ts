@@ -21,8 +21,9 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const outcome = parseOutcome(searchParams.get('status'));
   const code = sanitizeCode(searchParams.get('code'));
+  const flow = sanitizeCode(searchParams.get('flow'));
 
-  const response = NextResponse.redirect(callbackUrl(request, outcome, code));
+  const response = NextResponse.redirect(callbackUrl(request, outcome, code, flow));
   clearSessionCookie(response);
   clearHandoffCookie(response);
   return response;
