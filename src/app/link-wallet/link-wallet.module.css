@@ -98,3 +98,139 @@
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.8);
 }
+
+/* Manage / remove flow */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 380px;
+  margin-top: 4px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.rowAddr {
+  font-size: 14px;
+  letter-spacing: 0.02em;
+}
+
+.removeBtn {
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.removeBtn:hover:not(:disabled) {
+  color: #ff6434;
+}
+
+.removeBtn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.empty {
+  max-width: 340px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.rowError {
+  max-width: 360px;
+  font-size: 13px;
+  color: #ff6434;
+}
+
+/* Remove confirmation overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.72);
+}
+
+.dialog {
+  width: 100%;
+  max-width: 360px;
+  padding: 24px;
+  background: #0c0c0c;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left;
+}
+
+.dialogTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.warn {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.warnAuth {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #ff6434;
+}
+
+.dialogActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.dialogRemove {
+  flex: 1;
+  padding: 11px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  background: #ff6434;
+  border: none;
+  cursor: pointer;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%);
+}
+
+.dialogCancel {
+  flex: 1;
+  padding: 11px;
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  cursor: pointer;
+}
