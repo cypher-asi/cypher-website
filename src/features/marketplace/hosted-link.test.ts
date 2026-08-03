@@ -65,6 +65,12 @@ describe('callbackUrl', () => {
     const url = new URL(callbackUrl(req(), 'cancelled'));
     expect(url.searchParams.get('status')).toBe('cancelled');
   });
+
+  it('includes the flow marker when given', () => {
+    expect(callbackUrl(req(), 'success', undefined, 'manage')).toBe(
+      'https://wilderworld.com/link-wallet/callback?status=success&flow=manage',
+    );
+  });
 });
 
 describe('clearHandoffCookie', () => {
@@ -118,6 +124,12 @@ describe('completePath', () => {
     expect(completePath('success')).toBe('/api/link-wallet/complete?status=success');
     expect(completePath('error', 'link_failed')).toBe(
       '/api/link-wallet/complete?status=error&code=link_failed',
+    );
+  });
+
+  it('includes the flow marker when given', () => {
+    expect(completePath('success', undefined, 'manage')).toBe(
+      '/api/link-wallet/complete?status=success&flow=manage',
     );
   });
 });

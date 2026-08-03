@@ -12,10 +12,14 @@ import { WilderMark } from '../WilderMark';
 import styles from '../link-wallet.module.css';
 
 function CallbackMessage() {
-  const status = useSearchParams().get('status');
+  const params = useSearchParams();
+  const status = params.get('status');
+  const flow = params.get('flow');
   const message =
     status === 'success'
-      ? 'Wallet linked. You can close this window.'
+      ? flow === 'manage'
+        ? 'All done. You can close this window.'
+        : 'Wallet linked. You can close this window.'
       : status === 'cancelled'
         ? 'Linking cancelled. You can close this window.'
         : 'Something went wrong. You can close this window and try again.';

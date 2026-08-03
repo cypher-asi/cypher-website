@@ -31,6 +31,12 @@ describe('GET /api/link-wallet/complete', () => {
     expect(loc.searchParams.get('status')).toBe('error');
   });
 
+  it('forwards the flow marker to the callback', async () => {
+    const loc = new URL((await GET(req('?status=success&flow=manage'))).headers.get('location')!);
+    expect(loc.searchParams.get('status')).toBe('success');
+    expect(loc.searchParams.get('flow')).toBe('manage');
+  });
+
   it('sanitizes an unsafe code', async () => {
     const loc = new URL(
       (await GET(req(`?status=error&code=${encodeURIComponent('../evil=1')}`))).headers.get(
