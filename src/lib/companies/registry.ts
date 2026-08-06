@@ -144,6 +144,7 @@ const wilderNav: NavSection[] = [
   { id: 'industries', label: 'Industries', href: '/industries', noPanel: true },
   { id: 'economy', label: 'Economy', href: '/economy', noPanel: true },
   { id: 'market', label: 'Market', href: '/market', noPanel: true },
+  { id: 'store', label: 'Store', href: '/vehicles', noPanel: true },
   { id: 'news', label: 'News', href: 'https://zine.live', external: true, noPanel: true },
 ];
 
