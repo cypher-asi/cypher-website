@@ -44,7 +44,7 @@ export default function GhostlineStore() {
         </Link>
 
         <div className={styles.rail}>
-          {GHOSTLINE_PASSES.map((pass) => (
+          {GHOSTLINE_PASSES.map((pass, index) => (
             <button
               type="button"
               key={pass.id}
@@ -61,6 +61,7 @@ export default function GhostlineStore() {
                   alt=""
                   fill
                   unoptimized
+                  priority={index === 0}
                   sizes="(max-width: 980px) 50vw, 220px"
                 />
               </span>
