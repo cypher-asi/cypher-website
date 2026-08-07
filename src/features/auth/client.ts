@@ -56,6 +56,14 @@ export async function loginWithPassword(email: string, password: string): Promis
   return data.user;
 }
 
+/** Create a new ZERO account (email + password) → signed-in user. */
+export async function register(email: string, password: string, name?: string): Promise<AuthUser> {
+  const res = await postJson('/api/auth/register', { email, password, name });
+  if (!res.ok) throw new Error(await errorMessage(res, 'Could not create your account'));
+  const data = (await res.json()) as { user: AuthUser };
+  return data.user;
+}
+
 /** Full disconnect — clears the session cookie server-side. */
 export async function logout(): Promise<void> {
   try {
