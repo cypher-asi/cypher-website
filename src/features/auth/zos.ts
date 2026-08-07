@@ -92,6 +92,69 @@ export async function establishOauthSession(sessionToken: string): Promise<strin
   return readAccessToken(res);
 }
 
+/** zos-api requires a valid invite slug to create an account. We apply it server-side
+ * (the user never enters one) so checkout signup is open. Sourced from env — never
+ * hardcoded or sent to the browser; register() fails loud if it isn't configured. */
+function inviteSlug(): string {
+  const slug = process.env.ZOS_INVITE_SLUG;
+  if (!slug) throw new AuthError(500, 'ZOS_INVITE_SLUG is not configured');
+  return slug;
+}
+
+/**
+ * Create + authorize a new ZERO account from email + password, then best-effort
+ * finalize it. Returns the access token and the resolved user — the account is
+ * signed in as part of creation (createAndAuthorize returns a token), so no separate
+ * login is needed. Sequence mirrors the ZERO signup flow: createAndAuthorize ->
+ * users/current (for the id) -> finalize.
+ */
+export async function register(
+  email: string,
+  password: string,
+  name?: string,
+): Promise<{ token: string; user: AuthUser }> {
+  const slug = inviteSlug();
+  const res = await zosFetch('/api/v2/accounts/createAndAuthorize', {
+    method: 'POST',
+    body: JSON.stringify({
+      user: { email, password, handle: email },
+      inviteSlug: slug,
+    }),
+  });
+  // 400 = validation (email already registered, weak password, bad invite slug).
+  if (!res.ok) throw new AuthError(res.status === 400 ? 400 : 502, 'Could not create your account');
+  const token = await readAccessToken(res);
+
+  const user = await currentUser(token);
+  if (!user) throw new AuthError(502, 'Could not resolve the new account');
+
+  await finalizeAccount(token, user.id, name?.trim() || email, slug);
+  return { token, user };
+}
+
+/**
+ * Finalize a freshly created account: sets the display name and records the invite
+ * referral. Best-effort — a non-OK response is logged, not thrown, since the account
+ * is already created + authorized (matches zos-api's own signup flow).
+ */
+async function finalizeAccount(
+  token: string,
+  userId: string,
+  name: string,
+  inviteCode: string,
+): Promise<void> {
+  try {
+    const res = await zosFetch('/api/v2/accounts/finalize', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ userId, name, inviteCode }),
+    });
+    if (!res.ok) console.warn(`[auth] account finalize returned ${res.status}`);
+  } catch {
+    /* best-effort — the account exists regardless */
+  }
+}
+
 /** Resolve the user for a token, or null if the token is invalid/expired. */
 export async function currentUser(token: string): Promise<AuthUser | null> {
   const res = await zosFetch('/api/users/current', {
