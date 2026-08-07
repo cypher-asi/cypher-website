@@ -32,17 +32,6 @@
 .summaryTotal { display: flex; justify-content: space-between; margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 1.1rem; font-weight: 700; }
 
 /* ── Flow ── */
-.previewNotice {
-  margin: 0 0 16px;
-  padding: 12px 14px;
-  border: 1px solid var(--ww-orange, #ff6434);
-  color: #e6e8eb;
-  background: rgba(255, 100, 52, 0.08);
-  font-size: 0.78rem;
-  line-height: 1.4;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-}
 .stepsHead { display: flex; gap: 10px; margin-bottom: 18px; }
 .stepTag { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; padding: 7px 12px; border: 1px solid rgba(255,255,255,0.12); color: rgba(230,232,235,0.45); }
 .stepTagActive { color: #e6e8eb; border-color: rgba(255,255,255,0.35); }
