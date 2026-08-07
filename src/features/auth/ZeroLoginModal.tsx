@@ -32,6 +32,7 @@ export function ZeroLoginModal() {
   const [mounted, setMounted] = useState(false);
   const [tab, setTab] = useState<Tab>('code');
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [code, setCode] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -50,6 +51,7 @@ export function ZeroLoginModal() {
   // kept so toggling between Sign in / Create doesn't lose what was typed.
   useEffect(() => {
     if (isOpen) {
+      setName('');
       setCode('');
       setPassword('');
       setConfirm('');
@@ -97,8 +99,8 @@ export function ZeroLoginModal() {
   };
   const onCreate = async (e: FormEvent) => {
     e.preventDefault();
-    if (password !== confirm) return;
-    await signUp(email.trim(), password);
+    if (!name.trim() || password !== confirm) return;
+    await signUp(email.trim(), password, name.trim());
   };
 
   // Epic Games OAuth. Login uses the existing-user path; create uses the
@@ -144,6 +146,17 @@ export function ZeroLoginModal() {
               />
             </div>
             <div>
+              <div className={styles.label}>Display name</div>
+              <input
+                className={styles.input}
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                autoComplete="name"
+                required
+              />
+            </div>
+            <div>
               <div className={styles.label}>Password</div>
               <input
                 className={styles.input}
@@ -170,7 +183,7 @@ export function ZeroLoginModal() {
             <button
               className={styles.submit}
               type="submit"
-              disabled={submitting || !email || !password || password !== confirm}
+              disabled={submitting || !email || !name.trim() || !password || password !== confirm}
             >
               {submitting ? 'Creating account…' : 'Create account'}
             </button>

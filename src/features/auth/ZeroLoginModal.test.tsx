@@ -78,22 +78,29 @@ describe('ZeroLoginModal — create mode', () => {
     expect(await screen.findByRole('button', { name: /Sign up with Epic Games/i })).toBeInTheDocument();
   });
 
-  it('keeps submit disabled until the passwords match, then calls signUp', () => {
+  it('keeps submit disabled until name + matching passwords, then calls signUp', () => {
     render(<ZeroLoginModal />);
     const email = screen.getByPlaceholderText('you@email.com');
+    const nameInput = document.querySelector('input[type="text"]') as HTMLInputElement;
     const passwords = document.querySelectorAll('input[type="password"]');
     const submit = screen.getByRole('button', { name: 'Create account' });
 
     fireEvent.change(email, { target: { value: 'a@b.com' } });
     fireEvent.change(passwords[0], { target: { value: 'secret1' } });
-    fireEvent.change(passwords[1], { target: { value: 'secret2' } });
+    fireEvent.change(passwords[1], { target: { value: 'secret1' } });
+    // Still disabled without a display name.
     expect(submit).toBeDisabled();
 
-    fireEvent.change(passwords[1], { target: { value: 'secret1' } });
+    fireEvent.change(nameInput, { target: { value: 'Ada' } });
     expect(submit).not.toBeDisabled();
 
+    // Mismatched passwords re-disable it.
+    fireEvent.change(passwords[1], { target: { value: 'secret2' } });
+    expect(submit).toBeDisabled();
+    fireEvent.change(passwords[1], { target: { value: 'secret1' } });
+
     fireEvent.click(submit);
-    expect(h.signUp).toHaveBeenCalledWith('a@b.com', 'secret1');
+    expect(h.signUp).toHaveBeenCalledWith('a@b.com', 'secret1', 'Ada');
   });
 
   it('toggles back to sign in via openLogin', () => {
