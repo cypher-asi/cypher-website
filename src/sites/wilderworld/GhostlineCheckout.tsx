@@ -51,9 +51,6 @@ export default function GhostlineCheckout({ pass }: { pass: GhostlinePass }) {
 
         {/* ── Steps ── */}
         <div className={styles.flow}>
-          <p className={styles.previewNotice} role="status">
-            Preview only — authentication and payment processing are not connected.
-          </p>
           <div className={styles.stepsHead}>
             <span className={`${styles.stepTag} ${styles.stepTagActive}`}>1 &middot; Account</span>
             <span className={`${styles.stepTag} ${step === 2 ? styles.stepTagActive : ''}`}>
