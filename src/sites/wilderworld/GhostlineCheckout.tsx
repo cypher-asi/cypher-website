@@ -2,17 +2,27 @@
 
 import { useState } from 'react';
 import { ArrowUpRight, Check, Lock, Mail } from 'lucide-react';
+import { useAuthStore } from '@/features/auth/store';
 import type { GhostlinePass } from './ghostline';
 import styles from './GhostlineCheckout.module.css';
 
-/** Two-step buy flow: (1) create account or log in via Email / ZERO / Epic
- *  Games, (2) card payment. UI is production markup; the integration points
- *  are marked: OAuth handlers on the provider buttons, and the card fieldset
- *  is shaped to be replaced 1:1 by a Stripe Payment Element. */
+function shortWallet(address: string): string {
+  return `${address.slice(0, 6)}…${address.slice(-4)}`;
+}
+
+/** Two-step buy flow: (1) account, (2) card payment. Auth reuses the shared ZERO
+ *  login: the Log in link opens the global modal (mounted by AuthProvider on Wilder
+ *  World) and we react to the resulting session, so the pass is delivered to the
+ *  signed-in account's zero wallet. The create-account buttons and the card fieldset
+ *  (shaped for a Stripe Payment Element) are the remaining integration points. */
 export default function GhostlineCheckout({ pass }: { pass: GhostlinePass }) {
   const [step, setStep] = useState<1 | 2>(1);
   const [email, setEmail] = useState('');
   const [account, setAccount] = useState<string | null>(null);
+
+  const user = useAuthStore((s) => s.user);
+  const openLogin = useAuthStore((s) => s.openLogin);
+  const disconnect = useAuthStore((s) => s.disconnect);
 
   const chooseProvider = (provider: string) => {
     // INTEGRATION POINT: replace with real auth.
@@ -58,66 +68,97 @@ export default function GhostlineCheckout({ pass }: { pass: GhostlinePass }) {
             </span>
           </div>
 
-          {step === 1 && (
-            <section className={styles.panel} aria-label="Create your account">
-              <h1 className={styles.panelTitle}>Create your account</h1>
-              <p className={styles.panelSub}>
-                Your pass and everything in it gets delivered to this account.
-              </p>
-              <button
-                type="button"
-                className={styles.providerBtn}
-                onClick={() => chooseProvider('epic')}
-              >
-                Continue with Epic Games
-              </button>
-              <button
-                type="button"
-                className={styles.providerBtn}
-                onClick={() => chooseProvider('zero')}
-              >
-                Continue with ZERO
-              </button>
-              <div className={styles.divider}>
-                <span>or</span>
-              </div>
-              <label className={styles.field}>
-                <span>Email</span>
-                <div className={styles.emailRow}>
-                  <Mail size={15} aria-hidden />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@wiami.city"
-                    autoComplete="email"
-                  />
+          {step === 1 &&
+            (user ? (
+              <section className={styles.panel} aria-label="Account">
+                <h1 className={styles.panelTitle}>Your account</h1>
+                <p className={styles.panelSub}>
+                  Your pass and everything in it gets delivered to this account.
+                </p>
+                <div className={styles.connected}>
+                  <span className={styles.connectedId} title={user.handle ?? undefined}>
+                    {user.zeroWalletAddress
+                      ? shortWallet(user.zeroWalletAddress)
+                      : (user.handle ?? 'Account')}
+                  </span>
+                  <button
+                    type="button"
+                    className={styles.disconnectBtn}
+                    onClick={() => void disconnect()}
+                  >
+                    Disconnect
+                  </button>
                 </div>
-              </label>
-              <button
-                type="button"
-                className="sci-btn sci-btn-primary"
-                disabled={!email.includes('@')}
-                onClick={() => chooseProvider('email')}
-              >
-                Continue with Email <ArrowUpRight size={16} strokeWidth={2.4} />
-              </button>
-              <p className={styles.loginLine}>
-                Already a Wilder?{' '}
-                <button type="button" onClick={() => chooseProvider('login')}>
-                  Log in
+                <button
+                  type="button"
+                  className="sci-btn sci-btn-primary"
+                  onClick={() => setStep(2)}
+                >
+                  Continue to payment <ArrowUpRight size={16} strokeWidth={2.4} />
                 </button>
-              </p>
-            </section>
-          )}
+              </section>
+            ) : (
+              <section className={styles.panel} aria-label="Create your account">
+                <h1 className={styles.panelTitle}>Create your account</h1>
+                <p className={styles.panelSub}>
+                  Your pass and everything in it gets delivered to this account.
+                </p>
+                <button
+                  type="button"
+                  className={styles.providerBtn}
+                  onClick={() => chooseProvider('epic')}
+                >
+                  Continue with Epic Games
+                </button>
+                <button
+                  type="button"
+                  className={styles.providerBtn}
+                  onClick={() => chooseProvider('zero')}
+                >
+                  Continue with ZERO
+                </button>
+                <div className={styles.divider}>
+                  <span>or</span>
+                </div>
+                <label className={styles.field}>
+                  <span>Email</span>
+                  <div className={styles.emailRow}>
+                    <Mail size={15} aria-hidden />
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="you@wiami.city"
+                      autoComplete="email"
+                    />
+                  </div>
+                </label>
+                <button
+                  type="button"
+                  className="sci-btn sci-btn-primary"
+                  disabled={!email.includes('@')}
+                  onClick={() => chooseProvider('email')}
+                >
+                  Continue with Email <ArrowUpRight size={16} strokeWidth={2.4} />
+                </button>
+                <p className={styles.loginLine}>
+                  Already a Wilder?{' '}
+                  <button type="button" onClick={openLogin}>
+                    Log in
+                  </button>
+                </p>
+              </section>
+            ))}
 
           {step === 2 && (
             <section className={styles.panel} aria-label="Payment">
               <h1 className={styles.panelTitle}>Payment</h1>
               <p className={styles.panelSub}>
-                {account && account !== 'login'
-                  ? `Delivering to ${account === 'epic' ? 'your Epic Games account' : account === 'zero' ? 'your ZERO account' : account}.`
-                  : 'Delivering to your account.'}
+                {user?.zeroWalletAddress
+                  ? `Delivering to ${shortWallet(user.zeroWalletAddress)}.`
+                  : account && account !== 'login'
+                    ? `Delivering to ${account === 'epic' ? 'your Epic Games account' : account === 'zero' ? 'your ZERO account' : account}.`
+                    : 'Delivering to your account.'}
               </p>
 
               {/* INTEGRATION POINT: this fieldset is replaced 1:1 by a Stripe

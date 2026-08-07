@@ -51,6 +51,39 @@
 }
 .providerBtn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.32); }
 
+.connected {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 13px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 1px;
+}
+.connectedId {
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #e6e8eb;
+  font-variant-numeric: tabular-nums;
+}
+.disconnectBtn {
+  background: none;
+  border: none;
+  color: rgba(230, 232, 235, 0.55);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.disconnectBtn:hover {
+  color: var(--ww-orange, #ff6434);
+}
+
 .divider { display: flex; align-items: center; gap: 14px; color: rgba(230,232,235,0.4); font-size: 12px; text-transform: uppercase; letter-spacing: 0.14em; }
 .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
 
