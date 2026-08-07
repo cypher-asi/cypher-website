@@ -10,9 +10,13 @@ interface AuthState {
   user: AuthUser | null;
   status: Status;
   isModalOpen: boolean;
+  /** Which form the modal shows: sign in, or create a new account. */
+  mode: 'login' | 'create';
   error: string | null;
 
   openLogin: () => void;
+  /** Open the modal in create-account mode. */
+  openCreate: () => void;
   /** Open the login modal showing an error (e.g. a failed social-login redirect). */
   openLoginWithError: (message: string) => void;
   closeLogin: () => void;
@@ -26,6 +30,8 @@ interface AuthState {
   verifyCode: (email: string, code: string) => Promise<boolean>;
   /** Email + password → sign in. Returns true on success. */
   signInWithPassword: (email: string, password: string) => Promise<boolean>;
+  /** Create a new ZERO account (email + password). Returns true on success. */
+  signUp: (email: string, password: string, name?: string) => Promise<boolean>;
   /** Full disconnect — clears the user and revokes the session. */
   disconnect: () => Promise<void>;
 }
@@ -38,10 +44,12 @@ export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   status: 'idle',
   isModalOpen: false,
+  mode: 'login',
   error: null,
 
-  openLogin: () => set({ isModalOpen: true, error: null }),
-  openLoginWithError: (msg) => set({ isModalOpen: true, error: msg }),
+  openLogin: () => set({ isModalOpen: true, mode: 'login', error: null }),
+  openCreate: () => set({ isModalOpen: true, mode: 'create', error: null }),
+  openLoginWithError: (msg) => set({ isModalOpen: true, mode: 'login', error: msg }),
   closeLogin: () => set({ isModalOpen: false, error: null }),
   clearError: () => set({ error: null }),
 
@@ -79,6 +87,18 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ status: 'submitting', error: null });
     try {
       const user = await client.loginWithPassword(email, password);
+      set({ user, status: 'idle', isModalOpen: false });
+      return true;
+    } catch (error) {
+      set({ status: 'idle', error: message(error) });
+      return false;
+    }
+  },
+
+  signUp: async (email, password, name) => {
+    set({ status: 'submitting', error: null });
+    try {
+      const user = await client.register(email, password, name);
       set({ user, status: 'idle', isModalOpen: false });
       return true;
     } catch (error) {
