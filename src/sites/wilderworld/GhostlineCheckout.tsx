@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowUpRight, Check, Lock, Mail } from 'lucide-react';
+import { ArrowUpRight, Check, Lock } from 'lucide-react';
 import { useAuthStore } from '@/features/auth/store';
 import type { GhostlinePass } from './ghostline';
 import styles from './GhostlineCheckout.module.css';
@@ -11,27 +11,17 @@ function shortWallet(address: string): string {
 }
 
 /** Two-step buy flow: (1) account, (2) card payment. Auth reuses the shared ZERO
- *  login: the Log in link opens the global modal (mounted by AuthProvider on Wilder
- *  World) and we react to the resulting session, so the pass is delivered to the
- *  signed-in account's zero wallet. The create-account buttons and the card fieldset
- *  (shaped for a Stripe Payment Element) are the remaining integration points. */
+ *  modal (mounted by AuthProvider on Wilder World): Create account / Log in open it,
+ *  and we react to the resulting session, delivering the pass to the signed-in
+ *  account's zero wallet. The card fieldset (shaped for a Stripe Payment Element) is
+ *  the remaining integration point. */
 export default function GhostlineCheckout({ pass }: { pass: GhostlinePass }) {
   const [step, setStep] = useState<1 | 2>(1);
-  const [email, setEmail] = useState('');
-  const [account, setAccount] = useState<string | null>(null);
 
   const user = useAuthStore((s) => s.user);
   const openLogin = useAuthStore((s) => s.openLogin);
+  const openCreate = useAuthStore((s) => s.openCreate);
   const disconnect = useAuthStore((s) => s.disconnect);
-
-  const chooseProvider = (provider: string) => {
-    // INTEGRATION POINT: replace with real auth.
-    //  - 'epic'  -> OAuth redirect to Epic Games (accounts.epicgames.com)
-    //  - 'zero'  -> OAuth redirect to ZERO
-    //  - 'email' -> create account / magic link for `email`
-    setAccount(provider === 'email' ? email : provider);
-    setStep(2);
-  };
 
   return (
     <div className={styles.page}>
@@ -89,64 +79,34 @@ export default function GhostlineCheckout({ pass }: { pass: GhostlinePass }) {
                     Disconnect
                   </button>
                 </div>
-                <button
-                  type="button"
-                  className="sci-btn sci-btn-primary"
-                  onClick={() => setStep(2)}
-                >
-                  Continue to payment <ArrowUpRight size={16} strokeWidth={2.4} />
-                </button>
+                {user.zeroWalletAddress ? (
+                  <button
+                    type="button"
+                    className="sci-btn sci-btn-primary"
+                    onClick={() => setStep(2)}
+                  >
+                    Continue to payment <ArrowUpRight size={16} strokeWidth={2.4} />
+                  </button>
+                ) : (
+                  <p className={styles.panelSub}>
+                    This ZERO account has no wallet yet, so it can&apos;t receive the vehicle. Disconnect
+                    and use an account with a wallet.
+                  </p>
+                )}
               </section>
             ) : (
-              <section className={styles.panel} aria-label="Create your account">
-                <h1 className={styles.panelTitle}>Create your account</h1>
+              <section className={styles.panel} aria-label="Account">
+                <h1 className={styles.panelTitle}>Your ZERO account</h1>
                 <p className={styles.panelSub}>
-                  Your pass and everything in it gets delivered to this account.
+                  Sign in, or create a ZERO account. Your pass and everything in it gets delivered to
+                  its wallet.
                 </p>
-                <button
-                  type="button"
-                  className={styles.providerBtn}
-                  onClick={() => chooseProvider('epic')}
-                >
-                  Continue with Epic Games
+                <button type="button" className="sci-btn sci-btn-primary" onClick={openCreate}>
+                  Create account <ArrowUpRight size={16} strokeWidth={2.4} />
                 </button>
-                <button
-                  type="button"
-                  className={styles.providerBtn}
-                  onClick={() => chooseProvider('zero')}
-                >
-                  Continue with ZERO
+                <button type="button" className={styles.providerBtn} onClick={openLogin}>
+                  Log in
                 </button>
-                <div className={styles.divider}>
-                  <span>or</span>
-                </div>
-                <label className={styles.field}>
-                  <span>Email</span>
-                  <div className={styles.emailRow}>
-                    <Mail size={15} aria-hidden />
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="you@wiami.city"
-                      autoComplete="email"
-                    />
-                  </div>
-                </label>
-                <button
-                  type="button"
-                  className="sci-btn sci-btn-primary"
-                  disabled={!email.includes('@')}
-                  onClick={() => chooseProvider('email')}
-                >
-                  Continue with Email <ArrowUpRight size={16} strokeWidth={2.4} />
-                </button>
-                <p className={styles.loginLine}>
-                  Already a Wilder?{' '}
-                  <button type="button" onClick={openLogin}>
-                    Log in
-                  </button>
-                </p>
               </section>
             ))}
 
@@ -156,9 +116,7 @@ export default function GhostlineCheckout({ pass }: { pass: GhostlinePass }) {
               <p className={styles.panelSub}>
                 {user?.zeroWalletAddress
                   ? `Delivering to ${shortWallet(user.zeroWalletAddress)}.`
-                  : account && account !== 'login'
-                    ? `Delivering to ${account === 'epic' ? 'your Epic Games account' : account === 'zero' ? 'your ZERO account' : account}.`
-                    : 'Delivering to your account.'}
+                  : 'Delivering to your account.'}
               </p>
 
               {/* INTEGRATION POINT: this fieldset is replaced 1:1 by a Stripe

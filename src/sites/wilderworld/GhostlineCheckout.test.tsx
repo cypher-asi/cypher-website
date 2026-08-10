@@ -5,12 +5,13 @@ import { render, screen, fireEvent } from '@testing-library/react';
 const h = vi.hoisted(() => ({
   user: null as null | { id: string; zeroWalletAddress: string | null; handle: string | null },
   openLogin: vi.fn(),
+  openCreate: vi.fn(),
   disconnect: vi.fn(),
 }));
 
 vi.mock('@/features/auth/store', () => ({
   useAuthStore: (selector: (s: unknown) => unknown) =>
-    selector({ user: h.user, openLogin: h.openLogin, disconnect: h.disconnect }),
+    selector({ user: h.user, openLogin: h.openLogin, openCreate: h.openCreate, disconnect: h.disconnect }),
 }));
 
 import GhostlineCheckout from './GhostlineCheckout';
@@ -21,28 +22,33 @@ const pass = GHOSTLINE_PASSES[0];
 beforeEach(() => {
   h.user = null;
   h.openLogin.mockReset();
+  h.openCreate.mockReset();
   h.disconnect.mockReset();
 });
 
 describe('GhostlineCheckout — account step auth', () => {
-  it('signed out: shows create-account and the Log in link opens the shared modal', () => {
+  it('signed out: Create account opens the create modal, Log in opens login', () => {
     render(<GhostlineCheckout pass={pass} />);
-    expect(screen.getByRole('heading', { name: 'Create your account' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Create account/i }));
+    expect(h.openCreate).toHaveBeenCalledTimes(1);
     fireEvent.click(screen.getByRole('button', { name: 'Log in' }));
     expect(h.openLogin).toHaveBeenCalledTimes(1);
   });
 
-  it('signed in: shows the zero wallet and Disconnect ends the session', () => {
+  it('signed in with a wallet: shows it, payment is reachable, Disconnect ends the session', () => {
     h.user = { id: 'u1', zeroWalletAddress: '0x1234567890abcdef1234567890abcdef12345678', handle: null };
     render(<GhostlineCheckout pass={pass} />);
     expect(screen.getByText('0x1234…5678')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Continue to payment/i })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Disconnect' }));
     expect(h.disconnect).toHaveBeenCalledTimes(1);
   });
 
-  it('signed in without a wallet: falls back to the account handle', () => {
+  it('signed in without a wallet: blocks payment and shows the no-wallet notice', () => {
     h.user = { id: 'u1', zeroWalletAddress: null, handle: 'wilder.zero' };
     render(<GhostlineCheckout pass={pass} />);
     expect(screen.getByText('wilder.zero')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Continue to payment/i })).not.toBeInTheDocument();
+    expect(screen.getByText(/no wallet yet/i)).toBeInTheDocument();
   });
 });

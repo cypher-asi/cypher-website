@@ -84,9 +84,6 @@
   color: var(--ww-orange, #ff6434);
 }
 
-.divider { display: flex; align-items: center; gap: 14px; color: rgba(230,232,235,0.4); font-size: 12px; text-transform: uppercase; letter-spacing: 0.14em; }
-.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
-
 .field { display: grid; gap: 7px; font-size: 12.5px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(230,232,235,0.55); }
 .field input {
   width: 100%; padding: 13px 14px;
@@ -99,14 +96,6 @@
 .field input:focus { outline: none; border-color: var(--ww-orange, #ff6434); }
 .field input::placeholder { color: rgba(230,232,235,0.3); }
 .fieldRow { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-
-.emailRow { position: relative; display: flex; align-items: center; }
-.emailRow svg { position: absolute; left: 14px; color: rgba(230,232,235,0.4); }
-.emailRow input { padding-left: 40px; }
-
-.loginLine { margin: 4px 0 0; font-size: 13.5px; color: rgba(230,232,235,0.55); }
-.loginLine button { background: none; border: none; color: #e6e8eb; font: inherit; font-weight: 600; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; padding: 0; }
-.loginLine button:hover { color: var(--ww-orange, #ff6434); }
 
 .secureLine { margin: 2px 0 0; display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: rgba(230,232,235,0.45); }
 .backLink { background: none; border: none; color: rgba(230,232,235,0.55); font: inherit; font-size: 13.5px; cursor: pointer; padding: 0; text-align: left; }
