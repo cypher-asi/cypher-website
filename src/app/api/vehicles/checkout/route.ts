@@ -3,10 +3,10 @@
  * delivers the NFT synchronously (the packs pattern): confirm a Stripe
  * PaymentIntent, then mint via ww-tx-server; refund on a mint failure.
  *
- * Body: { passId, paymentMethodId, stripeCustomerId? }. The recipient wallet and
- * user id are taken from the signed-in session, NOT the request body, so a caller
- * cannot mint to an arbitrary wallet or spoof identity. Price is resolved
- * server-side from the pass id.
+ * Body: { passId, paymentMethodId }. The recipient wallet, user id, and Stripe
+ * customer are all derived from the signed-in session (never the request body), so a
+ * caller cannot mint to an arbitrary wallet, charge another user's customer, or spoof
+ * identity. Price is resolved server-side from the pass id.
  */
 import { NextResponse } from 'next/server';
 import { getSessionToken } from '@/features/auth/session';
