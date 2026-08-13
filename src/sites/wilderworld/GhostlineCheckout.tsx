@@ -1,9 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowUpRight, Check, Lock } from 'lucide-react';
+import { ArrowUpRight, Check } from 'lucide-react';
+import { Elements } from '@stripe/react-stripe-js';
 import { useAuthStore } from '@/features/auth/store';
+import { getStripePromise } from '@/features/vehicles/stripe-client';
 import type { GhostlinePass } from './ghostline';
+import VehiclePaymentForm from './VehiclePaymentForm';
 import styles from './GhostlineCheckout.module.css';
 
 function shortWallet(address: string): string {
@@ -13,8 +16,8 @@ function shortWallet(address: string): string {
 /** Two-step buy flow: (1) account, (2) card payment. Auth reuses the shared ZERO
  *  modal (mounted by AuthProvider on Wilder World): Create account / Log in open it,
  *  and we react to the resulting session, delivering the pass to the signed-in
- *  account's zero wallet. The card fieldset (shaped for a Stripe Payment Element) is
- *  the remaining integration point. */
+ *  account's zero wallet. Step 2 is a Stripe Elements card field (VehiclePaymentForm)
+ *  that charges and delivers via /api/vehicles/checkout. */
 export default function GhostlineCheckout({ pass }: { pass: GhostlinePass }) {
   const [step, setStep] = useState<1 | 2>(1);
 
@@ -111,47 +114,13 @@ export default function GhostlineCheckout({ pass }: { pass: GhostlinePass }) {
             ))}
 
           {step === 2 && (
-            <section className={styles.panel} aria-label="Payment">
-              <h1 className={styles.panelTitle}>Payment</h1>
-              <p className={styles.panelSub}>
-                {user?.zeroWalletAddress
-                  ? `Delivering to ${shortWallet(user.zeroWalletAddress)}.`
-                  : 'Delivering to your account.'}
-              </p>
-
-              {/* INTEGRATION POINT: this fieldset is replaced 1:1 by a Stripe
-                  Payment Element (or the processor of choice). Markup mirrors
-                  its layout so the swap is invisible. */}
-              <label className={styles.field}>
-                <span>Card number</span>
-                <input inputMode="numeric" placeholder="1234 1234 1234 1234" autoComplete="cc-number" />
-              </label>
-              <div className={styles.fieldRow}>
-                <label className={styles.field}>
-                  <span>Expiry</span>
-                  <input inputMode="numeric" placeholder="MM / YY" autoComplete="cc-exp" />
-                </label>
-                <label className={styles.field}>
-                  <span>CVC</span>
-                  <input inputMode="numeric" placeholder="CVC" autoComplete="cc-csc" />
-                </label>
-              </div>
-              <label className={styles.field}>
-                <span>Name on card</span>
-                <input placeholder="Name on card" autoComplete="cc-name" />
-              </label>
-
-              <button type="button" className="sci-btn sci-btn-primary" disabled>
-                Payment unavailable <ArrowUpRight size={16} strokeWidth={2.4} />
-              </button>
-              <p className={styles.secureLine}>
-                <Lock size={12} aria-hidden /> Payment processing will be enabled after the
-                production integration is complete.
-              </p>
-              <button type="button" className={styles.backLink} onClick={() => setStep(1)}>
-                {'\u2039'} Back to account
-              </button>
-            </section>
+            <Elements stripe={getStripePromise()}>
+              <VehiclePaymentForm
+                pass={pass}
+                walletAddress={user?.zeroWalletAddress ?? null}
+                onBack={() => setStep(1)}
+              />
+            </Elements>
           )}
         </div>
       </div>
