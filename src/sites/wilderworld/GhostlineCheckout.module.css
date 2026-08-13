@@ -97,6 +97,16 @@
 .field input::placeholder { color: rgba(230,232,235,0.3); }
 .fieldRow { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
+.cardElement {
+  width: 100%;
+  padding: 13px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 1px;
+}
+.cardElement:focus-within { border-color: var(--ww-orange, #ff6434); }
+.payError { margin: 0; font-size: 13px; color: var(--ww-orange, #ff6434); }
+
 .secureLine { margin: 2px 0 0; display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: rgba(230,232,235,0.45); }
 .backLink { background: none; border: none; color: rgba(230,232,235,0.55); font: inherit; font-size: 13.5px; cursor: pointer; padding: 0; text-align: left; }
 .backLink:hover { color: #e6e8eb; }
