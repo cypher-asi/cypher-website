@@ -57,3 +57,10 @@ export function vehicleAdminSaleApiKey(): string {
   if (!key) throw new VehicleCheckoutError(503, 'VEHICLE_ADMIN_SALE_API_KEY is not configured');
   return key;
 }
+
+/** Base URL of the ZERO payments service (Stripe customer store). Fails loud if unset. */
+export function zeroPaymentsUrl(): string {
+  const url = process.env.ZERO_PAYMENTS_URL;
+  if (!url) throw new VehicleCheckoutError(503, 'ZERO_PAYMENTS_URL is not configured');
+  return url.replace(/\/+$/, '');
+}

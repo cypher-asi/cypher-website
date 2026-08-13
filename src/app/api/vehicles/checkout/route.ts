@@ -34,7 +34,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       );
     }
 
-    const { passId, paymentMethodId, stripeCustomerId } = await readJson(request);
+    const { passId, paymentMethodId } = await readJson(request);
     if (typeof passId !== 'string' || typeof paymentMethodId !== 'string') {
       return NextResponse.json({ error: 'passId and paymentMethodId are required' }, { status: 400 });
     }
@@ -42,9 +42,9 @@ export async function POST(request: Request): Promise<NextResponse> {
     const result = await processVehicleCheckout({
       passId,
       paymentMethodId,
-      stripeCustomerId: typeof stripeCustomerId === 'string' ? stripeCustomerId : undefined,
       walletAddress: user.zeroWalletAddress, // server-resolved, never from the client
       userId: user.id,
+      sessionToken: token, // server-side, to resolve the Stripe customer for this user
     });
 
     return NextResponse.json(result, { status: result.status === 'pending' ? 202 : 200 });

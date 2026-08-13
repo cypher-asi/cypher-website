@@ -2,12 +2,15 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 vi.mock('server-only', () => ({}));
 
-// Mock the Stripe client so no key or network is needed.
+// Mock the Stripe client and the customer resolver so no key/network is needed.
 const stripeMock = {
   paymentIntents: { create: vi.fn() },
   refunds: { create: vi.fn() },
 };
 vi.mock('./stripe', () => ({ getStripe: () => stripeMock }));
+
+const customerMock = vi.hoisted(() => ({ resolveStripeCustomer: vi.fn() }));
+vi.mock('./customer', () => customerMock);
 
 import { processVehicleCheckout } from './checkout';
 import { VehicleCheckoutError } from './config';
@@ -17,6 +20,7 @@ const INPUT = {
   paymentMethodId: 'pm_1',
   walletAddress: '0xBuyer',
   userId: 'user-1',
+  sessionToken: 'tok',
 };
 
 function fetchReturning(bodyObj: unknown, status = 200) {
@@ -26,6 +30,7 @@ function fetchReturning(bodyObj: unknown, status = 200) {
 beforeEach(() => {
   stripeMock.paymentIntents.create.mockReset();
   stripeMock.refunds.create.mockReset();
+  customerMock.resolveStripeCustomer.mockReset().mockResolvedValue('cus_9');
   vi.stubEnv('WW_TX_SERVER_URL', 'http://tx.local/');
   vi.stubEnv('VEHICLE_ADMIN_SALE_API_KEY', 'secret-key');
 });
@@ -36,25 +41,26 @@ afterEach(() => {
 });
 
 describe('processVehicleCheckout', () => {
-  it('charges the server-side price and mints on success', async () => {
+  it('resolves the customer server-side, charges the server price, and mints', async () => {
     stripeMock.paymentIntents.create.mockResolvedValueOnce({ id: 'pi_1', status: 'succeeded' });
     fetchReturning({ error: null, data: { transactionHash: '0xTX' } });
 
     const result = await processVehicleCheckout(INPUT);
 
     expect(result).toEqual({ status: 'delivered', transactionHash: '0xTX' });
+    // Customer resolved from the session token + payment method, never from the client.
+    expect(customerMock.resolveStripeCustomer).toHaveBeenCalledWith('tok', 'pm_1');
 
-    // Price + model id come from the catalogue, not the caller.
     const [charge] = stripeMock.paymentIntents.create.mock.calls[0];
     expect(charge).toMatchObject({
-      amount: 1900, // ghostline = $19
+      amount: 1900, // ghostline = $19, from the catalogue
       currency: 'usd',
       payment_method: 'pm_1',
       confirm: true,
+      customer: 'cus_9', // the server-resolved customer
       metadata: expect.objectContaining({ product: 'vehicle', modelId: '1', walletAddress: '0xBuyer' }),
     });
 
-    // Mint call carries the server-resolved wallet + model id and the api key.
     const [url, init] = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0];
     expect(url).toBe('http://tx.local/api/v2/transactions/vehicle-admin-sale');
     expect((init as RequestInit).headers).toMatchObject({ 'x-api-key': 'secret-key' });
@@ -65,19 +71,17 @@ describe('processVehicleCheckout', () => {
     });
   });
 
-  it('attaches an existing Stripe customer when provided', async () => {
-    stripeMock.paymentIntents.create.mockResolvedValueOnce({ id: 'pi_1', status: 'succeeded' });
-    fetchReturning({ error: null, data: { transactionHash: '0xTX' } });
-
-    await processVehicleCheckout({ ...INPUT, stripeCustomerId: 'cus_9' });
-
-    expect(stripeMock.paymentIntents.create.mock.calls[0][0]).toMatchObject({ customer: 'cus_9' });
+  it('does not charge if the customer cannot be resolved', async () => {
+    customerMock.resolveStripeCustomer.mockRejectedValueOnce(new VehicleCheckoutError(502, 'payments down'));
+    await expect(processVehicleCheckout(INPUT)).rejects.toMatchObject({ statusCode: 502 });
+    expect(stripeMock.paymentIntents.create).not.toHaveBeenCalled();
   });
 
-  it('rejects an unknown pass before charging anything', async () => {
+  it('rejects an unknown pass before touching payments', async () => {
     await expect(processVehicleCheckout({ ...INPUT, passId: 'nope' })).rejects.toMatchObject({
       statusCode: 400,
     });
+    expect(customerMock.resolveStripeCustomer).not.toHaveBeenCalled();
     expect(stripeMock.paymentIntents.create).not.toHaveBeenCalled();
   });
 

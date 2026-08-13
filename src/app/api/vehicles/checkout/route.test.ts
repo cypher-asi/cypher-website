@@ -35,14 +35,16 @@ beforeEach(() => {
 });
 
 describe('POST /api/vehicles/checkout', () => {
-  it('delivers and returns 200, using the session wallet (not the body)', async () => {
-    const res = await POST(post({ ...validBody, walletAddress: '0xATTACKER' }));
+  it('uses the session wallet + token and ignores client-supplied wallet/customer', async () => {
+    const res = await POST(post({ ...validBody, walletAddress: '0xATTACKER', stripeCustomerId: 'cus_victim' }));
 
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ status: 'delivered', transactionHash: '0xTX' });
     const arg = h.processVehicleCheckout.mock.calls[0][0];
     expect(arg.walletAddress).toBe('0xBuyer'); // from session, ignores body walletAddress
     expect(arg.userId).toBe('u1');
+    expect(arg.sessionToken).toBe('tok'); // session token forwarded for customer resolution
+    expect(arg).not.toHaveProperty('stripeCustomerId'); // client customer id is never trusted
   });
 
   it('returns 202 for a pending (paid, delivery slow) result', async () => {
