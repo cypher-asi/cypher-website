@@ -1,6 +1,7 @@
 import 'server-only';
 import { createHash } from 'node:crypto';
 import { getStripe } from './stripe';
+import { resolveStripeCustomer } from './customer';
 import {
   resolveVehiclePurchase,
   vehicleAdminSaleApiKey,
@@ -14,12 +15,12 @@ const MINT_TIMEOUT_MS = 60_000;
 export type CheckoutInput = {
   passId: string;
   paymentMethodId: string;
-  /** Existing Stripe customer for this ZERO user, resolved upstream (never created here). */
-  stripeCustomerId?: string;
   /** Recipient wallet, resolved SERVER-SIDE from the session — never from the client. */
   walletAddress: string;
   /** ZERO user id, for Stripe metadata. */
   userId: string;
+  /** The signed-in session's zos token, used to resolve the Stripe customer server-side. */
+  sessionToken: string;
 };
 
 export type CheckoutResult =
@@ -34,8 +35,12 @@ export type CheckoutResult =
  * buyer is told to contact support rather than retry.
  */
 export async function processVehicleCheckout(input: CheckoutInput): Promise<CheckoutResult> {
-  const { passId, paymentMethodId, stripeCustomerId, walletAddress, userId } = input;
+  const { passId, paymentMethodId, walletAddress, userId, sessionToken } = input;
   const purchase = resolveVehiclePurchase(passId); // server-side price + model id
+
+  // Resolve the buyer's Stripe customer from their authenticated session (keyed by
+  // zero-payments-server from the token, never a client-supplied id) before charging.
+  const stripeCustomerId = await resolveStripeCustomer(sessionToken, paymentMethodId);
   const stripe = getStripe();
 
   // Deterministic key so an accidental double-submit within a short window cannot
@@ -52,7 +57,7 @@ export async function processVehicleCheckout(input: CheckoutInput): Promise<Chec
       payment_method: paymentMethodId,
       confirm: true,
       description: `Wilder World Vehicle - ${purchase.passName}`,
-      ...(stripeCustomerId ? { customer: stripeCustomerId } : {}),
+      customer: stripeCustomerId,
       metadata: {
         product: 'vehicle',
         passId,
