@@ -14,6 +14,14 @@ vi.mock('@/features/auth/store', () => ({
     selector({ user: h.user, openLogin: h.openLogin, openCreate: h.openCreate, disconnect: h.disconnect }),
 }));
 
+// Stub Stripe Elements so step 2 renders without a real Stripe context.
+vi.mock('@stripe/react-stripe-js', () => ({
+  Elements: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useStripe: () => ({}),
+  useElements: () => ({ getElement: () => ({}) }),
+  CardElement: () => <div data-testid="card-element" />,
+}));
+
 import GhostlineCheckout from './GhostlineCheckout';
 import { GHOSTLINE_PASSES } from './ghostline';
 
@@ -50,5 +58,13 @@ describe('GhostlineCheckout — account step auth', () => {
     expect(screen.getByText('wilder.zero')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Continue to payment/i })).not.toBeInTheDocument();
     expect(screen.getByText(/no wallet yet/i)).toBeInTheDocument();
+  });
+
+  it('Continue to payment advances to the Stripe payment form', () => {
+    h.user = { id: 'u1', zeroWalletAddress: '0x1234567890abcdef1234567890abcdef12345678', handle: null };
+    render(<GhostlineCheckout pass={pass} />);
+    fireEvent.click(screen.getByRole('button', { name: /Continue to payment/i }));
+    expect(screen.getByTestId('card-element')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Pay \$19/ })).toBeInTheDocument();
   });
 });
