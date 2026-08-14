@@ -14,13 +14,15 @@ export type SavedCard = {
 };
 
 /**
- * List the authenticated buyer's saved cards via zero-payments-server. The cards
- * belong to the Stripe customer that the service derives from the bearer token (the
- * session's own zos token) — never anything the client supplies — so this only ever
- * returns the caller's own cards. Field-mapped to a narrow shape (no customer id or
- * other internals leak to the browser).
+ * Fetch the authenticated buyer's payment methods via zero-payments-server. The
+ * cards belong to the Stripe customer that the service derives from the bearer token
+ * (the session's own zos token) — never anything the client supplies — so this only
+ * ever returns the caller's own data. Cards are field-mapped to a narrow shape; the
+ * customer id is kept for server-side use and never handed to callers that expose it.
  */
-export async function listSavedCards(sessionToken: string): Promise<SavedCard[]> {
+async function fetchPaymentMethods(
+  sessionToken: string,
+): Promise<{ cards: SavedCard[]; stripeCustomerId: string | null }> {
   let res: Response;
   try {
     res = await fetch(`${zeroPaymentsUrl()}/api/payment-methods`, {
@@ -38,19 +40,45 @@ export async function listSavedCards(sessionToken: string): Promise<SavedCard[]>
 
   const body = (await res.json().catch(() => null)) as {
     paymentMethods?: SavedCard[];
+    stripeCustomerId?: string | null;
   } | null;
 
   if (!res.ok || !Array.isArray(body?.paymentMethods)) {
     throw new VehicleCheckoutError(502, 'Could not load your saved cards. Please try again.');
   }
 
-  return body.paymentMethods.map((c) => ({
-    id: c.id,
-    brand: c.brand,
-    last4: c.last4,
-    expMonth: c.expMonth,
-    expYear: c.expYear,
-  }));
+  return {
+    cards: body.paymentMethods.map((c) => ({
+      id: c.id,
+      brand: c.brand,
+      last4: c.last4,
+      expMonth: c.expMonth,
+      expYear: c.expYear,
+    })),
+    stripeCustomerId: body.stripeCustomerId ?? null,
+  };
+}
+
+/** List the buyer's saved cards for the checkout UI (browser-safe: no customer id). */
+export async function listSavedCards(sessionToken: string): Promise<SavedCard[]> {
+  return (await fetchPaymentMethods(sessionToken)).cards;
+}
+
+/**
+ * Resolve the Stripe customer for a charge on an ALREADY-SAVED card, verifying the
+ * card belongs to this buyer. Unlike resolveStripeCustomer this does NOT attach — the
+ * saved card is reused exactly as-is, so paying with a saved card never creates a
+ * duplicate payment method (the bug that re-attaching on every checkout causes).
+ */
+export async function resolveCustomerForSavedCard(
+  sessionToken: string,
+  paymentMethodId: string,
+): Promise<string> {
+  const { cards, stripeCustomerId } = await fetchPaymentMethods(sessionToken);
+  if (!stripeCustomerId || !cards.some((c) => c.id === paymentMethodId)) {
+    throw new VehicleCheckoutError(400, 'That saved card could not be found. Please pick another card.');
+  }
+  return stripeCustomerId;
 }
 
 /**
