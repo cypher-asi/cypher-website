@@ -23,9 +23,9 @@ vi.mock('@stripe/react-stripe-js', () => ({
 }));
 
 import GhostlineCheckout from './GhostlineCheckout';
-import { GHOSTLINE_PASSES } from './ghostline';
+import { VEHICLE_PASSES } from './vehicles';
 
-const pass = GHOSTLINE_PASSES[0];
+const pass = VEHICLE_PASSES[0];
 
 beforeEach(() => {
   h.user = null;

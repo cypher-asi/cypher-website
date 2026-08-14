@@ -1,5 +1,5 @@
 import 'server-only';
-import { getGhostlinePass } from '@/sites/wilderworld/ghostline';
+import { getVehiclePass } from '@/sites/wilderworld/vehicles';
 
 /**
  * On-chain model id for each vehicle pass. Model ids are 1-based (the Vehicle
@@ -36,7 +36,7 @@ export type VehiclePurchase = {
  * from our own catalogue. Throws (400) on an unknown pass.
  */
 export function resolveVehiclePurchase(passId: string): VehiclePurchase {
-  const pass = getGhostlinePass(passId);
+  const pass = getVehiclePass(passId);
   const modelId = MODEL_ID_BY_PASS[passId];
   if (!pass || !modelId) {
     throw new VehicleCheckoutError(400, `Unknown vehicle pass: ${passId}`);

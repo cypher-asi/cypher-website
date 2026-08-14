@@ -1,9 +1,10 @@
-/** Ghostline drop: two passes, identical access package, different vehicle.
- *  Single source of truth for /vehicles, /vehicles/[id], and checkout. */
+/** Vehicle passes for the Store (the Ghostline drop: Radeon Ghostline + Vera Solis) —
+ *  two passes, identical access package, different vehicle. Single source of truth for
+ *  /vehicles, /vehicles/[id], and checkout. */
 
 export type IncludeLine = { label: string; detail?: string; children?: IncludeLine[] };
 
-export type GhostlineMedia = {
+export type VehicleMedia = {
   type: 'video' | 'image';
   src: string;
   label: string;
@@ -11,7 +12,7 @@ export type GhostlineMedia = {
   poster?: string;
 };
 
-export type GhostlinePass = {
+export type VehiclePass = {
   id: string;
   name: string;
   tier: 'Standard' | 'Premium';
@@ -26,7 +27,7 @@ export type GhostlinePass = {
   thumbnailVideo?: string;
   thumbnailPoster?: string;
   poster: string;
-  media: GhostlineMedia[];
+  media: VehicleMedia[];
 };
 
 const PERSONAL_COMPOUND: IncludeLine = {
@@ -39,7 +40,7 @@ const PERSONAL_COMPOUND: IncludeLine = {
   ],
 };
 
-export const GHOSTLINE_PASSES: GhostlinePass[] = [
+export const VEHICLE_PASSES: VehiclePass[] = [
   {
     id: 'ghostline',
     name: 'Radeon Ghostline',
@@ -106,6 +107,6 @@ export const GHOSTLINE_PASSES: GhostlinePass[] = [
   },
 ];
 
-export function getGhostlinePass(id: string): GhostlinePass | undefined {
-  return GHOSTLINE_PASSES.find((p) => p.id === id);
+export function getVehiclePass(id: string): VehiclePass | undefined {
+  return VEHICLE_PASSES.find((p) => p.id === id);
 }
