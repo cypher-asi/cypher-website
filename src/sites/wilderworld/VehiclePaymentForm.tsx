@@ -1,13 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowUpRight, Check, Lock } from 'lucide-react';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import type { VehiclePass } from './vehicles';
+import type { SavedCard } from '@/features/vehicles/types';
 import styles from './VehicleCheckout.module.css';
 
 function shortWallet(address: string): string {
   return `${address.slice(0, 6)}…${address.slice(-4)}`;
+}
+
+function formatCard(card: SavedCard): string {
+  const brand = card.brand ? card.brand.charAt(0).toUpperCase() + card.brand.slice(1) : 'Card';
+  return `${brand} •••• ${card.last4}`;
 }
 
 type PayState =
@@ -45,25 +51,56 @@ export default function VehiclePaymentForm({
   const stripe = useStripe();
   const elements = useElements();
   const [state, setState] = useState<PayState>({ kind: 'idle' });
+  // null while the saved cards are loading; then the buyer's cards ([] if none).
+  const [cards, setCards] = useState<SavedCard[] | null>(null);
+  const [useNewCard, setUseNewCard] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    fetch('/api/vehicles/payment-methods')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (active) setCards(Array.isArray(data?.cards) ? data.cards : []);
+      })
+      .catch(() => {
+        // A failure to load saved cards is non-fatal — fall back to entering a new one.
+        if (active) setCards([]);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  // Prefill the most-recent saved card; the toggle switches to entering a new one.
+  const savedCard = cards && cards.length > 0 ? cards[0] : null;
+  const showSaved = savedCard !== null && !useNewCard;
 
   async function pay() {
-    if (!stripe || !elements) return;
-    const card = elements.getElement(CardElement);
-    if (!card) return;
+    let paymentMethodId: string;
+    let usingSaved = false;
 
-    setState({ kind: 'processing' });
-
-    const { error, paymentMethod } = await stripe.createPaymentMethod({ type: 'card', card });
-    if (error || !paymentMethod) {
-      setState({ kind: 'error', message: error?.message ?? 'Could not read your card. Please try again.' });
-      return;
+    if (showSaved && savedCard) {
+      paymentMethodId = savedCard.id; // reuse the saved card as-is (no re-attach)
+      usingSaved = true;
+      setState({ kind: 'processing' });
+    } else {
+      if (!stripe || !elements) return;
+      const card = elements.getElement(CardElement);
+      if (!card) return;
+      setState({ kind: 'processing' });
+      const { error, paymentMethod } = await stripe.createPaymentMethod({ type: 'card', card });
+      if (error || !paymentMethod) {
+        setState({ kind: 'error', message: error?.message ?? 'Could not read your card. Please try again.' });
+        return;
+      }
+      paymentMethodId = paymentMethod.id;
     }
 
     try {
       const res = await fetch('/api/vehicles/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ passId: pass.id, paymentMethodId: paymentMethod.id }),
+        body: JSON.stringify({ passId: pass.id, paymentMethodId, savedCard: usingSaved }),
       });
       const body = (await res.json().catch(() => null)) as {
         status?: string;
@@ -115,12 +152,43 @@ export default function VehiclePaymentForm({
         {walletAddress ? `Delivering to ${shortWallet(walletAddress)}.` : 'Delivering to your account.'}
       </p>
 
-      <label className={styles.field}>
-        <span>Card details</span>
-        <div className={styles.cardElement}>
-          <CardElement options={CARD_OPTIONS} />
+      {cards === null ? (
+        <p className={styles.panelSub}>Loading payment options…</p>
+      ) : showSaved && savedCard ? (
+        <div className={styles.field}>
+          <span>Card details</span>
+          <div className={styles.savedCard}>
+            <span className={styles.savedCardLabel}>{formatCard(savedCard)}</span>
+            <button
+              type="button"
+              className={styles.backLink}
+              onClick={() => setUseNewCard(true)}
+              disabled={processing}
+            >
+              Use a different card
+            </button>
+          </div>
         </div>
-      </label>
+      ) : (
+        <>
+          <label className={styles.field}>
+            <span>Card details</span>
+            <div className={styles.cardElement}>
+              <CardElement options={CARD_OPTIONS} />
+            </div>
+          </label>
+          {savedCard && (
+            <button
+              type="button"
+              className={styles.backLink}
+              onClick={() => setUseNewCard(false)}
+              disabled={processing}
+            >
+              {'‹'} Use your saved card
+            </button>
+          )}
+        </>
+      )}
 
       {state.kind === 'error' && (
         <p className={styles.payError} role="alert">
@@ -132,7 +200,7 @@ export default function VehiclePaymentForm({
         type="button"
         className="sci-btn sci-btn-primary"
         onClick={() => void pay()}
-        disabled={!stripe || processing}
+        disabled={cards === null || processing || (!showSaved && !stripe)}
       >
         {processing ? (
           'Processing…'

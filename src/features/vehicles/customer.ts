@@ -1,17 +1,11 @@
 import 'server-only';
 import { VehicleCheckoutError, zeroPaymentsUrl } from './config';
+import type { SavedCard } from './types';
 
 /** How long to wait on the payments service before giving up. */
 const PAYMENTS_TIMEOUT_MS = 15_000;
 
-/** A card the buyer has saved with zero-payments-server, safe to show/reuse. */
-export type SavedCard = {
-  id: string;
-  brand: string;
-  last4: string;
-  expMonth: number;
-  expYear: number;
-};
+export type { SavedCard };
 
 /**
  * Fetch the authenticated buyer's payment methods via zero-payments-server. The
