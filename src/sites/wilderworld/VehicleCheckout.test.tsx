@@ -32,6 +32,8 @@ beforeEach(() => {
   h.openLogin.mockReset();
   h.openCreate.mockReset();
   h.disconnect.mockReset();
+  // The payment form loads saved cards on mount; return none by default.
+  global.fetch = vi.fn(async () => new Response(JSON.stringify({ cards: [] }), { status: 200 })) as typeof fetch;
 });
 
 describe('VehicleCheckout — account step auth', () => {
@@ -60,11 +62,11 @@ describe('VehicleCheckout — account step auth', () => {
     expect(screen.getByText(/no wallet yet/i)).toBeInTheDocument();
   });
 
-  it('Continue to payment advances to the Stripe payment form', () => {
+  it('Continue to payment advances to the Stripe payment form', async () => {
     h.user = { id: 'u1', zeroWalletAddress: '0x1234567890abcdef1234567890abcdef12345678', handle: null };
     render(<VehicleCheckout pass={pass} />);
     fireEvent.click(screen.getByRole('button', { name: /Continue to payment/i }));
-    expect(screen.getByTestId('card-element')).toBeInTheDocument();
+    expect(await screen.findByTestId('card-element')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Pay \$19/ })).toBeInTheDocument();
   });
 });

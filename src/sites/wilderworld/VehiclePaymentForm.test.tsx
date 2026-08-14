@@ -15,8 +15,20 @@ import { VEHICLE_PASSES } from './vehicles';
 const pass = VEHICLE_PASSES[0]; // Radeon Ghostline, $19
 const onBack = vi.fn();
 
-function fetchReturning(bodyObj: unknown, status = 200) {
-  global.fetch = vi.fn(async () => new Response(JSON.stringify(bodyObj), { status })) as typeof fetch;
+const SAVED = { id: 'pm_saved', brand: 'visa', last4: '3112', expMonth: 3, expYear: 2031 };
+
+/** Route the mount GET (saved cards) and the checkout POST independently. */
+function mockFetch({ checkout, cards = [] }: { checkout?: { body: unknown; status?: number }; cards?: unknown[] }) {
+  global.fetch = vi.fn(async (url: RequestInfo | URL) => {
+    if (String(url).includes('/payment-methods')) {
+      return new Response(JSON.stringify({ cards }), { status: 200 });
+    }
+    return new Response(JSON.stringify(checkout?.body ?? {}), { status: checkout?.status ?? 200 });
+  }) as typeof fetch;
+}
+
+function checkoutCall() {
+  return (global.fetch as ReturnType<typeof vi.fn>).mock.calls.find(([u]) => String(u).includes('/checkout'));
 }
 
 function renderForm(wallet: string | null = '0x1234567890abcdef1234567890abcdef12345678') {
@@ -32,54 +44,81 @@ beforeEach(() => {
 afterEach(() => vi.restoreAllMocks());
 
 describe('VehiclePaymentForm', () => {
-  it('renders the card field, delivering line, and Pay button', () => {
+  it('renders the card field, delivering line, and Pay button (no saved cards)', async () => {
+    mockFetch({ cards: [] });
     renderForm();
-    expect(screen.getByTestId('card-element')).toBeInTheDocument();
+    expect(await screen.findByTestId('card-element')).toBeInTheDocument();
     expect(screen.getByText(/Delivering to 0x1234…5678/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Pay \$19/ })).toBeInTheDocument();
   });
 
-  it('tokenizes the card, posts passId + paymentMethodId, then shows delivered', async () => {
-    fetchReturning({ status: 'delivered', transactionHash: '0xTX' });
+  it('tokenizes a new card, posts passId + paymentMethodId + savedCard:false, shows delivered', async () => {
+    mockFetch({ cards: [], checkout: { body: { status: 'delivered', transactionHash: '0xTX' } } });
     renderForm();
-    fireEvent.click(screen.getByRole('button', { name: /Pay \$19/ }));
+    fireEvent.click(await screen.findByRole('button', { name: /Pay \$19/ }));
 
     await waitFor(() => expect(screen.getByText(/on its way to your wallet/i)).toBeInTheDocument());
     expect(stripeMock.createPaymentMethod).toHaveBeenCalledWith({ type: 'card', card: expect.anything() });
-    const [url, init] = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0];
-    expect(url).toBe('/api/vehicles/checkout');
-    expect(JSON.parse((init as RequestInit).body as string)).toEqual({
+    const init = checkoutCall()![1] as RequestInit;
+    expect(JSON.parse(init.body as string)).toEqual({
       passId: 'ghostline',
       paymentMethodId: 'pm_1',
+      savedCard: false,
     });
   });
 
-  it('shows the pending state on a 202', async () => {
-    fetchReturning({ status: 'pending', message: 'on its way' }, 202);
+  it('prefills the saved card and reuses it (savedCard:true, no tokenization)', async () => {
+    mockFetch({ cards: [SAVED], checkout: { body: { status: 'delivered', transactionHash: '0xTX' } } });
     renderForm();
+    expect(await screen.findByText(/Visa\b.*3112/)).toBeInTheDocument();
+    expect(screen.queryByTestId('card-element')).not.toBeInTheDocument();
+
     fireEvent.click(screen.getByRole('button', { name: /Pay \$19/ }));
+
+    await waitFor(() => expect(screen.getByText(/on its way to your wallet/i)).toBeInTheDocument());
+    expect(stripeMock.createPaymentMethod).not.toHaveBeenCalled(); // saved card is reused as-is
+    const init = checkoutCall()![1] as RequestInit;
+    expect(JSON.parse(init.body as string)).toEqual({
+      passId: 'ghostline',
+      paymentMethodId: 'pm_saved',
+      savedCard: true,
+    });
+  });
+
+  it('"Use a different card" reveals the card field to enter a new one', async () => {
+    mockFetch({ cards: [SAVED] });
+    renderForm();
+    fireEvent.click(await screen.findByRole('button', { name: /Use a different card/i }));
+    expect(await screen.findByTestId('card-element')).toBeInTheDocument();
+  });
+
+  it('shows the pending state on a 202', async () => {
+    mockFetch({ cards: [], checkout: { body: { status: 'pending', message: 'on its way' }, status: 202 } });
+    renderForm();
+    fireEvent.click(await screen.findByRole('button', { name: /Pay \$19/ }));
     await waitFor(() => expect(screen.getByText(/Payment received/i)).toBeInTheDocument());
   });
 
   it('shows the server error message on a failed charge', async () => {
-    fetchReturning({ error: 'Your card was declined.' }, 402);
+    mockFetch({ cards: [], checkout: { body: { error: 'Your card was declined.' }, status: 402 } });
     renderForm();
-    fireEvent.click(screen.getByRole('button', { name: /Pay \$19/ }));
+    fireEvent.click(await screen.findByRole('button', { name: /Pay \$19/ }));
     await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Your card was declined.'));
   });
 
-  it('surfaces a card tokenization error without calling the API', async () => {
+  it('surfaces a card tokenization error without calling checkout', async () => {
     stripeMock.createPaymentMethod.mockResolvedValueOnce({ error: { message: 'Invalid card number.' } });
-    global.fetch = vi.fn() as typeof fetch;
+    mockFetch({ cards: [] });
     renderForm();
-    fireEvent.click(screen.getByRole('button', { name: /Pay \$19/ }));
+    fireEvent.click(await screen.findByRole('button', { name: /Pay \$19/ }));
     await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Invalid card number.'));
-    expect(global.fetch).not.toHaveBeenCalled();
+    expect(checkoutCall()).toBeUndefined();
   });
 
-  it('Back to account calls onBack', () => {
+  it('Back to account calls onBack', async () => {
+    mockFetch({ cards: [] });
     renderForm();
-    fireEvent.click(screen.getByRole('button', { name: /Back to account/i }));
+    fireEvent.click(await screen.findByRole('button', { name: /Back to account/i }));
     expect(onBack).toHaveBeenCalledTimes(1);
   });
 });
