@@ -45,6 +45,15 @@ describe('POST /api/vehicles/checkout', () => {
     expect(arg.userId).toBe('u1');
     expect(arg.sessionToken).toBe('tok'); // session token forwarded for customer resolution
     expect(arg).not.toHaveProperty('stripeCustomerId'); // client customer id is never trusted
+    expect(arg.savedCard).toBe(false); // absent flag => attach a new card
+  });
+
+  it('forwards savedCard=true only when the client explicitly sets it', async () => {
+    await POST(post({ ...validBody, savedCard: true }));
+    expect(h.processVehicleCheckout.mock.calls[0][0].savedCard).toBe(true);
+
+    await POST(post({ ...validBody, savedCard: 'yes' })); // any non-true value => new card
+    expect(h.processVehicleCheckout.mock.calls[1][0].savedCard).toBe(false);
   });
 
   it('returns 202 for a pending (paid, delivery slow) result', async () => {

@@ -3,7 +3,9 @@
  * delivers the NFT synchronously (the packs pattern): confirm a Stripe
  * PaymentIntent, then mint via ww-tx-server; refund on a mint failure.
  *
- * Body: { passId, paymentMethodId }. The recipient wallet, user id, and Stripe
+ * Body: { passId, paymentMethodId, savedCard? }. savedCard=true reuses an
+ * already-saved card as-is (no re-attach); otherwise the card is attached. The
+ * recipient wallet, user id, and Stripe
  * customer are all derived from the signed-in session (never the request body), so a
  * caller cannot mint to an arbitrary wallet, charge another user's customer, or spoof
  * identity. Price is resolved server-side from the pass id.
@@ -34,7 +36,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       );
     }
 
-    const { passId, paymentMethodId } = await readJson(request);
+    const { passId, paymentMethodId, savedCard } = await readJson(request);
     if (typeof passId !== 'string' || typeof paymentMethodId !== 'string') {
       return NextResponse.json({ error: 'passId and paymentMethodId are required' }, { status: 400 });
     }
@@ -42,6 +44,8 @@ export async function POST(request: Request): Promise<NextResponse> {
     const result = await processVehicleCheckout({
       passId,
       paymentMethodId,
+      // Reuse only when the client explicitly flags a saved card; anything else attaches.
+      savedCard: savedCard === true,
       walletAddress: user.zeroWalletAddress, // server-resolved, never from the client
       userId: user.id,
       sessionToken: token, // server-side, to resolve the Stripe customer for this user

@@ -9,7 +9,10 @@ const stripeMock = {
 };
 vi.mock('./stripe', () => ({ getStripe: () => stripeMock }));
 
-const customerMock = vi.hoisted(() => ({ resolveStripeCustomer: vi.fn() }));
+const customerMock = vi.hoisted(() => ({
+  resolveStripeCustomer: vi.fn(),
+  resolveCustomerForSavedCard: vi.fn(),
+}));
 vi.mock('./customer', () => customerMock);
 
 import { processVehicleCheckout } from './checkout';
@@ -21,6 +24,7 @@ const INPUT = {
   walletAddress: '0xBuyer',
   userId: 'user-1',
   sessionToken: 'tok',
+  savedCard: false,
 };
 
 function fetchReturning(bodyObj: unknown, status = 200) {
@@ -31,6 +35,7 @@ beforeEach(() => {
   stripeMock.paymentIntents.create.mockReset();
   stripeMock.refunds.create.mockReset();
   customerMock.resolveStripeCustomer.mockReset().mockResolvedValue('cus_9');
+  customerMock.resolveCustomerForSavedCard.mockReset().mockResolvedValue('cus_saved');
   vi.stubEnv('WW_TX_SERVER_URL', 'http://tx.local/');
   vi.stubEnv('VEHICLE_ADMIN_SALE_API_KEY', 'secret-key');
 });
@@ -69,6 +74,22 @@ describe('processVehicleCheckout', () => {
       modelId: 1,
       quantity: 1,
     });
+    // New card: it attaches, and never takes the saved-card (no-attach) path.
+    expect(customerMock.resolveCustomerForSavedCard).not.toHaveBeenCalled();
+  });
+
+  it('reuses a saved card without re-attaching (savedCard=true)', async () => {
+    stripeMock.paymentIntents.create.mockResolvedValueOnce({ id: 'pi_1', status: 'succeeded' });
+    fetchReturning({ error: null, data: { transactionHash: '0xTX' } });
+
+    const result = await processVehicleCheckout({ ...INPUT, savedCard: true });
+
+    expect(result).toEqual({ status: 'delivered', transactionHash: '0xTX' });
+    // The saved-card resolver (no attach) is used; the attaching resolver is NOT.
+    expect(customerMock.resolveCustomerForSavedCard).toHaveBeenCalledWith('tok', 'pm_1');
+    expect(customerMock.resolveStripeCustomer).not.toHaveBeenCalled();
+    const [charge] = stripeMock.paymentIntents.create.mock.calls[0];
+    expect(charge).toMatchObject({ payment_method: 'pm_1', customer: 'cus_saved' });
   });
 
   it('does not charge if the customer cannot be resolved', async () => {

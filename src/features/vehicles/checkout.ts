@@ -1,7 +1,7 @@
 import 'server-only';
 import { createHash } from 'node:crypto';
 import { getStripe } from './stripe';
-import { resolveStripeCustomer } from './customer';
+import { resolveStripeCustomer, resolveCustomerForSavedCard } from './customer';
 import {
   resolveVehiclePurchase,
   vehicleAdminSaleApiKey,
@@ -21,6 +21,11 @@ export type CheckoutInput = {
   userId: string;
   /** The signed-in session's zos token, used to resolve the Stripe customer server-side. */
   sessionToken: string;
+  /**
+   * True when paymentMethodId is an already-saved card being reused (charge it as-is,
+   * no re-attach); false for a freshly-entered card (attach it so it saves for later).
+   */
+  savedCard: boolean;
 };
 
 export type CheckoutResult =
@@ -35,12 +40,15 @@ export type CheckoutResult =
  * buyer is told to contact support rather than retry.
  */
 export async function processVehicleCheckout(input: CheckoutInput): Promise<CheckoutResult> {
-  const { passId, paymentMethodId, walletAddress, userId, sessionToken } = input;
+  const { passId, paymentMethodId, walletAddress, userId, sessionToken, savedCard } = input;
   const purchase = resolveVehiclePurchase(passId); // server-side price + model id
 
   // Resolve the buyer's Stripe customer from their authenticated session (keyed by
   // zero-payments-server from the token, never a client-supplied id) before charging.
-  const stripeCustomerId = await resolveStripeCustomer(sessionToken, paymentMethodId);
+  // A saved card is reused without re-attaching (no duplicate); a new card is attached.
+  const stripeCustomerId = savedCard
+    ? await resolveCustomerForSavedCard(sessionToken, paymentMethodId)
+    : await resolveStripeCustomer(sessionToken, paymentMethodId);
   const stripe = getStripe();
 
   // Deterministic key so an accidental double-submit within a short window cannot
