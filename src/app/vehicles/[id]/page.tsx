@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import GhostlineDetail from '@/sites/wilderworld/GhostlineDetail';
+import VehicleDetail from '@/sites/wilderworld/VehicleDetail';
 import { VEHICLE_PASSES, getVehiclePass } from '@/sites/wilderworld/vehicles';
 
 export function generateStaticParams() {
@@ -25,5 +25,5 @@ export default async function VehiclePassPage({
   const { id } = await params;
   const pass = getVehiclePass(id);
   if (!pass) notFound();
-  return <GhostlineDetail pass={pass} />;
+  return <VehicleDetail pass={pass} />;
 }

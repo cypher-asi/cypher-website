@@ -7,7 +7,7 @@ import { useAuthStore } from '@/features/auth/store';
 import { getStripePromise } from '@/features/vehicles/stripe-client';
 import type { VehiclePass } from './vehicles';
 import VehiclePaymentForm from './VehiclePaymentForm';
-import styles from './GhostlineCheckout.module.css';
+import styles from './VehicleCheckout.module.css';
 
 function shortWallet(address: string): string {
   return `${address.slice(0, 6)}…${address.slice(-4)}`;
@@ -18,7 +18,7 @@ function shortWallet(address: string): string {
  *  and we react to the resulting session, delivering the pass to the signed-in
  *  account's zero wallet. Step 2 is a Stripe Elements card field (VehiclePaymentForm)
  *  that charges and delivers via /api/vehicles/checkout. */
-export default function GhostlineCheckout({ pass }: { pass: VehiclePass }) {
+export default function VehicleCheckout({ pass }: { pass: VehiclePass }) {
   const [step, setStep] = useState<1 | 2>(1);
 
   const user = useAuthStore((s) => s.user);

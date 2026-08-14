@@ -22,7 +22,7 @@ vi.mock('@stripe/react-stripe-js', () => ({
   CardElement: () => <div data-testid="card-element" />,
 }));
 
-import GhostlineCheckout from './GhostlineCheckout';
+import VehicleCheckout from './VehicleCheckout';
 import { VEHICLE_PASSES } from './vehicles';
 
 const pass = VEHICLE_PASSES[0];
@@ -34,9 +34,9 @@ beforeEach(() => {
   h.disconnect.mockReset();
 });
 
-describe('GhostlineCheckout — account step auth', () => {
+describe('VehicleCheckout — account step auth', () => {
   it('signed out: Create account opens the create modal, Log in opens login', () => {
-    render(<GhostlineCheckout pass={pass} />);
+    render(<VehicleCheckout pass={pass} />);
     fireEvent.click(screen.getByRole('button', { name: /Create account/i }));
     expect(h.openCreate).toHaveBeenCalledTimes(1);
     fireEvent.click(screen.getByRole('button', { name: 'Log in' }));
@@ -45,7 +45,7 @@ describe('GhostlineCheckout — account step auth', () => {
 
   it('signed in with a wallet: shows it, payment is reachable, Disconnect ends the session', () => {
     h.user = { id: 'u1', zeroWalletAddress: '0x1234567890abcdef1234567890abcdef12345678', handle: null };
-    render(<GhostlineCheckout pass={pass} />);
+    render(<VehicleCheckout pass={pass} />);
     expect(screen.getByText('0x1234…5678')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Continue to payment/i })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Disconnect' }));
@@ -54,7 +54,7 @@ describe('GhostlineCheckout — account step auth', () => {
 
   it('signed in without a wallet: blocks payment and shows the no-wallet notice', () => {
     h.user = { id: 'u1', zeroWalletAddress: null, handle: 'wilder.zero' };
-    render(<GhostlineCheckout pass={pass} />);
+    render(<VehicleCheckout pass={pass} />);
     expect(screen.getByText('wilder.zero')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Continue to payment/i })).not.toBeInTheDocument();
     expect(screen.getByText(/no wallet yet/i)).toBeInTheDocument();
@@ -62,7 +62,7 @@ describe('GhostlineCheckout — account step auth', () => {
 
   it('Continue to payment advances to the Stripe payment form', () => {
     h.user = { id: 'u1', zeroWalletAddress: '0x1234567890abcdef1234567890abcdef12345678', handle: null };
-    render(<GhostlineCheckout pass={pass} />);
+    render(<VehicleCheckout pass={pass} />);
     fireEvent.click(screen.getByRole('button', { name: /Continue to payment/i }));
     expect(screen.getByTestId('card-element')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Pay \$19/ })).toBeInTheDocument();
