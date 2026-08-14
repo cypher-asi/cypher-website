@@ -3,8 +3,9 @@
  * delivers the NFT synchronously (the packs pattern): confirm a Stripe
  * PaymentIntent, then mint via ww-tx-server; refund on a mint failure.
  *
- * Body: { passId, paymentMethodId, savedCard? }. savedCard=true reuses an
- * already-saved card as-is (no re-attach); otherwise the card is attached. The
+ * Body: { passId, paymentMethodId, email, savedCard? }. email is the receipt
+ * address (validated here, sent to Stripe as receipt_email). savedCard=true reuses
+ * an already-saved card as-is (no re-attach); otherwise the card is attached. The
  * recipient wallet, user id, and Stripe
  * customer are all derived from the signed-in session (never the request body), so a
  * caller cannot mint to an arbitrary wallet, charge another user's customer, or spoof
@@ -18,6 +19,11 @@ import { processVehicleCheckout } from '@/features/vehicles/checkout';
 import { VehicleCheckoutError } from '@/features/vehicles/config';
 
 export const dynamic = 'force-dynamic';
+
+/** A pragmatic "looks like an email" check; Stripe is the real validator on receipt_email. */
+function isLikelyEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
 
 export async function POST(request: Request): Promise<NextResponse> {
   const forged = crossOriginRejection(request);
@@ -36,9 +42,12 @@ export async function POST(request: Request): Promise<NextResponse> {
       );
     }
 
-    const { passId, paymentMethodId, savedCard } = await readJson(request);
+    const { passId, paymentMethodId, savedCard, email } = await readJson(request);
     if (typeof passId !== 'string' || typeof paymentMethodId !== 'string') {
       return NextResponse.json({ error: 'passId and paymentMethodId are required' }, { status: 400 });
+    }
+    if (typeof email !== 'string' || !isLikelyEmail(email)) {
+      return NextResponse.json({ error: 'A valid email is required for your receipt' }, { status: 400 });
     }
 
     const result = await processVehicleCheckout({
@@ -46,6 +55,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       paymentMethodId,
       // Reuse only when the client explicitly flags a saved card; anything else attaches.
       savedCard: savedCard === true,
+      email: email.trim(),
       walletAddress: user.zeroWalletAddress, // server-resolved, never from the client
       userId: user.id,
       sessionToken: token, // server-side, to resolve the Stripe customer for this user

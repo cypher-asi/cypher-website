@@ -25,6 +25,7 @@ const INPUT = {
   userId: 'user-1',
   sessionToken: 'tok',
   savedCard: false,
+  email: 'buyer@example.com',
 };
 
 function fetchReturning(bodyObj: unknown, status = 200) {
@@ -63,6 +64,7 @@ describe('processVehicleCheckout', () => {
       payment_method: 'pm_1',
       confirm: true,
       customer: 'cus_9', // the server-resolved customer
+      receipt_email: 'buyer@example.com', // the buyer's receipt email
       metadata: expect.objectContaining({ product: 'vehicle', modelId: '1', walletAddress: '0xBuyer' }),
     });
 

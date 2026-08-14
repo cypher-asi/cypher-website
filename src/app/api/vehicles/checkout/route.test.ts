@@ -26,7 +26,7 @@ function post(body: unknown, headers: Record<string, string> = {}): Request {
   });
 }
 
-const validBody = { passId: 'ghostline', paymentMethodId: 'pm_1' };
+const validBody = { passId: 'ghostline', paymentMethodId: 'pm_1', email: 'buyer@example.com' };
 
 beforeEach(() => {
   h.getSessionToken.mockReset().mockReturnValue('tok');
@@ -80,6 +80,17 @@ describe('POST /api/vehicles/checkout', () => {
     const res = await POST(post({ passId: 'ghostline' }));
     expect(res.status).toBe(400);
     expect(h.processVehicleCheckout).not.toHaveBeenCalled();
+  });
+
+  it('rejects a missing or invalid receipt email (400) and forwards a valid one trimmed', async () => {
+    for (const email of [undefined, '', 'not-an-email']) {
+      const res = await POST(post({ passId: 'ghostline', paymentMethodId: 'pm_1', email }));
+      expect(res.status).toBe(400);
+    }
+    expect(h.processVehicleCheckout).not.toHaveBeenCalled();
+
+    await POST(post({ ...validBody, email: '  buyer@example.com  ' }));
+    expect(h.processVehicleCheckout.mock.calls[0][0].email).toBe('buyer@example.com');
   });
 
   it('maps a VehicleCheckoutError to its status', async () => {
