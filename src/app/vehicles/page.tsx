@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import GhostlineStore from '@/sites/wilderworld/GhostlineStore';
+import VehicleStore from '@/sites/wilderworld/VehicleStore';
 
 export const metadata: Metadata = {
   title: 'Ghostline — Wilder World',
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function GhostlinePage() {
-  return <GhostlineStore />;
+  return <VehicleStore />;
 }

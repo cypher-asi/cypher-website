@@ -5,14 +5,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpRight, Check, ExternalLink } from 'lucide-react';
 import type { VehiclePass } from './vehicles';
-import styles from './GhostlineStore.module.css';
+import styles from './VehicleStore.module.css';
 
 const EARLY_ACCESS_URL =
   'https://store.epicgames.com/p/wilder-world-wilder-world-alpha-b4ccf8?lang=en-US';
 
 /** Pass detail page. The media gallery stays within the selected offer so the
  * shopper continues forward through the purchase funnel. */
-export default function GhostlineDetail({ pass }: { pass: VehiclePass }) {
+export default function VehicleDetail({ pass }: { pass: VehiclePass }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const activeMedia = pass.media[activeIndex];
 

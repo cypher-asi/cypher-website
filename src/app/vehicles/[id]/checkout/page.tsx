@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import GhostlineCheckout from '@/sites/wilderworld/GhostlineCheckout';
+import VehicleCheckout from '@/sites/wilderworld/VehicleCheckout';
 import { VEHICLE_PASSES, getVehiclePass } from '@/sites/wilderworld/vehicles';
 
 export function generateStaticParams() {
@@ -17,7 +17,7 @@ export async function generateMetadata({
   return { title: pass ? `Checkout — ${pass.name}` : 'Checkout — Ghostline' };
 }
 
-export default async function GhostlineCheckoutPage({
+export default async function VehicleCheckoutPage({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -25,5 +25,5 @@ export default async function GhostlineCheckoutPage({
   const { id } = await params;
   const pass = getVehiclePass(id);
   if (!pass) notFound();
-  return <GhostlineCheckout pass={pass} />;
+  return <VehicleCheckout pass={pass} />;
 }

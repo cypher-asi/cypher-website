@@ -7,11 +7,11 @@ import { ArrowUpRight } from 'lucide-react';
 import { SectionHeader } from '@/components/SectionHeader';
 import LazyVideo from './LazyVideo';
 import { VEHICLE_PASSES } from './vehicles';
-import styles from './GhostlineStore.module.css';
+import styles from './VehicleStore.module.css';
 
 /** Ghostline drop storefront: the offer rail changes the featured content in
  * place. Only the featured hero and its Buy Now action enter the offer funnel. */
-export default function GhostlineStore() {
+export default function VehicleStore() {
   const [previewId, setPreviewId] = useState(VEHICLE_PASSES[0].id);
   const featured =
     VEHICLE_PASSES.find((p) => p.id === previewId) ?? VEHICLE_PASSES[0];

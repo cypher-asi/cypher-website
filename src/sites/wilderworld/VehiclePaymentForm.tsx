@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { ArrowUpRight, Check, Lock } from 'lucide-react';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import type { VehiclePass } from './vehicles';
-import styles from './GhostlineCheckout.module.css';
+import styles from './VehicleCheckout.module.css';
 
 function shortWallet(address: string): string {
   return `${address.slice(0, 6)}…${address.slice(-4)}`;
