@@ -6,6 +6,6 @@ export const metadata: Metadata = {
   description: 'Two cars. One compound. Choose your way into Wiami.',
 };
 
-export default function GhostlinePage() {
+export default function VehiclesPage() {
   return <VehicleStore />;
 }
