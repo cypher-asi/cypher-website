@@ -5,6 +5,7 @@ import { ArrowUpRight, Check, Lock } from 'lucide-react';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import type { VehiclePass } from './vehicles';
 import type { SavedCard } from '@/features/vehicles/types';
+import { zscanTxUrl } from '@/lib/explorer';
 import styles from './VehicleCheckout.module.css';
 
 function shortWallet(address: string): string {
@@ -19,7 +20,7 @@ function formatCard(card: SavedCard): string {
 type PayState =
   | { kind: 'idle' }
   | { kind: 'processing' }
-  | { kind: 'delivered' }
+  | { kind: 'delivered'; transactionHash?: string }
   | { kind: 'pending'; message: string }
   | { kind: 'error'; message: string };
 
@@ -114,10 +115,11 @@ export default function VehiclePaymentForm({
         status?: string;
         message?: string;
         error?: string;
+        transactionHash?: string;
       } | null;
 
       if (res.ok && body?.status === 'delivered') {
-        setState({ kind: 'delivered' });
+        setState({ kind: 'delivered', transactionHash: body.transactionHash });
       } else if (res.status === 202 && body?.status === 'pending') {
         setState({
           kind: 'pending',
@@ -138,6 +140,17 @@ export default function VehiclePaymentForm({
         <p className={styles.panelSub}>
           <Check size={14} strokeWidth={3} aria-hidden /> Your {pass.name} is on its way to your wallet.
         </p>
+        {state.transactionHash && (
+          <a
+            className={styles.explorerLink}
+            href={zscanTxUrl(state.transactionHash)}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View transaction on zscan
+            <ArrowUpRight size={13} />
+          </a>
+        )}
       </section>
     );
   }
