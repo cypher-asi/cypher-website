@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { ArrowUpRight, Check, Lock } from 'lucide-react';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import type { GhostlinePass } from './ghostline';
+import type { VehiclePass } from './vehicles';
 import styles from './GhostlineCheckout.module.css';
 
 function shortWallet(address: string): string {
@@ -38,7 +38,7 @@ export default function VehiclePaymentForm({
   walletAddress,
   onBack,
 }: {
-  pass: GhostlinePass;
+  pass: VehiclePass;
   walletAddress: string | null;
   onBack: () => void;
 }) {

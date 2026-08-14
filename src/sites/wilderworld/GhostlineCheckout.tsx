@@ -5,7 +5,7 @@ import { ArrowUpRight, Check } from 'lucide-react';
 import { Elements } from '@stripe/react-stripe-js';
 import { useAuthStore } from '@/features/auth/store';
 import { getStripePromise } from '@/features/vehicles/stripe-client';
-import type { GhostlinePass } from './ghostline';
+import type { VehiclePass } from './vehicles';
 import VehiclePaymentForm from './VehiclePaymentForm';
 import styles from './GhostlineCheckout.module.css';
 
@@ -18,7 +18,7 @@ function shortWallet(address: string): string {
  *  and we react to the resulting session, delivering the pass to the signed-in
  *  account's zero wallet. Step 2 is a Stripe Elements card field (VehiclePaymentForm)
  *  that charges and delivers via /api/vehicles/checkout. */
-export default function GhostlineCheckout({ pass }: { pass: GhostlinePass }) {
+export default function GhostlineCheckout({ pass }: { pass: VehiclePass }) {
   const [step, setStep] = useState<1 | 2>(1);
 
   const user = useAuthStore((s) => s.user);

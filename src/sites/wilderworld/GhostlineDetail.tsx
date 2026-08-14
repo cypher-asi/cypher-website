@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpRight, Check, ExternalLink } from 'lucide-react';
-import type { GhostlinePass } from './ghostline';
+import type { VehiclePass } from './vehicles';
 import styles from './GhostlineStore.module.css';
 
 const EARLY_ACCESS_URL =
@@ -12,7 +12,7 @@ const EARLY_ACCESS_URL =
 
 /** Pass detail page. The media gallery stays within the selected offer so the
  * shopper continues forward through the purchase funnel. */
-export default function GhostlineDetail({ pass }: { pass: GhostlinePass }) {
+export default function GhostlineDetail({ pass }: { pass: VehiclePass }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const activeMedia = pass.media[activeIndex];
 

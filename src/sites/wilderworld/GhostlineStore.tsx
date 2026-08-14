@@ -6,15 +6,15 @@ import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { SectionHeader } from '@/components/SectionHeader';
 import LazyVideo from './LazyVideo';
-import { GHOSTLINE_PASSES } from './ghostline';
+import { VEHICLE_PASSES } from './vehicles';
 import styles from './GhostlineStore.module.css';
 
 /** Ghostline drop storefront: the offer rail changes the featured content in
  * place. Only the featured hero and its Buy Now action enter the offer funnel. */
 export default function GhostlineStore() {
-  const [previewId, setPreviewId] = useState(GHOSTLINE_PASSES[0].id);
+  const [previewId, setPreviewId] = useState(VEHICLE_PASSES[0].id);
   const featured =
-    GHOSTLINE_PASSES.find((p) => p.id === previewId) ?? GHOSTLINE_PASSES[0];
+    VEHICLE_PASSES.find((p) => p.id === previewId) ?? VEHICLE_PASSES[0];
 
   return (
     <div className={styles.page}>
@@ -44,7 +44,7 @@ export default function GhostlineStore() {
         </Link>
 
         <div className={styles.rail}>
-          {GHOSTLINE_PASSES.map((pass, index) => (
+          {VEHICLE_PASSES.map((pass, index) => (
             <button
               type="button"
               key={pass.id}
@@ -81,7 +81,7 @@ export default function GhostlineStore() {
           subtitle="Both passes carry the same full compound access for three months. The only question is what you drive out of the garage."
         />
         <div className={styles.passGrid}>
-          {GHOSTLINE_PASSES.map((pass) => (
+          {VEHICLE_PASSES.map((pass) => (
             <Link key={pass.id} href={`/vehicles/${pass.id}`} className={styles.passCard}>
               <span className={styles.passMedia}>
                 <LazyVideo

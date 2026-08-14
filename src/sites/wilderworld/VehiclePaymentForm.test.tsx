@@ -10,9 +10,9 @@ vi.mock('@stripe/react-stripe-js', () => ({
 }));
 
 import VehiclePaymentForm from './VehiclePaymentForm';
-import { GHOSTLINE_PASSES } from './ghostline';
+import { VEHICLE_PASSES } from './vehicles';
 
-const pass = GHOSTLINE_PASSES[0]; // Radeon Ghostline, $19
+const pass = VEHICLE_PASSES[0]; // Radeon Ghostline, $19
 const onBack = vi.fn();
 
 function fetchReturning(bodyObj: unknown, status = 200) {
