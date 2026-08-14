@@ -67,6 +67,11 @@ describe('VehiclePaymentForm', () => {
 
     await waitFor(() => expect(screen.getByText(/on its way to your wallet/i)).toBeInTheDocument());
     expect(stripeMock.createPaymentMethod).toHaveBeenCalledWith({ type: 'card', card: expect.anything() });
+    // The delivered panel links the on-chain tx on zscan.
+    expect(screen.getByRole('link', { name: /View transaction on zscan/i })).toHaveAttribute(
+      'href',
+      'https://zscan.live/tx/0xTX',
+    );
     const init = checkoutCall()![1] as RequestInit;
     expect(JSON.parse(init.body as string)).toEqual({
       passId: 'ghostline',
