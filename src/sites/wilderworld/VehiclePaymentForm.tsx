@@ -51,9 +51,12 @@ export default function VehiclePaymentForm({
   const stripe = useStripe();
   const elements = useElements();
   const [state, setState] = useState<PayState>({ kind: 'idle' });
+  const [email, setEmail] = useState('');
   // null while the saved cards are loading; then the buyer's cards ([] if none).
   const [cards, setCards] = useState<SavedCard[] | null>(null);
   const [useNewCard, setUseNewCard] = useState(false);
+
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
   useEffect(() => {
     let active = true;
@@ -76,6 +79,11 @@ export default function VehiclePaymentForm({
   const showSaved = savedCard !== null && !useNewCard;
 
   async function pay() {
+    if (!emailValid) {
+      setState({ kind: 'error', message: 'Enter a valid email for your receipt.' });
+      return;
+    }
+
     let paymentMethodId: string;
     let usingSaved = false;
 
@@ -100,7 +108,7 @@ export default function VehiclePaymentForm({
       const res = await fetch('/api/vehicles/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ passId: pass.id, paymentMethodId, savedCard: usingSaved }),
+        body: JSON.stringify({ passId: pass.id, paymentMethodId, savedCard: usingSaved, email: email.trim() }),
       });
       const body = (await res.json().catch(() => null)) as {
         status?: string;
@@ -151,6 +159,20 @@ export default function VehiclePaymentForm({
       <p className={styles.panelSub}>
         {walletAddress ? `Delivering to ${shortWallet(walletAddress)}.` : 'Delivering to your account.'}
       </p>
+
+      <label className={styles.field}>
+        <span>Email</span>
+        <input
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          placeholder="you@example.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          disabled={processing}
+        />
+      </label>
+      <p className={styles.hint}>Where your payment receipt is sent — not your on-chain confirmation.</p>
 
       {cards === null ? (
         <p className={styles.panelSub}>Loading payment options…</p>

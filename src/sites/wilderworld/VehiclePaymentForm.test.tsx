@@ -35,6 +35,10 @@ function renderForm(wallet: string | null = '0x1234567890abcdef1234567890abcdef1
   return render(<VehiclePaymentForm pass={pass} walletAddress={wallet} onBack={onBack} />);
 }
 
+function fillEmail(value = 'buyer@example.com') {
+  fireEvent.change(screen.getByPlaceholderText('you@example.com'), { target: { value } });
+}
+
 beforeEach(() => {
   stripeMock.createPaymentMethod.mockReset().mockResolvedValue({ paymentMethod: { id: 'pm_1' } });
   elementsMock.getElement.mockReturnValue({});
@@ -48,14 +52,18 @@ describe('VehiclePaymentForm', () => {
     mockFetch({ cards: [] });
     renderForm();
     expect(await screen.findByTestId('card-element')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('you@example.com')).toBeInTheDocument();
+    expect(screen.getByText(/payment receipt is sent/i)).toBeInTheDocument();
     expect(screen.getByText(/Delivering to 0x1234…5678/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Pay \$19/ })).toBeInTheDocument();
   });
 
-  it('tokenizes a new card, posts passId + paymentMethodId + savedCard:false, shows delivered', async () => {
+  it('tokenizes a new card, posts passId + paymentMethodId + savedCard:false + email, shows delivered', async () => {
     mockFetch({ cards: [], checkout: { body: { status: 'delivered', transactionHash: '0xTX' } } });
     renderForm();
-    fireEvent.click(await screen.findByRole('button', { name: /Pay \$19/ }));
+    await screen.findByTestId('card-element');
+    fillEmail();
+    fireEvent.click(screen.getByRole('button', { name: /Pay \$19/ }));
 
     await waitFor(() => expect(screen.getByText(/on its way to your wallet/i)).toBeInTheDocument());
     expect(stripeMock.createPaymentMethod).toHaveBeenCalledWith({ type: 'card', card: expect.anything() });
@@ -64,7 +72,18 @@ describe('VehiclePaymentForm', () => {
       passId: 'ghostline',
       paymentMethodId: 'pm_1',
       savedCard: false,
+      email: 'buyer@example.com',
     });
+  });
+
+  it('blocks checkout until a valid receipt email is entered', async () => {
+    mockFetch({ cards: [], checkout: { body: { status: 'delivered' } } });
+    renderForm();
+    fillEmail('not-an-email');
+    fireEvent.click(await screen.findByRole('button', { name: /Pay \$19/ }));
+    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent(/valid email/i));
+    expect(checkoutCall()).toBeUndefined();
+    expect(stripeMock.createPaymentMethod).not.toHaveBeenCalled();
   });
 
   it('prefills the saved card and reuses it (savedCard:true, no tokenization)', async () => {
@@ -73,6 +92,7 @@ describe('VehiclePaymentForm', () => {
     expect(await screen.findByText(/Visa\b.*3112/)).toBeInTheDocument();
     expect(screen.queryByTestId('card-element')).not.toBeInTheDocument();
 
+    fillEmail();
     fireEvent.click(screen.getByRole('button', { name: /Pay \$19/ }));
 
     await waitFor(() => expect(screen.getByText(/on its way to your wallet/i)).toBeInTheDocument());
@@ -82,6 +102,7 @@ describe('VehiclePaymentForm', () => {
       passId: 'ghostline',
       paymentMethodId: 'pm_saved',
       savedCard: true,
+      email: 'buyer@example.com',
     });
   });
 
@@ -95,14 +116,18 @@ describe('VehiclePaymentForm', () => {
   it('shows the pending state on a 202', async () => {
     mockFetch({ cards: [], checkout: { body: { status: 'pending', message: 'on its way' }, status: 202 } });
     renderForm();
-    fireEvent.click(await screen.findByRole('button', { name: /Pay \$19/ }));
+    await screen.findByTestId('card-element');
+    fillEmail();
+    fireEvent.click(screen.getByRole('button', { name: /Pay \$19/ }));
     await waitFor(() => expect(screen.getByText(/Payment received/i)).toBeInTheDocument());
   });
 
   it('shows the server error message on a failed charge', async () => {
     mockFetch({ cards: [], checkout: { body: { error: 'Your card was declined.' }, status: 402 } });
     renderForm();
-    fireEvent.click(await screen.findByRole('button', { name: /Pay \$19/ }));
+    await screen.findByTestId('card-element');
+    fillEmail();
+    fireEvent.click(screen.getByRole('button', { name: /Pay \$19/ }));
     await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Your card was declined.'));
   });
 
@@ -110,7 +135,9 @@ describe('VehiclePaymentForm', () => {
     stripeMock.createPaymentMethod.mockResolvedValueOnce({ error: { message: 'Invalid card number.' } });
     mockFetch({ cards: [] });
     renderForm();
-    fireEvent.click(await screen.findByRole('button', { name: /Pay \$19/ }));
+    await screen.findByTestId('card-element');
+    fillEmail();
+    fireEvent.click(screen.getByRole('button', { name: /Pay \$19/ }));
     await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Invalid card number.'));
     expect(checkoutCall()).toBeUndefined();
   });

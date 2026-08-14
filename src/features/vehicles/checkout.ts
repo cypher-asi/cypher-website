@@ -26,6 +26,8 @@ export type CheckoutInput = {
    * no re-attach); false for a freshly-entered card (attach it so it saves for later).
    */
   savedCard: boolean;
+  /** Where Stripe emails the payment receipt (the buyer entered it; validated by the route). */
+  email: string;
 };
 
 export type CheckoutResult =
@@ -40,7 +42,7 @@ export type CheckoutResult =
  * buyer is told to contact support rather than retry.
  */
 export async function processVehicleCheckout(input: CheckoutInput): Promise<CheckoutResult> {
-  const { passId, paymentMethodId, walletAddress, userId, sessionToken, savedCard } = input;
+  const { passId, paymentMethodId, walletAddress, userId, sessionToken, savedCard, email } = input;
   const purchase = resolveVehiclePurchase(passId); // server-side price + model id
 
   // Resolve the buyer's Stripe customer from their authenticated session (keyed by
@@ -66,6 +68,7 @@ export async function processVehicleCheckout(input: CheckoutInput): Promise<Chec
       confirm: true,
       description: `Wilder World Vehicle - ${purchase.passName}`,
       customer: stripeCustomerId,
+      receipt_email: email,
       metadata: {
         product: 'vehicle',
         passId,
