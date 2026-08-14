@@ -17,7 +17,7 @@ export async function generateMetadata({
   return { title: pass ? `${pass.name} — Wilder World` : 'Ghostline — Wilder World' };
 }
 
-export default async function VehiclePassPage({
+export default async function VehiclePage({
   params,
 }: {
   params: Promise<{ id: string }>;
