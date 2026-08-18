@@ -2,12 +2,14 @@
 
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { ArrowDown, ArrowUpRight, ChevronRight } from 'lucide-react';
 import { TypewriterText } from './TypewriterText';
 import type { TypewriterSegment } from './TypewriterText';
 import { SectionNav } from './SectionNav';
 import { scrollToSection } from './scrollToSection';
+import { navConnectContext } from './navConnect';
+import { ZeroAuthButton } from '@/features/auth/ZeroAuthButton';
 import type { NavSection, PageSection } from '@/lib/companies/types';
 import styles from './Nav.module.css';
 
@@ -387,6 +389,9 @@ export function Nav({
   // /gameplay). A section matches when its own href, or one of its sub-items'
   // hrefs, points at the current route.
   const pathname = usePathname();
+  const router = useRouter();
+  // Connect lives in the top nav only on the Market and Store experiences.
+  const connectContext = navConnectContext(pathname);
   const currentId = useMemo(() => {
     if (!pathname) return null;
     const matches = (href?: string) => {
@@ -432,6 +437,13 @@ export function Nav({
                 />
               )}
             </Link>
+            {connectContext && (
+              <ZeroAuthButton
+                onDisconnect={
+                  connectContext === 'store' ? () => router.push('/vehicles') : undefined
+                }
+              />
+            )}
           </div>
 
           <nav className={`${styles.topNav} ${navStyle === 'buttons' ? styles.topNavButtons : ''}`}>

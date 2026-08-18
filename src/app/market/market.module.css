@@ -199,12 +199,6 @@
   min-width: 0;
 }
 
-/* Connect / Disconnect, pushed to the right edge of the title row. */
-.headerAuth {
-  margin-left: auto;
-  flex-shrink: 0;
-}
-
 .toolbar {
   justify-self: end;
   display: flex;
