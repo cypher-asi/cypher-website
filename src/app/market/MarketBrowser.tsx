@@ -20,7 +20,6 @@ import { useInfiniteScroll } from './hooks/useInfiniteScroll';
 import { useMarketUrlSync } from './hooks/useMarketUrlSync';
 import { useTradeReconciler } from './hooks/useTradeReconciler';
 import { countSelectedTraits, filterByTraits, itemKey } from './lib/items';
-import { ZeroAuthButton } from '@/features/auth/ZeroAuthButton';
 import type { Availability } from './types';
 import { CollectionNav } from './components/CollectionNav';
 import { MobileCollectionMenu } from './components/MobileCollectionMenu';
@@ -382,9 +381,6 @@ export default function MarketBrowser({ industries }: Props) {
             onToggle={() => setCollectionMenuOpen(!collectionMenuOpen)}
             onSelect={selectCollection}
           />
-          <div className={styles.headerAuth}>
-            <ZeroAuthButton />
-          </div>
         </div>
 
         <CollectionNav
