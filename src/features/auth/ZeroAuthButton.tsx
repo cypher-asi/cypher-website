@@ -1,5 +1,6 @@
 'use client';
 
+import { LogOut } from 'lucide-react';
 import { useAuthStore } from './store';
 import styles from './ZeroAuthButton.module.css';
 
@@ -42,8 +43,11 @@ export function ZeroAuthButton({ onDisconnect }: { onDisconnect?: () => void } =
           void disconnect();
           onDisconnect?.();
         }}
+        aria-label="Disconnect"
+        title="Disconnect"
       >
-        Disconnect
+        <span className={styles.disconnectLabel}>Disconnect</span>
+        <LogOut className={styles.disconnectIcon} size={15} strokeWidth={2} aria-hidden />
       </button>
     </div>
   );

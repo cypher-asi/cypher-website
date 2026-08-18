@@ -24,10 +24,14 @@
   font-size: 0.8rem;
   font-variant-numeric: tabular-nums;
   color: var(--color-text-primary);
+  white-space: nowrap;
 }
 
 .disconnect {
   appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 0.45rem 0.9rem;
   background: transparent;
   border: 1px solid #1c1c1f;
@@ -40,4 +44,23 @@
 .disconnect:hover {
   border-color: #ff6434;
   color: #ff6434;
+}
+
+/* Desktop shows the text label; the icon is mobile-only. */
+.disconnectIcon {
+  display: none;
+}
+
+/* Below the nav's collapse breakpoint the top bar gets crowded, so swap the
+   text button for a compact icon-only one and keep the identity on one line. */
+@media (max-width: 900px) {
+  .disconnect {
+    padding: 0.4rem;
+  }
+  .disconnectLabel {
+    display: none;
+  }
+  .disconnectIcon {
+    display: inline-flex;
+  }
 }
