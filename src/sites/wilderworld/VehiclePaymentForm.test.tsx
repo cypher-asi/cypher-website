@@ -13,7 +13,6 @@ import VehiclePaymentForm from './VehiclePaymentForm';
 import { VEHICLE_PASSES } from './vehicles';
 
 const pass = VEHICLE_PASSES[0]; // Radeon Ghostline, $19
-const onBack = vi.fn();
 
 const SAVED = { id: 'pm_saved', brand: 'visa', last4: '3112', expMonth: 3, expYear: 2031 };
 
@@ -32,7 +31,7 @@ function checkoutCall() {
 }
 
 function renderForm(wallet: string | null = '0x1234567890abcdef1234567890abcdef12345678') {
-  return render(<VehiclePaymentForm pass={pass} walletAddress={wallet} onBack={onBack} />);
+  return render(<VehiclePaymentForm pass={pass} walletAddress={wallet} />);
 }
 
 function fillEmail(value = 'buyer@example.com') {
@@ -42,7 +41,6 @@ function fillEmail(value = 'buyer@example.com') {
 beforeEach(() => {
   stripeMock.createPaymentMethod.mockReset().mockResolvedValue({ paymentMethod: { id: 'pm_1' } });
   elementsMock.getElement.mockReturnValue({});
-  onBack.mockReset();
 });
 
 afterEach(() => vi.restoreAllMocks());
@@ -147,10 +145,10 @@ describe('VehiclePaymentForm', () => {
     expect(checkoutCall()).toBeUndefined();
   });
 
-  it('Back to account calls onBack', async () => {
+  it('offers no way back to a separate account step', async () => {
     mockFetch({ cards: [] });
     renderForm();
-    fireEvent.click(await screen.findByRole('button', { name: /Back to account/i }));
-    expect(onBack).toHaveBeenCalledTimes(1);
+    await screen.findByRole('button', { name: /Pay \$19/ });
+    expect(screen.queryByRole('button', { name: /Back to account/i })).not.toBeInTheDocument();
   });
 });

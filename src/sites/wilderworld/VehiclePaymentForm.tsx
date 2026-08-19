@@ -35,19 +35,17 @@ const CARD_OPTIONS = {
 } as const;
 
 /**
- * Step 2 of the vehicle checkout: a Stripe Elements card field that tokenizes the
- * card in Stripe's iframe (never touching our servers) and posts to
+ * The payment panel of the vehicle checkout: a Stripe Elements card field that
+ * tokenizes the card in Stripe's iframe (never touching our servers) and posts to
  * /api/vehicles/checkout, which charges and delivers the NFT synchronously. Renders
  * the delivered / pending / error outcomes. Must be rendered inside <Elements>.
  */
 export default function VehiclePaymentForm({
   pass,
   walletAddress,
-  onBack,
 }: {
   pass: VehiclePass;
   walletAddress: string | null;
-  onBack: () => void;
 }) {
   const stripe = useStripe();
   const elements = useElements();
@@ -248,9 +246,6 @@ export default function VehiclePaymentForm({
       <p className={styles.secureLine}>
         <Lock size={12} aria-hidden /> Secured by Stripe. Your card details never touch our servers.
       </p>
-      <button type="button" className={styles.backLink} onClick={onBack} disabled={processing}>
-        {'‹'} Back to account
-      </button>
     </section>
   );
 }

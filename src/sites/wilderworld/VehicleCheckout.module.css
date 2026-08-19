@@ -32,10 +32,9 @@
 .summaryTotal { display: flex; justify-content: space-between; margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 1.1rem; font-weight: 700; }
 
 /* ── Flow ── */
-.stepsHead { display: flex; gap: 10px; margin-bottom: 18px; }
-.stepTag { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; padding: 7px 12px; border: 1px solid rgba(255,255,255,0.12); color: rgba(230,232,235,0.45); }
-.stepTagActive { color: #e6e8eb; border-color: rgba(255,255,255,0.35); }
 
+.backToStore { display: inline-block; margin-bottom: 18px; font-size: 13.5px; color: rgba(230,232,235,0.55); text-decoration: none; }
+.backToStore:hover { color: #e6e8eb; }
 .panel { border: 1px solid rgba(255,255,255,0.14); background: #0a0a0a; padding: 30px 32px 32px; display: grid; gap: 14px; }
 .panelTitle { margin: 0; font-size: 1.7rem; font-weight: 700; line-height: 1.05; }
 .panelSub { margin: 0 0 6px; font-size: 14px; color: rgba(230,232,235,0.6); line-height: 1.5; }

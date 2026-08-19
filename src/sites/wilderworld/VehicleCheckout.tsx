@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import Link from 'next/link';
 import { ArrowUpRight, Check } from 'lucide-react';
 import { Elements } from '@stripe/react-stripe-js';
 import { useAuthStore } from '@/features/auth/store';
@@ -9,18 +9,15 @@ import type { VehiclePass } from './vehicles';
 import VehiclePaymentForm from './VehiclePaymentForm';
 import styles from './VehicleCheckout.module.css';
 
-function shortWallet(address: string): string {
-  return `${address.slice(0, 6)}…${address.slice(-4)}`;
-}
-
-/** Two-step buy flow: (1) account, (2) card payment. Auth reuses the shared ZERO
- *  modal (mounted by AuthProvider on Wilder World): Create account / Log in open it,
- *  and we react to the resulting session, delivering the pass to the signed-in
- *  account's zero wallet. Step 2 is a Stripe Elements card field (VehiclePaymentForm)
- *  that charges and delivers via /api/vehicles/checkout. */
+/** Single-panel buy flow. What the panel shows follows the session rather than a
+ *  step the buyer has to advance: without a usable account it asks for one, and
+ *  with a usable account it goes straight to payment, so there is no interstitial
+ *  "continue" click between signing in and paying. Auth reuses the shared ZERO
+ *  modal (mounted by AuthProvider on Wilder World): Create account / Log in open
+ *  it, and we react to the resulting session, delivering the pass to the signed-in
+ *  account's zero wallet. Payment is a Stripe Elements card field
+ *  (VehiclePaymentForm) that charges and delivers via /api/vehicles/checkout. */
 export default function VehicleCheckout({ pass }: { pass: VehiclePass }) {
-  const [step, setStep] = useState<1 | 2>(1);
-
   const user = useAuthStore((s) => s.user);
   const openLogin = useAuthStore((s) => s.openLogin);
   const openCreate = useAuthStore((s) => s.openCreate);
@@ -52,75 +49,53 @@ export default function VehicleCheckout({ pass }: { pass: VehiclePass }) {
           </div>
         </aside>
 
-        {/* ── Steps ── */}
+        {/* ── Account, or payment once the account can receive the vehicle ── */}
         <div className={styles.flow}>
-          <div className={styles.stepsHead}>
-            <span className={`${styles.stepTag} ${styles.stepTagActive}`}>1 &middot; Account</span>
-            <span className={`${styles.stepTag} ${step === 2 ? styles.stepTagActive : ''}`}>
-              2 &middot; Payment
-            </span>
-          </div>
+          <Link href="/vehicles" className={styles.backToStore}>
+            {'‹'} Back to store
+          </Link>
 
-          {step === 1 &&
-            (user ? (
-              <section className={styles.panel} aria-label="Account">
-                <h1 className={styles.panelTitle}>Your account</h1>
-                <p className={styles.panelSub}>
-                  Your pass and everything in it gets delivered to this account.
-                </p>
-                <div className={styles.connected}>
-                  <span className={styles.connectedId} title={user.handle ?? undefined}>
-                    {user.zeroWalletAddress
-                      ? shortWallet(user.zeroWalletAddress)
-                      : (user.handle ?? 'Account')}
-                  </span>
-                  <button
-                    type="button"
-                    className={styles.disconnectBtn}
-                    onClick={() => void disconnect()}
-                  >
-                    Disconnect
-                  </button>
-                </div>
-                {user.zeroWalletAddress ? (
-                  <button
-                    type="button"
-                    className="sci-btn sci-btn-primary"
-                    onClick={() => setStep(2)}
-                  >
-                    Continue to payment <ArrowUpRight size={16} strokeWidth={2.4} />
-                  </button>
-                ) : (
-                  <p className={styles.panelSub}>
-                    This ZERO account has no wallet yet, so it can&apos;t receive the vehicle. Disconnect
-                    and use an account with a wallet.
-                  </p>
-                )}
-              </section>
-            ) : (
-              <section className={styles.panel} aria-label="Account">
-                <h1 className={styles.panelTitle}>Your ZERO account</h1>
-                <p className={styles.panelSub}>
-                  Sign in, or create a ZERO account. Your pass and everything in it gets delivered to
-                  its wallet.
-                </p>
-                <button type="button" className="sci-btn sci-btn-primary" onClick={openCreate}>
-                  Create account <ArrowUpRight size={16} strokeWidth={2.4} />
-                </button>
-                <button type="button" className={styles.providerBtn} onClick={openLogin}>
-                  Log in
-                </button>
-              </section>
-            ))}
-
-          {step === 2 && (
+          {user?.zeroWalletAddress ? (
             <Elements stripe={getStripePromise()}>
-              <VehiclePaymentForm
-                pass={pass}
-                walletAddress={user?.zeroWalletAddress ?? null}
-                onBack={() => setStep(1)}
-              />
+              <VehiclePaymentForm pass={pass} walletAddress={user.zeroWalletAddress} />
             </Elements>
+          ) : user ? (
+            <section className={styles.panel} aria-label="Account">
+              <h1 className={styles.panelTitle}>Your account</h1>
+              <p className={styles.panelSub}>
+                Your pass and everything in it gets delivered to this account.
+              </p>
+              <div className={styles.connected}>
+                <span className={styles.connectedId} title={user.handle ?? undefined}>
+                  {user.handle ?? 'Account'}
+                </span>
+                <button
+                  type="button"
+                  className={styles.disconnectBtn}
+                  onClick={() => void disconnect()}
+                >
+                  Disconnect
+                </button>
+              </div>
+              <p className={styles.panelSub}>
+                This ZERO account has no wallet yet, so it can&apos;t receive the vehicle. Disconnect
+                and use an account with a wallet.
+              </p>
+            </section>
+          ) : (
+            <section className={styles.panel} aria-label="Account">
+              <h1 className={styles.panelTitle}>Your ZERO account</h1>
+              <p className={styles.panelSub}>
+                Sign in, or create a ZERO account. Your pass and everything in it gets delivered to
+                its wallet.
+              </p>
+              <button type="button" className="sci-btn sci-btn-primary" onClick={openCreate}>
+                Create account <ArrowUpRight size={16} strokeWidth={2.4} />
+              </button>
+              <button type="button" className={styles.providerBtn} onClick={openLogin}>
+                Log in
+              </button>
+            </section>
           )}
         </div>
       </div>

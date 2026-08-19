@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 
 // Mutable auth state shared with the mocked store, varied per test.
 const h = vi.hoisted(() => ({
@@ -14,7 +14,7 @@ vi.mock('@/features/auth/store', () => ({
     selector({ user: h.user, openLogin: h.openLogin, openCreate: h.openCreate, disconnect: h.disconnect }),
 }));
 
-// Stub Stripe Elements so step 2 renders without a real Stripe context.
+// Stub Stripe Elements so the payment panel renders without a real Stripe context.
 vi.mock('@stripe/react-stripe-js', () => ({
   Elements: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useStripe: () => ({}),
@@ -36,7 +36,7 @@ beforeEach(() => {
   global.fetch = vi.fn(async () => new Response(JSON.stringify({ cards: [] }), { status: 200 })) as typeof fetch;
 });
 
-describe('VehicleCheckout — account step auth', () => {
+describe('VehicleCheckout — the panel follows the session', () => {
   it('signed out: Create account opens the create modal, Log in opens login', () => {
     render(<VehicleCheckout pass={pass} />);
     fireEvent.click(screen.getByRole('button', { name: /Create account/i }));
@@ -45,28 +45,55 @@ describe('VehicleCheckout — account step auth', () => {
     expect(h.openLogin).toHaveBeenCalledTimes(1);
   });
 
-  it('signed in with a wallet: shows it, payment is reachable, Disconnect ends the session', () => {
+  it('signed out: shows the account panel, not payment', () => {
+    render(<VehicleCheckout pass={pass} />);
+    expect(screen.getByRole('heading', { name: /Your ZERO account/i })).toBeInTheDocument();
+    expect(screen.queryByTestId('card-element')).not.toBeInTheDocument();
+  });
+
+  it('signed in with a wallet: goes straight to payment, with no step to advance', async () => {
     h.user = { id: 'u1', zeroWalletAddress: '0x1234567890abcdef1234567890abcdef12345678', handle: null };
     render(<VehicleCheckout pass={pass} />);
-    expect(screen.getByText('0x1234…5678')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Continue to payment/i })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Disconnect' }));
-    expect(h.disconnect).toHaveBeenCalledTimes(1);
+
+    expect(await screen.findByTestId('card-element')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Pay \$19/ })).toBeInTheDocument();
+    expect(screen.getByText(/Delivering to 0x1234…5678/)).toBeInTheDocument();
+    // The interstitial step is gone entirely.
+    expect(screen.queryByRole('button', { name: /Continue to payment/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Back to account/i })).not.toBeInTheDocument();
   });
 
   it('signed in without a wallet: blocks payment and shows the no-wallet notice', () => {
     h.user = { id: 'u1', zeroWalletAddress: null, handle: 'wilder.zero' };
     render(<VehicleCheckout pass={pass} />);
     expect(screen.getByText('wilder.zero')).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /Continue to payment/i })).not.toBeInTheDocument();
+    expect(screen.queryByTestId('card-element')).not.toBeInTheDocument();
     expect(screen.getByText(/no wallet yet/i)).toBeInTheDocument();
   });
 
-  it('Continue to payment advances to the Stripe payment form', async () => {
-    h.user = { id: 'u1', zeroWalletAddress: '0x1234567890abcdef1234567890abcdef12345678', handle: null };
+  it('offers a way back to the store from every state', async () => {
+    const backToStore = () =>
+      screen.getByRole('link', { name: /Back to store/i }).getAttribute('href');
+
+    render(<VehicleCheckout pass={pass} />); // signed out
+    expect(backToStore()).toBe('/vehicles');
+    cleanup();
+
+    h.user = { id: 'u1', zeroWalletAddress: null, handle: 'wilder.zero' }; // no wallet
     render(<VehicleCheckout pass={pass} />);
-    fireEvent.click(screen.getByRole('button', { name: /Continue to payment/i }));
-    expect(await screen.findByTestId('card-element')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Pay \$19/ })).toBeInTheDocument();
+    expect(backToStore()).toBe('/vehicles');
+    cleanup();
+
+    h.user = { id: 'u1', zeroWalletAddress: '0x1234567890abcdef1234567890abcdef12345678', handle: null };
+    render(<VehicleCheckout pass={pass} />); // paying
+    await screen.findByTestId('card-element');
+    expect(backToStore()).toBe('/vehicles');
+  });
+
+  it('signed in without a wallet: Disconnect ends the session', () => {
+    h.user = { id: 'u1', zeroWalletAddress: null, handle: 'wilder.zero' };
+    render(<VehicleCheckout pass={pass} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Disconnect' }));
+    expect(h.disconnect).toHaveBeenCalledTimes(1);
   });
 });
