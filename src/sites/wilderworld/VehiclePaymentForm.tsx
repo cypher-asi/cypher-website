@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { ArrowUpRight, Check, Lock } from 'lucide-react';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import type { VehiclePass } from './vehicles';
@@ -24,6 +25,13 @@ type PayState =
   | { kind: 'delivered'; transactionHash?: string }
   | { kind: 'pending'; message: string }
   | { kind: 'error'; message: string };
+
+/**
+ * TEMPORARY — goes with isDemoCheckout. Stands in for a transaction hash so the
+ * demonstrated success panel shows the explorer link in its real position. The
+ * link does not resolve, because no transaction was made.
+ */
+const DEMO_TX_HASH = `0x${'0'.repeat(64)}`;
 
 const CARD_OPTIONS = {
   style: {
@@ -92,12 +100,11 @@ export default function VehiclePaymentForm({
 
     // TEMPORARY — see isDemoCheckout. Walks through to the delivered screen with
     // no charge and no mint. The pause stands in for the wait a real purchase has,
-    // so the sequence of screens is the one a buyer would see. No transaction hash,
-    // because there is no transaction to link.
+    // so the sequence of screens is the one a buyer would see.
     if (isDemoCheckout()) {
       setState({ kind: 'processing' });
       await new Promise((resolve) => setTimeout(resolve, 1800));
-      setState({ kind: 'delivered' });
+      setState({ kind: 'delivered', transactionHash: DEMO_TX_HASH });
       return;
     }
 
@@ -151,11 +158,27 @@ export default function VehiclePaymentForm({
 
   if (state.kind === 'delivered') {
     return (
-      <section className={styles.panel} aria-label="Payment complete">
-        <h1 className={styles.panelTitle}>You&apos;re in.</h1>
+      <section className={styles.panel} aria-label="Purchase complete">
+        <span className={styles.successBadge} aria-hidden>
+          <Check size={20} strokeWidth={3} />
+        </span>
+        <h1 className={styles.panelTitle}>Purchase complete</h1>
         <p className={styles.panelSub}>
-          <Check size={14} strokeWidth={3} aria-hidden /> Your {pass.name} is on its way to your wallet.
+          Your {pass.name} is on its way to your ZERO wallet
+          {walletAddress ? ` (${shortWallet(walletAddress)})` : ''}.
         </p>
+
+        {/* What the pass carries, restated at the moment it is actually owned —
+            the order summary alongside is about to be left behind. */}
+        <ul className={styles.successList}>
+          {pass.contents.map((line) => (
+            <li key={line}>
+              <Check size={13} strokeWidth={3} aria-hidden />
+              {line}
+            </li>
+          ))}
+        </ul>
+
         {state.transactionHash && (
           <a
             className={styles.explorerLink}
@@ -167,6 +190,10 @@ export default function VehiclePaymentForm({
             <ArrowUpRight size={13} />
           </a>
         )}
+
+        <Link href="/vehicles" className="sci-btn sci-btn-primary">
+          Back to store <ArrowUpRight size={16} strokeWidth={2.4} />
+        </Link>
       </section>
     );
   }
