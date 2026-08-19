@@ -62,7 +62,13 @@ export default function VehiclePaymentForm({
     fetch('/api/vehicles/payment-methods')
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
-        if (active) setCards(Array.isArray(data?.cards) ? data.cards : []);
+        if (!active) return;
+        setCards(Array.isArray(data?.cards) ? data.cards : []);
+        // Prefill the receipt email when we hold one, without overwriting anything
+        // the buyer has already typed while this was in flight.
+        if (typeof data?.email === 'string' && data.email) {
+          setEmail((current) => current || data.email);
+        }
       })
       .catch(() => {
         // A failure to load saved cards is non-fatal — fall back to entering a new one.
