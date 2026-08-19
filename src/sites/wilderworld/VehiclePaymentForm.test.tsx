@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
 
 const stripeMock = { createPaymentMethod: vi.fn() };
 const elementsMock = { getElement: vi.fn(() => ({})) };
@@ -46,6 +46,18 @@ beforeEach(() => {
 afterEach(() => vi.restoreAllMocks());
 
 describe('VehiclePaymentForm', () => {
+  it('tells the buyer the payment options are loading, and stops once they arrive', async () => {
+    global.fetch = vi.fn(() => new Promise(() => {})) as unknown as typeof fetch; // never settles
+    renderForm();
+    expect(screen.getByText(/Loading payment options/i)).toBeInTheDocument();
+
+    cleanup();
+    mockFetch({ cards: [] });
+    renderForm();
+    await screen.findByTestId('card-element');
+    expect(screen.queryByText(/Loading payment options/i)).not.toBeInTheDocument();
+  });
+
   it('renders the card field, delivering line, and Pay button (no saved cards)', async () => {
     mockFetch({ cards: [] });
     renderForm();

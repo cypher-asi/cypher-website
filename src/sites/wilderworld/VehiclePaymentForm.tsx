@@ -186,7 +186,7 @@ export default function VehiclePaymentForm({
       <p className={styles.hint}>Where your payment receipt is sent — not your on-chain confirmation.</p>
 
       {cards === null ? (
-        <p className={styles.panelSub}>Loading payment options…</p>
+        <p className={styles.loadingNote}>Loading payment options…</p>
       ) : showSaved && savedCard ? (
         <div className={styles.field}>
           <span>Card details</span>
