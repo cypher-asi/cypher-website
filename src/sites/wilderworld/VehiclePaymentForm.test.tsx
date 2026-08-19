@@ -106,6 +106,28 @@ describe('VehiclePaymentForm', () => {
     expect(screen.getByPlaceholderText('you@example.com')).toHaveValue('typed@example.com');
   });
 
+  it('holds the whole form while the prefill is in flight, then releases it', async () => {
+    let release: (r: Response) => void = () => {};
+    global.fetch = vi.fn(
+      async () =>
+        new Promise<Response>((resolve) => {
+          release = resolve;
+        }),
+    ) as typeof fetch;
+
+    renderForm();
+    // Nothing is usable yet: the email is about to be filled in for them, and the
+    // Pay button is disabled, so neither should invite interaction.
+    expect(screen.getByPlaceholderText('you@example.com')).toBeDisabled();
+    expect(screen.getByRole('button', { name: /Pay \$19/ })).toBeDisabled();
+
+    release(new Response(JSON.stringify({ cards: [], email: null }), { status: 200 }));
+
+    await screen.findByTestId('card-element');
+    expect(screen.getByPlaceholderText('you@example.com')).toBeEnabled();
+    expect(screen.getByRole('button', { name: /Pay \$19/ })).toBeEnabled();
+  });
+
   it('renders the card field, delivering line, and Pay button (no saved cards)', async () => {
     mockFetch({ cards: [] });
     renderForm();

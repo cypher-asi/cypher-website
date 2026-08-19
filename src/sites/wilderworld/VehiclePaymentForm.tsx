@@ -169,6 +169,11 @@ export default function VehiclePaymentForm({
   }
 
   const processing = state.kind === 'processing';
+  // Until the prefill lands we don't yet know the buyer's email or saved card, so
+  // the whole form is held: entering an email that is about to be overwritten, or
+  // pressing a Pay button that is already disabled, both read as broken.
+  const loading = cards === null;
+  const busy = loading || processing;
 
   return (
     <section className={styles.panel} aria-label="Payment">
@@ -186,7 +191,7 @@ export default function VehiclePaymentForm({
           placeholder="you@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          disabled={processing}
+          disabled={busy}
         />
       </label>
       <p className={styles.hint}>Where your payment receipt is sent — not your on-chain confirmation.</p>
@@ -237,9 +242,9 @@ export default function VehiclePaymentForm({
 
       <button
         type="button"
-        className="sci-btn sci-btn-primary"
+        className={`sci-btn sci-btn-primary ${busy ? styles.btnBusy : ''}`}
         onClick={() => void pay()}
-        disabled={cards === null || processing || (!showSaved && !stripe)}
+        disabled={busy || (!showSaved && !stripe)}
       >
         {processing ? (
           'Processing…'
