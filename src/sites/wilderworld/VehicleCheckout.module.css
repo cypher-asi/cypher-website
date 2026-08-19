@@ -124,8 +124,28 @@
 .payError { margin: 0; font-size: 13px; color: var(--ww-orange, #ff6434); }
 .hint { margin: -5px 0 2px; font-size: 12px; color: rgba(230, 232, 235, 0.45); text-transform: none; letter-spacing: normal; }
 
-.explorerLink { display: inline-flex; align-items: center; gap: 5px; font-size: 13.5px; color: rgba(230,232,235,0.7); text-decoration: none; }
-.explorerLink:hover { color: var(--ww-orange, #ff6434); }
+/* ── Purchase complete ── */
+
+.successBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  color: #000;
+  background: var(--ww-orange, #ff6434);
+  border-radius: 1px;
+  /* Same clipped corner as the primary buttons, and like them the fill defines
+     the shape: a border would be cut by the clip and leave the diagonal open. */
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 11px), calc(100% - 11px) 100%, 0 100%);
+}
+
+.successList { list-style: none; margin: 0; padding: 14px 0 2px; display: grid; gap: 9px; border-top: 1px solid rgba(255,255,255,0.1); }
+.successList li { display: flex; align-items: baseline; gap: 10px; font-size: 14px; color: rgba(230,232,235,0.75); }
+.successList svg { color: var(--ww-orange, #ff6434); flex-shrink: 0; transform: translateY(1px); }
+
+.explorerLink { display: inline-flex; align-items: center; gap: 5px; font-size: 13.5px; color: var(--ww-orange, #ff6434); text-decoration: none; }
+.explorerLink:hover { text-decoration: underline; }
 
 .secureLine { margin: 2px 0 0; display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: rgba(230,232,235,0.45); }
 .backLink { background: none; border: none; color: rgba(230,232,235,0.55); font: inherit; font-size: 13.5px; cursor: pointer; padding: 0; text-align: left; }

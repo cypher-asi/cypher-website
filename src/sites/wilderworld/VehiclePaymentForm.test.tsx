@@ -148,12 +148,14 @@ describe('VehiclePaymentForm', () => {
       // It passes through the same waiting state a real purchase shows...
       await waitFor(() => expect(screen.getByRole('button', { name: /Processing/ })).toBeInTheDocument());
       // ...and lands on delivered, with nothing charged, minted, or linked.
-      await waitFor(() => expect(screen.getByText(/on its way to your wallet/i)).toBeInTheDocument(), {
+      await waitFor(() => expect(screen.getByRole('heading', { name: /Purchase complete/i })).toBeInTheDocument(), {
         timeout: 4000,
       });
       expect(checkoutCall()).toBeUndefined();
       expect(stripeMock.createPaymentMethod).not.toHaveBeenCalled();
-      expect(screen.queryByRole('link', { name: /View transaction/i })).not.toBeInTheDocument();
+      // The explorer link is shown in its real position so the panel is reviewed
+      // whole, though it points at nothing — there was no transaction.
+      expect(screen.getByRole('link', { name: /View transaction on zscan/i })).toBeInTheDocument();
     });
 
     it('still requires a valid receipt email, so that step is demonstrated too', async () => {
@@ -165,7 +167,7 @@ describe('VehiclePaymentForm', () => {
       fireEvent.click(screen.getByRole('button', { name: /Pay \$19/ }));
 
       await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent(/valid email/i));
-      expect(screen.queryByText(/on its way to your wallet/i)).not.toBeInTheDocument();
+      expect(screen.queryByRole('heading', { name: /Purchase complete/i })).not.toBeInTheDocument();
     });
 
     it('can be paid without Stripe having loaded, as an unkeyed environment has', async () => {
@@ -196,7 +198,7 @@ describe('VehiclePaymentForm', () => {
     fillEmail();
     fireEvent.click(screen.getByRole('button', { name: /Pay \$19/ }));
 
-    await waitFor(() => expect(screen.getByText(/on its way to your wallet/i)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole('heading', { name: /Purchase complete/i })).toBeInTheDocument());
     expect(stripeMock.createPaymentMethod).toHaveBeenCalledWith({ type: 'card', card: expect.anything() });
     // The delivered panel links the on-chain tx on zscan.
     expect(screen.getByRole('link', { name: /View transaction on zscan/i })).toHaveAttribute(
@@ -210,6 +212,28 @@ describe('VehiclePaymentForm', () => {
       savedCard: false,
       email: 'buyer@example.com',
     });
+  });
+
+  it('confirms the purchase with what was bought, where it went, and a way onward', async () => {
+    mockFetch({ cards: [], checkout: { body: { status: 'delivered', transactionHash: '0xTX' } } });
+    renderForm();
+    await screen.findByTestId('card-element');
+    fillEmail();
+    fireEvent.click(screen.getByRole('button', { name: /Pay \$19/ }));
+
+    await waitFor(() => expect(screen.getByRole('heading', { name: /Purchase complete/i })).toBeInTheDocument());
+    // Where it went, so the buyer can find it.
+    expect(screen.getByText(/on its way to your ZERO wallet \(0x1234…5678\)/i)).toBeInTheDocument();
+    // What the pass carries, restated now that it is owned.
+    for (const line of pass.contents) {
+      expect(screen.getByText(line)).toBeInTheDocument();
+    }
+    // Proof on chain, and somewhere to go next.
+    expect(screen.getByRole('link', { name: /View transaction on zscan/i })).toHaveAttribute(
+      'href',
+      'https://zscan.live/tx/0xTX',
+    );
+    expect(screen.getByRole('link', { name: /Back to store/i })).toHaveAttribute('href', '/vehicles');
   });
 
   it('blocks checkout until a valid receipt email is entered', async () => {
@@ -231,7 +255,7 @@ describe('VehiclePaymentForm', () => {
     fillEmail();
     fireEvent.click(screen.getByRole('button', { name: /Pay \$19/ }));
 
-    await waitFor(() => expect(screen.getByText(/on its way to your wallet/i)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole('heading', { name: /Purchase complete/i })).toBeInTheDocument());
     expect(stripeMock.createPaymentMethod).not.toHaveBeenCalled(); // saved card is reused as-is
     const init = checkoutCall()![1] as RequestInit;
     expect(JSON.parse(init.body as string)).toEqual({
