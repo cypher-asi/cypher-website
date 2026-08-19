@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { establishOauthSession, register } from './zos';
+import { establishOauthSession, register, currentUserEmail } from './zos';
 
 describe('establishOauthSession', () => {
   afterEach(() => {
@@ -116,5 +116,53 @@ describe('register', () => {
 
     const err = await register('a@b.com', 'pw').catch((e) => e);
     expect(err.statusCode).toBe(500);
+  });
+});
+
+describe('currentUserEmail', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+  });
+
+  function respondWith(body: unknown, status = 200) {
+    vi.stubEnv('ZOS_API_URL', 'https://zos.example');
+    const fetchMock = vi.fn(
+      async (_url: string, _init: RequestInit) => new Response(JSON.stringify(body), { status }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+    return fetchMock;
+  }
+
+  it('returns the account primary email, authed by the token', async () => {
+    const fetchMock = respondWith({ id: 'u1', profileSummary: { primaryEmail: 'buyer@example.com' } });
+
+    await expect(currentUserEmail('tok')).resolves.toBe('buyer@example.com');
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toContain('/api/users/current');
+    expect(init.headers).toMatchObject({ Authorization: 'Bearer tok' });
+  });
+
+  it('returns null for an account with no email, as social sign-ups have', async () => {
+    respondWith({ id: 'u1', profileSummary: { primaryEmail: null } });
+    await expect(currentUserEmail('tok')).resolves.toBeNull();
+  });
+
+  it('returns null when the profile summary is absent entirely', async () => {
+    respondWith({ id: 'u1' });
+    await expect(currentUserEmail('tok')).resolves.toBeNull();
+  });
+
+  it('returns null rather than throwing when the lookup fails', async () => {
+    respondWith({ error: 'nope' }, 500);
+    await expect(currentUserEmail('tok')).resolves.toBeNull();
+  });
+
+  it('returns null rather than throwing when the service is unreachable', async () => {
+    vi.stubEnv('ZOS_API_URL', 'https://zos.example');
+    vi.stubGlobal('fetch', vi.fn(async () => {
+      throw new Error('econnrefused');
+    }));
+    await expect(currentUserEmail('tok')).resolves.toBeNull();
   });
 });

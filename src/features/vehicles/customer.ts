@@ -1,5 +1,6 @@
 import 'server-only';
 import { VehicleCheckoutError, zeroPaymentsUrl } from './config';
+import { getStripe } from './stripe';
 import type { SavedCard } from './types';
 
 /** How long to wait on the payments service before giving up. */
@@ -53,9 +54,29 @@ async function fetchPaymentMethods(
   };
 }
 
-/** List the buyer's saved cards for the checkout UI (browser-safe: no customer id). */
-export async function listSavedCards(sessionToken: string): Promise<SavedCard[]> {
-  return (await fetchPaymentMethods(sessionToken)).cards;
+/**
+ * What the checkout can prefill for this buyer: their saved cards, and the email
+ * held on their Stripe customer (null when they have no customer yet, or it was
+ * created without one — the payments service only records an email on the
+ * subscription and autobuy paths).
+ *
+ * The email is strictly best-effort: a Stripe hiccup or missing key must not cost
+ * the buyer their saved cards, so it degrades to null rather than throwing.
+ */
+export async function listCheckoutPrefill(
+  sessionToken: string,
+): Promise<{ cards: SavedCard[]; stripeEmail: string | null }> {
+  const { cards, stripeCustomerId } = await fetchPaymentMethods(sessionToken);
+  if (!stripeCustomerId) return { cards, stripeEmail: null };
+
+  try {
+    const customer = await getStripe().customers.retrieve(stripeCustomerId);
+    // A deleted customer comes back as {deleted: true} with no email.
+    const email = 'deleted' in customer ? null : customer.email;
+    return { cards, stripeEmail: email && email.length > 0 ? email : null };
+  } catch {
+    return { cards, stripeEmail: null };
+  }
 }
 
 /**

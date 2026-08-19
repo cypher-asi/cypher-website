@@ -185,6 +185,31 @@ export async function currentUser(token: string): Promise<AuthUser | null> {
   };
 }
 
+/**
+ * The email on the token's ZERO account, or null when it has none.
+ *
+ * Kept off AuthUser deliberately: the session user is client-side state shared by
+ * every page, and only the checkout needs an email, so this stays a server-side
+ * lookup for the callers that want it.
+ *
+ * Best-effort by design — accounts created through a social provider carry no
+ * email at all, so "no email" is an ordinary outcome rather than a failure, and a
+ * lookup problem must never block the thing being prefilled.
+ */
+export async function currentUserEmail(token: string): Promise<string | null> {
+  try {
+    const res = await zosFetch('/api/users/current', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return null;
+    const user = (await res.json()) as { profileSummary?: { primaryEmail?: string | null } | null };
+    const email = user?.profileSummary?.primaryEmail;
+    return typeof email === 'string' && email.length > 0 ? email : null;
+  } catch {
+    return null;
+  }
+}
+
 /** Revoke the token's zos-api session. Best-effort — logout must not fail. */
 export async function revokeSession(token: string): Promise<void> {
   try {

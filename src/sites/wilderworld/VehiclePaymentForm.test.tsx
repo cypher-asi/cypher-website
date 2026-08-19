@@ -17,10 +17,18 @@ const pass = VEHICLE_PASSES[0]; // Radeon Ghostline, $19
 const SAVED = { id: 'pm_saved', brand: 'visa', last4: '3112', expMonth: 3, expYear: 2031 };
 
 /** Route the mount GET (saved cards) and the checkout POST independently. */
-function mockFetch({ checkout, cards = [] }: { checkout?: { body: unknown; status?: number }; cards?: unknown[] }) {
+function mockFetch({
+  checkout,
+  cards = [],
+  email = null,
+}: {
+  checkout?: { body: unknown; status?: number };
+  cards?: unknown[];
+  email?: string | null;
+}) {
   global.fetch = vi.fn(async (url: RequestInfo | URL) => {
     if (String(url).includes('/payment-methods')) {
-      return new Response(JSON.stringify({ cards }), { status: 200 });
+      return new Response(JSON.stringify({ cards, email }), { status: 200 });
     }
     return new Response(JSON.stringify(checkout?.body ?? {}), { status: checkout?.status ?? 200 });
   }) as typeof fetch;
@@ -56,6 +64,46 @@ describe('VehiclePaymentForm', () => {
     renderForm();
     await screen.findByTestId('card-element');
     expect(screen.queryByText(/Loading payment options/i)).not.toBeInTheDocument();
+  });
+
+  it('prefills the receipt email when one is on file, ready to pay without typing', async () => {
+    mockFetch({ cards: [], email: 'buyer@example.com', checkout: { body: { status: 'delivered' } } });
+    renderForm();
+
+    await screen.findByTestId('card-element');
+    expect(screen.getByPlaceholderText('you@example.com')).toHaveValue('buyer@example.com');
+
+    // The prefilled value is what actually gets charged, with nothing typed.
+    fireEvent.click(screen.getByRole('button', { name: /Pay \$19/ }));
+    await waitFor(() => expect(checkoutCall()).toBeDefined());
+    const init = checkoutCall()![1] as RequestInit;
+    expect(JSON.parse(init.body as string).email).toBe('buyer@example.com');
+  });
+
+  it('leaves the email empty when none is on file', async () => {
+    mockFetch({ cards: [], email: null });
+    renderForm();
+    await screen.findByTestId('card-element');
+    expect(screen.getByPlaceholderText('you@example.com')).toHaveValue('');
+  });
+
+  it('never overwrites an email the buyer typed while the prefill was in flight', async () => {
+    let release: (r: Response) => void = () => {};
+    global.fetch = vi.fn(
+      async (url: RequestInfo | URL) =>
+        String(url).includes('/payment-methods')
+          ? new Promise<Response>((resolve) => {
+              release = resolve;
+            })
+          : new Response('{}', { status: 200 }),
+    ) as typeof fetch;
+
+    renderForm();
+    fillEmail('typed@example.com');
+    release(new Response(JSON.stringify({ cards: [], email: 'onfile@example.com' }), { status: 200 }));
+
+    await screen.findByTestId('card-element');
+    expect(screen.getByPlaceholderText('you@example.com')).toHaveValue('typed@example.com');
   });
 
   it('renders the card field, delivering line, and Pay button (no saved cards)', async () => {
