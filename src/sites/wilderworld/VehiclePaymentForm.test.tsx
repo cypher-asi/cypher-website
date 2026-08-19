@@ -1,6 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
 
+// The real payment path is the default under test; the demo walkthrough is opted
+// into per-test, so shipping it on never silently hides the flow it stands in for.
+const demo = vi.hoisted(() => ({ isDemoCheckout: vi.fn(() => false) }));
+vi.mock('@/features/vehicles/demo-checkout', () => demo);
+
 const stripeMock = { createPaymentMethod: vi.fn() };
 const elementsMock = { getElement: vi.fn(() => ({})) };
 vi.mock('@stripe/react-stripe-js', () => ({
@@ -49,6 +54,7 @@ function fillEmail(value = 'buyer@example.com') {
 beforeEach(() => {
   stripeMock.createPaymentMethod.mockReset().mockResolvedValue({ paymentMethod: { id: 'pm_1' } });
   elementsMock.getElement.mockReturnValue({});
+  demo.isDemoCheckout.mockReturnValue(false);
 });
 
 afterEach(() => vi.restoreAllMocks());
@@ -126,6 +132,51 @@ describe('VehiclePaymentForm', () => {
     await screen.findByTestId('card-element');
     expect(screen.getByPlaceholderText('you@example.com')).toBeEnabled();
     expect(screen.getByRole('button', { name: /Pay \$19/ })).toBeEnabled();
+  });
+
+  describe('while the checkout is demonstrated rather than transacted', () => {
+    beforeEach(() => demo.isDemoCheckout.mockReturnValue(true));
+
+    it('reaches the delivered screen without charging or minting', async () => {
+      mockFetch({ cards: [] });
+      renderForm();
+      await screen.findByTestId('card-element');
+      fillEmail();
+
+      fireEvent.click(screen.getByRole('button', { name: /Pay \$19/ }));
+
+      // It passes through the same waiting state a real purchase shows...
+      await waitFor(() => expect(screen.getByRole('button', { name: /Processing/ })).toBeInTheDocument());
+      // ...and lands on delivered, with nothing charged, minted, or linked.
+      await waitFor(() => expect(screen.getByText(/on its way to your wallet/i)).toBeInTheDocument(), {
+        timeout: 4000,
+      });
+      expect(checkoutCall()).toBeUndefined();
+      expect(stripeMock.createPaymentMethod).not.toHaveBeenCalled();
+      expect(screen.queryByRole('link', { name: /View transaction/i })).not.toBeInTheDocument();
+    });
+
+    it('still requires a valid receipt email, so that step is demonstrated too', async () => {
+      mockFetch({ cards: [] });
+      renderForm();
+      await screen.findByTestId('card-element');
+      fillEmail('not-an-email');
+
+      fireEvent.click(screen.getByRole('button', { name: /Pay \$19/ }));
+
+      await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent(/valid email/i));
+      expect(screen.queryByText(/on its way to your wallet/i)).not.toBeInTheDocument();
+    });
+
+    it('can be paid without Stripe having loaded, as an unkeyed environment has', async () => {
+      stripeMock.createPaymentMethod.mockReset();
+      mockFetch({ cards: [] });
+      renderForm();
+      await screen.findByTestId('card-element');
+      fillEmail();
+
+      expect(screen.getByRole('button', { name: /Pay \$19/ })).toBeEnabled();
+    });
   });
 
   it('renders the card field, delivering line, and Pay button (no saved cards)', async () => {

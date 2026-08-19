@@ -5,6 +5,7 @@ import { ArrowUpRight, Check, Lock } from 'lucide-react';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import type { VehiclePass } from './vehicles';
 import type { SavedCard } from '@/features/vehicles/types';
+import { isDemoCheckout } from '@/features/vehicles/demo-checkout';
 import { zscanTxUrl } from '@/lib/explorer';
 import styles from './VehicleCheckout.module.css';
 
@@ -86,6 +87,17 @@ export default function VehiclePaymentForm({
   async function pay() {
     if (!emailValid) {
       setState({ kind: 'error', message: 'Enter a valid email for your receipt.' });
+      return;
+    }
+
+    // TEMPORARY — see isDemoCheckout. Walks through to the delivered screen with
+    // no charge and no mint. The pause stands in for the wait a real purchase has,
+    // so the sequence of screens is the one a buyer would see. No transaction hash,
+    // because there is no transaction to link.
+    if (isDemoCheckout()) {
+      setState({ kind: 'processing' });
+      await new Promise((resolve) => setTimeout(resolve, 1800));
+      setState({ kind: 'delivered' });
       return;
     }
 
@@ -240,11 +252,13 @@ export default function VehiclePaymentForm({
         </p>
       )}
 
+      {/* The Stripe readiness check is skipped while demonstrating, since that path
+          is not taken and the environment has no reason to hold a publishable key. */}
       <button
         type="button"
         className={`sci-btn sci-btn-primary ${busy ? styles.btnBusy : ''}`}
         onClick={() => void pay()}
-        disabled={busy || (!showSaved && !stripe)}
+        disabled={busy || (!isDemoCheckout() && !showSaved && !stripe)}
       >
         {processing ? (
           'Processing…'
