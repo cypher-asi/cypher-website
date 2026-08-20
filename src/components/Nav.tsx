@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { ArrowDown, ArrowUpRight, ChevronRight } from 'lucide-react';
 import { TypewriterText } from './TypewriterText';
 import type { TypewriterSegment } from './TypewriterText';
@@ -389,7 +389,6 @@ export function Nav({
   // /gameplay). A section matches when its own href, or one of its sub-items'
   // hrefs, points at the current route.
   const pathname = usePathname();
-  const router = useRouter();
   // Connect lives in the top nav only on the Market and Store experiences.
   const connectContext = navConnectContext(pathname);
   const currentId = useMemo(() => {
@@ -437,13 +436,11 @@ export function Nav({
                 />
               )}
             </Link>
-            {connectContext && (
-              <ZeroAuthButton
-                onDisconnect={
-                  connectContext === 'store' ? () => router.push('/vehicles') : undefined
-                }
-              />
-            )}
+            {/* Disconnecting never navigates. Every route that shows this button has
+                a signed-out state worth staying on: the store and a vehicle page are
+                unchanged by it, and checkout falls back to asking for an account.
+                Being thrown back to the store mid-purchase loses the buyer's place. */}
+            {connectContext && <ZeroAuthButton />}
           </div>
 
           <nav className={`${styles.topNav} ${navStyle === 'buttons' ? styles.topNavButtons : ''}`}>

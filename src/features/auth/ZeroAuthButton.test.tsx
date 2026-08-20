@@ -37,12 +37,4 @@ describe('ZeroAuthButton', () => {
     expect(h.disconnect).toHaveBeenCalledTimes(1);
   });
 
-  it('runs onDisconnect after disconnect when provided', () => {
-    h.user = { zeroWalletAddress: WALLET, handle: null };
-    const onDisconnect = vi.fn();
-    render(<ZeroAuthButton onDisconnect={onDisconnect} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Disconnect' }));
-    expect(h.disconnect).toHaveBeenCalledTimes(1);
-    expect(onDisconnect).toHaveBeenCalledTimes(1);
-  });
 });

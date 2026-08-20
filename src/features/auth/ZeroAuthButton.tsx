@@ -11,10 +11,10 @@ function shortWallet(address: string): string {
 /**
  * Header entry point to auth: "Connect" when signed out (opens the modal), identity +
  * "Disconnect" when signed in (full disconnect, so a different account can sign in).
- * `onDisconnect` runs right after disconnect is triggered — e.g. the Store passes it to
- * send the user back to the store home. Omitted (the Market usage) leaves state on the page.
+ * Disconnecting never navigates: every page carrying this button has a signed-out
+ * state worth staying on, and moving the user loses their place.
  */
-export function ZeroAuthButton({ onDisconnect }: { onDisconnect?: () => void } = {}) {
+export function ZeroAuthButton() {
   const user = useAuthStore((s) => s.user);
   const openLogin = useAuthStore((s) => s.openLogin);
   const disconnect = useAuthStore((s) => s.disconnect);
@@ -41,7 +41,6 @@ export function ZeroAuthButton({ onDisconnect }: { onDisconnect?: () => void } =
         className={styles.disconnect}
         onClick={() => {
           void disconnect();
-          onDisconnect?.();
         }}
         aria-label="Disconnect"
         title="Disconnect"
