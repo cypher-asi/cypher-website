@@ -8,12 +8,25 @@ import styles from './ZeroLoginModal.module.css';
 
 type Tab = 'code' | 'password';
 
+/** Shown in both modes: the buyer may not know what a ZERO account is, or why
+ *  the thing they are buying ends up in one. */
+const ACCOUNT_EXPLAINER =
+  'Your Wilder World account is powered by ZERO. It holds your wallet and everything you own across Wilder World, including anything you buy here.';
+
 /**
  * Global ZERO auth modal (Wilder World only — mounted by AuthProvider). Two modes,
- * driven by the store: `login` (email code / password / Epic) and `create` (email +
- * password → a new ZERO account, or Epic). Both post to our /api/auth routes, which
- * set the httpOnly session cookie. The copy makes explicit that the account being
- * created or signed into is a ZERO account, not a Wilder-World-only login.
+ * driven by the store: `login` (Epic, or email code / password) and `create` (Epic,
+ * or email + password → a new ZERO account). Both post to our /api/auth routes,
+ * which set the httpOnly session cookie.
+ *
+ * Epic is the only option offered on open, with email folded behind a link. Wilder
+ * World creates a ZERO account for players in-game from their Epic account, so most
+ * players already have one: signing in with Epic lands them on it, while signing up
+ * by email gives them a second account and delivers their purchases to the wrong
+ * one. Email stays one click away because plenty of buyers never play the game.
+ *
+ * The copy leads with the Wilder World account and explains that ZERO powers it,
+ * rather than opening on a brand the buyer may not recognise.
  */
 export function ZeroLoginModal() {
   const isOpen = useAuthStore((s) => s.isModalOpen);
@@ -37,6 +50,8 @@ export function ZeroLoginModal() {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [codeSent, setCodeSent] = useState(false);
+  // Email is folded away behind Epic until asked for.
+  const [emailRevealed, setEmailRevealed] = useState(false);
   // Social login (Epic Games) is web-only — its OAuth redirect is unreliable on
   // mobile browsers, matching how the ZERO app / packs gate it. Computed after
   // mount so it's SSR-safe (navigator is client-only).
@@ -56,6 +71,7 @@ export function ZeroLoginModal() {
       setPassword('');
       setConfirm('');
       setCodeSent(false);
+      setEmailRevealed(false);
     }
   }, [isOpen, mode]);
 
@@ -77,6 +93,9 @@ export function ZeroLoginModal() {
   if (!mounted || !isOpen) return null;
 
   const isCreate = mode === 'create';
+  // Derived, not stored: on mobile Epic is unavailable, so email is the only way in
+  // and must never be collapsed behind a link that would leave the modal empty.
+  const showEmail = emailRevealed || isMobile;
   const submitting = status === 'submitting';
   const passwordsMismatch = confirm.length > 0 && password !== confirm;
 
@@ -124,14 +143,79 @@ export function ZeroLoginModal() {
           <X size={18} />
         </button>
 
-        <h2 className={styles.title}>{isCreate ? 'Create your ZERO account' : 'Sign in'}</h2>
+        <h2 className={styles.title}>
+          {isCreate ? 'Create account' : 'Sign in'}
+        </h2>
         <p className={styles.subtitle}>
-          {isCreate
-            ? 'Your Wilder World items and wallet live in a ZERO account. Create one to check out and manage what you own.'
-            : 'Connect your ZERO account to buy, sell and manage items on Wilder Market.'}
+          {isCreate ? ACCOUNT_EXPLAINER : 'Connect your existing Wilder World and ZERO account.'}
         </p>
+        {!isCreate && <p className={styles.subtitle}>{ACCOUNT_EXPLAINER}</p>}
 
-        {isCreate ? (
+        {/* Epic leads, and email is folded away behind it. Wilder World creates a
+            ZERO account for players in-game from their Epic account, so most players
+            already have one. Signing in with Epic lands them on it; signing up by
+            email instead quietly creates a second account, and anything they buy is
+            delivered to the wrong one. Email stays one click away rather than gone,
+            since plenty of buyers will not play the game at all. */}
+        {/* One offer at a time: Epic, or the email form. Showing both at once put
+            the choice back in front of a player who had already made it. */}
+        {!isMobile && !showEmail && (
+          <>
+            <p className={styles.epicLead}>
+              {isCreate
+                ? 'Create your Wilder World account and its ZERO wallet using Epic Games. It’s the same account you’ll use in game.'
+                : 'Already play Wilder World?'}
+            </p>
+            <button type="button" className={styles.social} onClick={epicSignIn}>
+              {isCreate ? 'Create with Epic Games' : 'Continue with Epic Games'}
+            </button>
+            {isCreate ? (
+              <button
+                type="button"
+                className={styles.emailToggle}
+                onClick={() => setEmailRevealed(true)}
+              >
+                Create an account with email instead
+              </button>
+            ) : (
+              <p className={styles.altPrompt}>
+                Not a player but have a ZERO account?{' '}
+                <button type="button" onClick={() => setEmailRevealed(true)}>
+                  Sign in with email instead
+                </button>
+              </p>
+            )}
+          </>
+        )}
+
+        {/* Sign-in only, and above the form so a player reads it before filling one
+            in. Returns to the Epic screen rather than redirecting straight out to
+            Epic, so a text link never navigates the page away unannounced. */}
+        {showEmail && !isMobile && !isCreate && (
+          <p className={styles.epicPrompt}>
+            Already play Wilder World? Continue with{' '}
+            <button type="button" onClick={() => setEmailRevealed(false)}>
+              Epic Games
+            </button>{' '}
+            instead.
+            <span className={styles.epicPromptLine}>
+              Not a player but have a ZERO account? Sign in below.
+            </span>
+          </p>
+        )}
+
+        {/* The email counterpart to the Epic explainer, so both routes say what they
+            create. Epic is not mentioned as a login here, only as something that can
+            be attached afterwards, which is what this path actually leaves open. */}
+        {showEmail && isCreate && (
+          <p className={styles.epicPrompt}>
+            Create your Wilder World account and its ZERO wallet using your email. You can link
+            your Epic account later.
+          </p>
+        )}
+
+        {showEmail &&
+          (isCreate ? (
           <form className={styles.form} onSubmit={onCreate}>
             <div>
               <div className={styles.label}>Email</div>
@@ -141,7 +225,6 @@ export function ZeroLoginModal() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@email.com"
-                autoFocus
                 required
               />
             </div>
@@ -217,7 +300,6 @@ export function ZeroLoginModal() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@email.com"
-                    autoFocus
                     required
                   />
                 </div>
@@ -270,7 +352,6 @@ export function ZeroLoginModal() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@email.com"
-                    autoFocus
                     required
                   />
                 </div>
@@ -291,30 +372,33 @@ export function ZeroLoginModal() {
               </form>
             )}
           </>
+          ))}
+
+        {/* Create only: a way back to the Epic option after the form has replaced
+            it. Sign-in offers the same escape above its form, where the account
+            already exists and the choice is more urgent. */}
+        {showEmail && !isMobile && isCreate && (
+          <button
+            type="button"
+            className={styles.emailToggle}
+            onClick={() => setEmailRevealed(false)}
+          >
+            Create with Epic Games instead
+          </button>
         )}
 
-        {!isMobile && (
-          <>
-            <div className={styles.divider}>
-              <span>or</span>
-            </div>
-            <button type="button" className={styles.social} onClick={epicSignIn}>
-              {isCreate ? 'Sign up with Epic Games' : 'Continue with Epic Games'}
-            </button>
-          </>
-        )}
 
         <p className={styles.switch}>
           {isCreate ? (
             <>
-              Already on ZERO?{' '}
+              Already play Wilder World or use ZERO?{' '}
               <button type="button" onClick={openLogin}>
                 Sign in
               </button>
             </>
           ) : (
             <>
-              New to ZERO?{' '}
+              New to Wilder World and ZERO?{' '}
               <button type="button" onClick={openCreate}>
                 Create an account
               </button>
