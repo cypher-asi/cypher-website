@@ -25,6 +25,11 @@ const ACCOUNT_EXPLAINER =
  * by email gives them a second account and delivers their purchases to the wrong
  * one. Email stays one click away because plenty of buyers never play the game.
  *
+ * Epic is offered on every device. It was previously hidden on mobile, inherited
+ * from how the ZERO app and packs gate it, but the redirect was verified working
+ * on a mobile browser (2026-08-20) and the gate only forced players into a second
+ * account. If it ever does fail somewhere, email is still one tap away.
+ *
  * The copy leads with the Wilder World account and explains that ZERO powers it,
  * rather than opening on a brand the buyer may not recognise.
  */
@@ -51,15 +56,9 @@ export function ZeroLoginModal() {
   const [confirm, setConfirm] = useState('');
   const [codeSent, setCodeSent] = useState(false);
   // Email is folded away behind Epic until asked for.
-  const [emailRevealed, setEmailRevealed] = useState(false);
-  // Social login (Epic Games) is web-only — its OAuth redirect is unreliable on
-  // mobile browsers, matching how the ZERO app / packs gate it. Computed after
-  // mount so it's SSR-safe (navigator is client-only).
-  const [isMobile, setIsMobile] = useState(false);
-
+  const [showEmail, setShowEmail] = useState(false);
   useEffect(() => {
     setMounted(true);
-    setIsMobile(/Mobi|Android/i.test(navigator.userAgent));
   }, []);
 
   // Reset transient form state when the modal opens or the mode changes. Email is
@@ -71,7 +70,7 @@ export function ZeroLoginModal() {
       setPassword('');
       setConfirm('');
       setCodeSent(false);
-      setEmailRevealed(false);
+      setShowEmail(false);
     }
   }, [isOpen, mode]);
 
@@ -93,9 +92,6 @@ export function ZeroLoginModal() {
   if (!mounted || !isOpen) return null;
 
   const isCreate = mode === 'create';
-  // Derived, not stored: on mobile Epic is unavailable, so email is the only way in
-  // and must never be collapsed behind a link that would leave the modal empty.
-  const showEmail = emailRevealed || isMobile;
   const submitting = status === 'submitting';
   const passwordsMismatch = confirm.length > 0 && password !== confirm;
 
@@ -159,7 +155,7 @@ export function ZeroLoginModal() {
             since plenty of buyers will not play the game at all. */}
         {/* One offer at a time: Epic, or the email form. Showing both at once put
             the choice back in front of a player who had already made it. */}
-        {!isMobile && !showEmail && (
+        {!showEmail && (
           <>
             <p className={styles.epicLead}>
               {isCreate
@@ -173,14 +169,14 @@ export function ZeroLoginModal() {
               <button
                 type="button"
                 className={styles.emailToggle}
-                onClick={() => setEmailRevealed(true)}
+                onClick={() => setShowEmail(true)}
               >
                 Create an account with email instead
               </button>
             ) : (
               <p className={styles.altPrompt}>
                 Not a player but have a ZERO account?{' '}
-                <button type="button" onClick={() => setEmailRevealed(true)}>
+                <button type="button" onClick={() => setShowEmail(true)}>
                   Sign in with email instead
                 </button>
               </p>
@@ -191,10 +187,10 @@ export function ZeroLoginModal() {
         {/* Sign-in only, and above the form so a player reads it before filling one
             in. Returns to the Epic screen rather than redirecting straight out to
             Epic, so a text link never navigates the page away unannounced. */}
-        {showEmail && !isMobile && !isCreate && (
+        {showEmail && !isCreate && (
           <p className={styles.epicPrompt}>
             Already play Wilder World? Continue with{' '}
-            <button type="button" onClick={() => setEmailRevealed(false)}>
+            <button type="button" onClick={() => setShowEmail(false)}>
               Epic Games
             </button>{' '}
             instead.
@@ -377,11 +373,11 @@ export function ZeroLoginModal() {
         {/* Create only: a way back to the Epic option after the form has replaced
             it. Sign-in offers the same escape above its form, where the account
             already exists and the choice is more urgent. */}
-        {showEmail && !isMobile && isCreate && (
+        {showEmail && isCreate && (
           <button
             type="button"
             className={styles.emailToggle}
-            onClick={() => setEmailRevealed(false)}
+            onClick={() => setShowEmail(false)}
           >
             Create with Epic Games instead
           </button>
