@@ -84,17 +84,26 @@ export default function VehicleCheckout({ pass }: { pass: VehiclePass }) {
             </section>
           ) : (
             <section className={styles.panel} aria-label="Account">
-              <h1 className={styles.panelTitle}>Your ZERO account</h1>
+              <h1 className={styles.panelTitle}>Sign in to checkout</h1>
               <p className={styles.panelSub}>
-                Sign in, or create a ZERO account. Your pass and everything in it gets delivered to
-                its wallet.
+                Your Wilder World account is powered by ZERO. Your pass and everything in it gets
+                delivered to your account&apos;s wallet.
               </p>
-              <button type="button" className="sci-btn sci-btn-primary" onClick={openCreate}>
-                Create account <ArrowUpRight size={16} strokeWidth={2.4} />
+
+              {/* Signing in leads. Most buyers already have an account from the game,
+                  so making "create" the loud option would hand them a second one and
+                  deliver the vehicle to a wallet the game does not know about. */}
+              <p className={styles.optionLead}>Already play Wilder World or have a ZERO account?</p>
+              <button type="button" className="sci-btn sci-btn-primary" onClick={openLogin}>
+                Connect <ArrowUpRight size={16} strokeWidth={2.4} />
               </button>
-              <button type="button" className={styles.providerBtn} onClick={openLogin}>
-                Log in
-              </button>
+
+              <p className={styles.createPrompt}>
+                New to Wilder World and ZERO?{' '}
+                <button type="button" onClick={openCreate}>
+                  Create your account here
+                </button>
+              </p>
             </section>
           )}
         </div>

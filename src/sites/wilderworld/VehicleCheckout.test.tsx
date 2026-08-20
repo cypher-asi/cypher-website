@@ -39,15 +39,18 @@ beforeEach(() => {
 describe('VehicleCheckout — the panel follows the session', () => {
   it('signed out: Create account opens the create modal, Log in opens login', () => {
     render(<VehicleCheckout pass={pass} />);
-    fireEvent.click(screen.getByRole('button', { name: /Create account/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Create your account here/i }));
     expect(h.openCreate).toHaveBeenCalledTimes(1);
-    fireEvent.click(screen.getByRole('button', { name: 'Log in' }));
+    fireEvent.click(screen.getByRole('button', { name: /Connect/i }));
     expect(h.openLogin).toHaveBeenCalledTimes(1);
   });
 
   it('signed out: shows the account panel, not payment', () => {
     render(<VehicleCheckout pass={pass} />);
-    expect(screen.getByRole('heading', { name: /Your ZERO account/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Sign in to checkout/i })).toBeInTheDocument();
+    // Each option says who it is for, so a returning player is steered to Log in
+    // rather than quietly creating a second account.
+    expect(screen.getByText(/Already play Wilder World or have a ZERO account\?/i)).toBeInTheDocument();
     expect(screen.queryByTestId('card-element')).not.toBeInTheDocument();
   });
 
