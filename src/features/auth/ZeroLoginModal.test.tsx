@@ -90,22 +90,18 @@ describe('ZeroLoginModal — login mode', () => {
     expect(screen.getByPlaceholderText('you@email.com')).not.toHaveFocus();
   });
 
-  it('shows email straight away on mobile, where Epic is unavailable', async () => {
+  it('offers Epic on mobile too, where it used to be hidden', async () => {
     setUserAgent(MOBILE);
     render(<ZeroLoginModal />);
 
-    // Epic is gated on mobile, so collapsing email too would leave no way in at all.
-    await waitFor(() => expect(screen.getByPlaceholderText('you@email.com')).toBeInTheDocument());
-    expect(screen.queryByRole('button', { name: /with email instead/i })).not.toBeInTheDocument();
-  });
+    // The old gate forced mobile players down the email path, which is exactly how
+    // a second account gets made. The redirect was verified working on mobile.
+    expect(await screen.findByRole('button', { name: /Continue with Epic Games/i })).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText('you@email.com')).not.toBeInTheDocument();
 
-  it('hides the Epic Games button on mobile', async () => {
-    setUserAgent(MOBILE);
-    render(<ZeroLoginModal />);
-    await screen.findByText('Sign in');
-    await waitFor(() =>
-      expect(screen.queryByRole('button', { name: /Continue with Epic Games/i })).not.toBeInTheDocument(),
-    );
+    // And email is still reachable, so a device where Epic did fail is not stuck.
+    await revealEmail();
+    expect(screen.getByPlaceholderText('you@email.com')).toBeInTheDocument();
   });
 
   it('offers a create-account toggle that calls openCreate', () => {
