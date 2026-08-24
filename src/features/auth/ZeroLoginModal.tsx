@@ -204,10 +204,26 @@ export function ZeroLoginModal() {
             create. Epic is not mentioned as a login here, only as something that can
             be attached afterwards, which is what this path actually leaves open. */}
         {showEmail && isCreate && (
-          <p className={styles.epicPrompt}>
-            Create your Wilder World account and its ZERO wallet using your email. You can link
-            your Epic account later.
-          </p>
+          <>
+            <p className={styles.epicPrompt}>
+              Create your Wilder World account and its ZERO wallet using your email. You can link
+              your Epic account later.
+            </p>
+
+            {/* The last point at which a second account can still be avoided. A player
+                who signs up here rather than with Epic gets a new ZERO account, their
+                purchase is delivered to its wallet, and the game keeps reading the
+                account Epic is already attached to. Linking Epic afterwards only moves
+                the problem, since it pulls the link off the account they play with.
+                So say it here, where not creating the account is still an option. */}
+            <p className={styles.signupWarning}>
+              Already play Wilder World? Creating an account here gives you a second one, and
+              anything you buy will not be on the account you play with.{' '}
+              <button type="button" onClick={() => setShowEmail(false)}>
+                Use Epic Games instead
+              </button>
+            </p>
+          </>
         )}
 
         {showEmail &&
