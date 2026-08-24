@@ -187,6 +187,19 @@
   color: var(--color-text-secondary);
 }
 
+/* A caution rather than description: this is the last point where a player can
+   avoid ending up with a second account, so it needs to read differently from
+   the copy around it. */
+.signupWarning {
+  margin: 0 0 1.1rem;
+  padding: 0.7rem 0.85rem;
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: var(--color-text-primary);
+  background: rgba(255, 100, 52, 0.07);
+  border-left: 2px solid #ff6434;
+}
+
 .epicPrompt {
   margin: 0 0 1.1rem;
   font-size: 0.82rem;
@@ -207,7 +220,8 @@
 }
 
 .epicPrompt button,
-.altPrompt button {
+.altPrompt button,
+.signupWarning button {
   appearance: none;
   background: none;
   border: none;

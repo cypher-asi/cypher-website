@@ -136,6 +136,21 @@ describe('ZeroLoginModal — create mode', () => {
     ).toBeInTheDocument();
   });
 
+  it('warns a player off creating a second account, and offers Epic from the warning', async () => {
+    render(<ZeroLoginModal />);
+    await revealEmail();
+
+    // This is the last point where the second account can still be avoided, so the
+    // warning has to name the consequence, not just mention Epic.
+    expect(screen.getByText(/gives you a second one/i)).toBeInTheDocument();
+    expect(screen.getByText(/not be on the account you play with/i)).toBeInTheDocument();
+
+    // And it has to be actionable from there rather than sending them hunting.
+    fireEvent.click(screen.getByRole('button', { name: /Use Epic Games instead/i }));
+    expect(await screen.findByRole('button', { name: 'Create with Epic Games' })).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText('you@email.com')).not.toBeInTheDocument();
+  });
+
   it('keeps submit disabled until name + matching passwords, then calls signUp', async () => {
     render(<ZeroLoginModal />);
     await revealEmail();
