@@ -160,10 +160,12 @@ export default function VehiclePaymentForm({
   if (state.kind === 'delivered') {
     return (
       <section className={styles.panel} aria-label="Purchase complete">
-        <span className={styles.successBadge} aria-hidden>
-          <Check size={20} strokeWidth={3} />
-        </span>
-        <h1 className={styles.panelTitle}>Purchase complete</h1>
+        <div className={styles.successHeader}>
+          <span className={styles.successBadge} aria-hidden>
+            <Check size={20} strokeWidth={3} />
+          </span>
+          <h1 className={styles.panelTitle}>Purchase complete</h1>
+        </div>
         <p className={styles.panelSub}>
           Your {pass.name} is on its way to your ZERO wallet
           {walletAddress ? ` (${shortWallet(walletAddress)})` : ''}.
