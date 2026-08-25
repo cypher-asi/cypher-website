@@ -4,6 +4,8 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { useAuthStore } from './store';
+import { useEpicAuthPopup } from './useEpicAuthPopup';
+import { POPUP_RETURN_PATH, REDIRECT_RETURN_PATH } from './epicPopup';
 import styles from './ZeroLoginModal.module.css';
 
 type Tab = 'code' | 'password';
@@ -46,6 +48,7 @@ export function ZeroLoginModal() {
   const signUp = useAuthStore((s) => s.signUp);
   const openLogin = useAuthStore((s) => s.openLogin);
   const openCreate = useAuthStore((s) => s.openCreate);
+  const restore = useAuthStore((s) => s.restore);
 
   const [mounted, setMounted] = useState(false);
   const [tab, setTab] = useState<Tab>('code');
@@ -89,6 +92,22 @@ export function ZeroLoginModal() {
     };
   }, [isOpen, closeLogin]);
 
+  // Runs the Epic handshake in a popup so the page underneath is never navigated
+  // away from. Declared with the other hooks, above the early return below, so
+  // its position never depends on whether the modal happens to be open.
+  //
+  // Cookies belong to the host rather than the window, so once the popup's
+  // callback has set the session we only need to re-read it here.
+  const epicPopup = useEpicAuthPopup(async () => {
+    await restore();
+    closeLogin();
+  });
+
+  // A failure from a previous attempt shouldn't greet the next one.
+  useEffect(() => {
+    if (isOpen) epicPopup.reset();
+  }, [isOpen, epicPopup.reset]);
+
   if (!mounted || !isOpen) return null;
 
   const isCreate = mode === 'create';
@@ -118,18 +137,20 @@ export function ZeroLoginModal() {
     await signUp(email.trim(), password, name.trim());
   };
 
-  // Epic Games OAuth. Login uses the existing-user path; create uses the
-  // create-or-login `initiate` path (its callback findOrCreates the account).
-  // zos-api sets its own SameSite=Lax oauth_state cookie during the redirect and
-  // validates it on its callback, so we navigate straight there — bouncing through
-  // an app route first would break that state round-trip. The base is public
+  // Login uses the existing-user path; create uses the create-or-login
+  // `initiate` path (its callback findOrCreates the account). zos-api sets its
+  // own SameSite=Lax oauth_state cookie during the redirect and validates it on
+  // its callback, so we point the window straight there — bouncing through an
+  // app route first would break that state round-trip. The base is public
   // (NEXT_PUBLIC), not a secret.
   const epicSignIn = () => {
     const base = process.env.NEXT_PUBLIC_ZOS_API_URL;
     if (!base) return;
-    const returnUrl = `${window.location.origin}/oauth/callback`;
     const path = isCreate ? '/api/oauth/epic-games/initiate' : '/api/oauth/epic-games/login';
-    window.location.href = `${base}${path}?returnUrl=${encodeURIComponent(returnUrl)}`;
+    const start = (returnPath: string) =>
+      `${base}${path}?returnUrl=${encodeURIComponent(`${window.location.origin}${returnPath}`)}`;
+
+    epicPopup.open(start(POPUP_RETURN_PATH), start(REDIRECT_RETURN_PATH));
   };
 
   return createPortal(
@@ -162,9 +183,22 @@ export function ZeroLoginModal() {
                 ? 'Create your Wilder World account and its ZERO wallet using Epic Games. It’s the same account you’ll use in game.'
                 : 'Already play Wilder World?'}
             </p>
-            <button type="button" className={styles.social} onClick={epicSignIn}>
-              {isCreate ? 'Create with Epic Games' : 'Continue with Epic Games'}
+            <button
+              type="button"
+              className={styles.social}
+              onClick={epicSignIn}
+              disabled={epicPopup.busy}
+            >
+              {epicPopup.busy
+                ? 'Waiting for Epic Games…'
+                : isCreate
+                  ? 'Create with Epic Games'
+                  : 'Continue with Epic Games'}
             </button>
+            {/* The popup owns the screen while it is open, so this is only read
+                after it closes: either it reported a failure, or the buyer shut
+                it and needs to know the button is live again. */}
+            {epicPopup.error && <div className={styles.error}>{epicPopup.error}</div>}
             {isCreate ? (
               <button
                 type="button"
