@@ -4,7 +4,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { useAuthStore } from './store';
-import { useEpicAuthPopup } from './useEpicAuthPopup';
+import { useEpicPopup } from './useEpicPopup';
 import { POPUP_RETURN_PATH, REDIRECT_RETURN_PATH } from './epicPopup';
 import styles from './ZeroLoginModal.module.css';
 
@@ -98,9 +98,14 @@ export function ZeroLoginModal() {
   //
   // Cookies belong to the host rather than the window, so once the popup's
   // callback has set the session we only need to re-read it here.
-  const epicPopup = useEpicAuthPopup(async () => {
-    await restore();
-    closeLogin();
+  const epicPopup = useEpicPopup({
+    onResult: async () => {
+      await restore();
+      closeLogin();
+    },
+    errorMessage: 'Could not finish signing in with Epic Games. Please try again.',
+    followUpErrorMessage:
+      'Signed in with Epic Games, but your account didn’t load. Please refresh the page.',
   });
 
   // A failure from a previous attempt shouldn't greet the next one.
