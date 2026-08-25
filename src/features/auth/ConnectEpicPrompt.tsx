@@ -1,27 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Check } from 'lucide-react';
 import { useEpicPopup } from './useEpicPopup';
-import type { LinkedAccount } from './zos';
+import { useEpicLinkStatus } from './useEpicLinkStatus';
 import styles from './ConnectEpicPrompt.module.css';
 
-const EPIC = 'epic-games';
 const START_PATH = '/api/auth/epic-link/start';
-
-type State =
-  | { kind: 'checking' }
-  | { kind: 'linked'; handle: string | null }
-  | { kind: 'unlinked' }
-  | { kind: 'confirm' }
-  | { kind: 'unavailable' };
-
-async function fetchEpicLink(signal?: AbortSignal): Promise<LinkedAccount | null> {
-  const res = await fetch('/api/auth/linked-accounts', { signal });
-  if (!res.ok) throw new Error(String(res.status));
-  const body = (await res.json()) as { accounts?: LinkedAccount[] };
-  return body.accounts?.find((a) => a.providerName === EPIC) ?? null;
-}
 
 /**
  * Offers to connect an Epic account, after a purchase rather than before it.
@@ -42,28 +27,18 @@ async function fetchEpicLink(signal?: AbortSignal): Promise<LinkedAccount | null
  * through Epic. The confirmation step is where that case is handled.
  */
 export function ConnectEpicPrompt() {
-  const [state, setState] = useState<State>({ kind: 'checking' });
-
-  const refresh = useCallback(async (signal?: AbortSignal) => {
-    const epic = await fetchEpicLink(signal);
-    setState(epic ? { kind: 'linked', handle: epic.handle } : { kind: 'unlinked' });
-  }, []);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    refresh(controller.signal).catch((err) => {
-      if (controller.signal.aborted || (err as Error)?.name === 'AbortError') return;
-      setState({ kind: 'unavailable' });
-    });
-    return () => controller.abort();
-  }, [refresh]);
+  const { status, refresh } = useEpicLinkStatus();
+  // Separate from the link status: it is a step the buyer is part-way through,
+  // not something the account is.
+  const [confirming, setConfirming] = useState(false);
 
   const popup = useEpicPopup({
-    onResult: async (status) => {
-      if (status === 'needs-confirmation') {
-        setState({ kind: 'confirm' });
+    onResult: async (result) => {
+      if (result === 'needs-confirmation') {
+        setConfirming(true);
         return;
       }
+      setConfirming(false);
       await refresh();
     },
     errorMessage: 'Could not connect your Epic account. Please try again.',
@@ -74,18 +49,9 @@ export function ConnectEpicPrompt() {
   // away from it to sign in elsewhere would lose the receipt the buyer is reading.
   const connect = (confirm = false) => popup.open(`${START_PATH}${confirm ? '?confirm=1' : ''}`);
 
-  if (state.kind === 'checking' || state.kind === 'unavailable') return null;
+  if (status.kind === 'checking' || status.kind === 'unavailable') return null;
 
-  if (state.kind === 'linked') {
-    return (
-      <p className={styles.linked}>
-        <Check size={13} strokeWidth={3} aria-hidden />
-        Epic Games connected{state.handle ? ` · ${state.handle}` : ''}
-      </p>
-    );
-  }
-
-  if (state.kind === 'confirm') {
+  if (confirming) {
     return (
       <section className={styles.warning} aria-label="Warning: this Epic account is already linked">
         {/* Definite, not hedged: zos-api only raises this when Epic is genuinely
@@ -118,7 +84,7 @@ export function ConnectEpicPrompt() {
             className={styles.secondary}
             onClick={() => {
               popup.reset();
-              setState({ kind: 'unlinked' });
+              setConfirming(false);
             }}
           >
             Cancel
@@ -134,6 +100,15 @@ export function ConnectEpicPrompt() {
         </div>
         {popup.error && <p className={styles.error}>{popup.error}</p>}
       </section>
+    );
+  }
+
+  if (status.kind === 'linked') {
+    return (
+      <p className={styles.linked}>
+        <Check size={13} strokeWidth={3} aria-hidden />
+        Epic Games connected{status.handle ? ` · ${status.handle}` : ''}
+      </p>
     );
   }
 
