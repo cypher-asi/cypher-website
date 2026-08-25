@@ -33,7 +33,7 @@
 
 /* ── Flow ── */
 
-.backToStore { display: inline-block; margin-bottom: 18px; font-size: 13.5px; color: rgba(230,232,235,0.55); text-decoration: none; }
+.backToStore { display: inline-block; margin-bottom: 8px; font-size: 13.5px; color: rgba(230,232,235,0.55); text-decoration: none; }
 .backToStore:hover { color: #e6e8eb; }
 .panel { border: 1px solid rgba(255,255,255,0.14); background: #0a0a0a; padding: 30px 32px 32px; display: grid; gap: 14px; }
 .panelTitle { margin: 0; font-size: 1.7rem; font-weight: 700; line-height: 1.05; }
@@ -121,7 +121,16 @@
 
 /* ── Purchase complete ── */
 
+/* Badge and title on one line, so this panel's header occupies the same single
+   row as the product panel's opposite it rather than stacking taller. */
+.successHeader {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
 .successBadge {
+  flex: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
