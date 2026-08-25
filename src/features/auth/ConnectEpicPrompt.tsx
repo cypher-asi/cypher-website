@@ -35,6 +35,11 @@ async function fetchEpicLink(signal?: AbortSignal): Promise<LinkedAccount | null
  * If the check itself fails we show nothing. Guessing "not linked" would ask
  * someone to connect an account they already have, which is worse than staying
  * quiet on a screen that is otherwise good news.
+ *
+ * The prompt is an invitation rather than a warning, deliberately. Urgency here
+ * would push hardest on existing players, and for them connecting is the one
+ * option that costs something — their game account is usually reachable only
+ * through Epic. The confirmation step is where that case is handled.
  */
 export function ConnectEpicPrompt() {
   const [state, setState] = useState<State>({ kind: 'checking' });
@@ -82,16 +87,31 @@ export function ConnectEpicPrompt() {
 
   if (state.kind === 'confirm') {
     return (
-      <section className={styles.warning} aria-label="Confirm connecting Epic Games">
-        <h2 className={styles.warningTitle}>This Epic account is already in use</h2>
-        {/* Deliberately "may be" — the check that raises this counts only social
-            logins and wallets, so an account with an email and password can trip
-            it while still being perfectly reachable. */}
+      <section className={styles.warning} aria-label="Warning: this Epic account is already linked">
+        {/* Definite, not hedged: zos-api only raises this when Epic is genuinely
+            that account's last way in — email and password count, because they
+            are stored as an auth0 authorization alongside the social ones. */}
+        <h2 className={styles.warningTitle}>Warning</h2>
         <p>
-          It is connected to a different Wilder World account. Connecting it here moves it, and that
-          account may be left with no way to sign in — along with anything it holds.
+          This Epic Games account is already used to sign into a different Wilder World account, and
+          it is the only way into it.
         </p>
-        <p>If that account is one you still use, add an email and password to it first.</p>
+        <p>
+          Connect it here and you will be locked out of that other account for good, along with
+          everything in it.
+        </p>
+        {/* Two ways out, both better than proceeding, so each gets its own line
+            rather than being buried in prose. The transfer comes first: someone
+            who already plays loses nothing by moving the vehicle, whereas
+            connecting costs them the account they play on. */}
+        <p>
+          <strong>Already play on that account?</strong> Don’t connect — send your vehicle there
+          instead, from your wallet in the ZERO app.
+        </p>
+        <p>
+          <strong>Want Epic Games on this account?</strong> Cancel, add an email to the other
+          account in the ZERO app under Profile → Linked accounts, then come back.
+        </p>
         <div className={styles.warningActions}>
           <button
             type="button"
@@ -119,14 +139,28 @@ export function ConnectEpicPrompt() {
 
   return (
     <section className={styles.prompt} aria-label="Connect Epic Games">
-      <h2 className={styles.promptTitle}>Play Wilder World?</h2>
+      <h2 className={styles.promptTitle}>Playing Wilder World?</h2>
+      {/* No promise of a check here. zos-api only objects when the other account
+          would be left with no way in at all — if it has an email login the move
+          happens silently, which is the case the note below the button exists
+          for. */}
       <p>
-        Connect your Epic Games account so this is the account you play with. Without it, your
-        vehicle stays on this account only.
+        Your Wilder World account isn’t connected to Epic Games yet. Connect it to use this vehicle
+        in game.
       </p>
       <button type="button" className={styles.connect} onClick={() => connect()} disabled={popup.busy}>
         {popup.busy ? 'Waiting for Epic Games…' : 'Connect Epic Games'}
       </button>
+      {/* This is the only defence for the silent case. The confirmation warning
+          fires only when the other account would be left with no way in at all;
+          if it has an email login, connecting moves the Epic sign-in with no
+          prompt whatsoever — and someone who has always signed in with Epic may
+          have no idea what that email password is. So say plainly what
+          connecting does, before they start. */}
+      <p className={styles.aside}>
+        Connecting makes Epic Games sign you into this account. If you already play on a different
+        Wilder World account, send your vehicle there from your wallet in the ZERO app instead.
+      </p>
       {popup.error && <p className={styles.error}>{popup.error}</p>}
     </section>
   );

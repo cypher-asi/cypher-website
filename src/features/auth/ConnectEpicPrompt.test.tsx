@@ -56,6 +56,11 @@ describe('ConnectEpicPrompt', () => {
     render(<ConnectEpicPrompt />);
 
     expect(await openPopup()).toBeInTheDocument();
+    // The confirmation warning only fires when the other account would be left
+    // with no way in. If it has an email login the move is silent, so the prompt
+    // itself has to say what connecting does.
+    expect(screen.getByText(/makes Epic Games sign you into this account/i)).toBeInTheDocument();
+    expect(screen.getByText(/send your vehicle there from your wallet/i)).toBeInTheDocument();
   });
 
   it('shows nothing rather than guessing when the check fails', async () => {
@@ -100,10 +105,17 @@ describe('ConnectEpicPrompt', () => {
     fireEvent.click(await openPopup());
     popupReports('needs-confirmation');
 
-    expect(await screen.findByText(/already in use/i)).toBeInTheDocument();
-    // The wording must not overstate it: the check that raises this counts only
-    // social logins and wallets, so an email-and-password account can trip it.
-    expect(screen.getByText(/may be left with no way to sign in/i)).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: /warning/i })).toBeInTheDocument();
+    // Definite wording is correct here: zos-api counts email/password (stored as
+    // an auth0 authorization) alongside the social ones, so it only raises this
+    // when Epic really is that account's last way in. It must also say what the
+    // buyer can do about it rather than only what they stand to lose.
+    expect(screen.getByText(/only way into it/i)).toBeInTheDocument();
+    expect(screen.getByText(/locked out of that other account/i)).toBeInTheDocument();
+    // Both ways out must be offered — the transfer especially, since it is the
+    // one that costs an existing player nothing.
+    expect(screen.getByText(/send your vehicle there/i)).toBeInTheDocument();
+    expect(screen.getByText(/add an email to the other/i)).toBeInTheDocument();
   });
 
   it('re-runs with confirm once the buyer accepts the warning', async () => {
@@ -128,7 +140,7 @@ describe('ConnectEpicPrompt', () => {
     fireEvent.click(await screen.findByRole('button', { name: /Cancel/i }));
 
     expect(await openPopup()).toBeInTheDocument();
-    expect(screen.queryByText(/already in use/i)).toBeNull();
+    expect(screen.queryByRole('heading', { name: /warning/i })).toBeNull();
   });
 
   it('surfaces a failed handshake', async () => {

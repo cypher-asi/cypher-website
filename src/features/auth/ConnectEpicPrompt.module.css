@@ -28,6 +28,20 @@
   color: var(--color-text-secondary);
 }
 
+/* The alternative for someone who bought on the wrong account. Subordinate to
+   the button above it, since it applies to fewer people than connecting does. */
+.prompt .aside {
+  margin: 0.6rem 0 0;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+/* Lead-ins for the two ways out, so they can be told apart at a glance. */
+.warning strong {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
 .promptTitle,
 .warningTitle {
   margin: 0 0 0.35rem;
@@ -35,6 +49,14 @@
   font-size: 0.88rem;
   letter-spacing: 0.03em;
   color: var(--color-text-primary);
+}
+
+/* Uppercased in CSS rather than in the markup so assistive tech still reads it
+   as a word. This is the one screen in the flow with an irreversible action. */
+.warningTitle {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #ff8a8a;
 }
 
 .connect,
