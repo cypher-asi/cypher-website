@@ -1,0 +1,13 @@
+/* Sits under "Delivering to …" on the payment panel, qualifying it. Carries the
+   same caution treatment as the sign-up warning, because it is the same warning
+   at the next opportunity to act on it — and the last one that is still free.
+   Still passive: no button, nothing to dismiss, never in the way of paying. */
+.checkoutNotice {
+  margin: 0.1rem 0 0;
+  padding: 0.7rem 0.85rem;
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: var(--color-text-primary);
+  background: rgba(255, 100, 52, 0.07);
+  border-left: 2px solid #ff6434;
+}

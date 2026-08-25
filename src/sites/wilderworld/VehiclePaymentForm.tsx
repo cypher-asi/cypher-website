@@ -8,6 +8,7 @@ import type { VehiclePass } from './vehicles';
 import type { SavedCard } from '@/features/vehicles/types';
 import { isDemoCheckout } from '@/features/vehicles/demo-checkout';
 import { ConnectEpicPrompt } from '@/features/auth/ConnectEpicPrompt';
+import { EpicCheckoutNotice } from '@/features/auth/EpicCheckoutNotice';
 import { zscanTxUrl } from '@/lib/explorer';
 import styles from './VehicleCheckout.module.css';
 
@@ -228,6 +229,10 @@ export default function VehiclePaymentForm({
       <p className={styles.panelSub}>
         {walletAddress ? `Delivering to ${shortWallet(walletAddress)}.` : 'Delivering to your account.'}
       </p>
+      {/* Directly under where the vehicle is going, because that is what it
+          qualifies — and before paying, which is the last point where landing on
+          the wrong account is still free to avoid. */}
+      <EpicCheckoutNotice />
 
       <label className={styles.field}>
         <span>Email</span>
