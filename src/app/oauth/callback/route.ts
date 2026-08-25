@@ -16,6 +16,11 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const sessionToken = searchParams.get('sessionEstablishmentToken');
   const error = searchParams.get('error');
+  // Set when the handshake was started in a popup. The session cookie is still
+  // established here exactly as before; only where we send the browser next
+  // differs, because a popup has to report back and close rather than navigate
+  // somewhere useful.
+  const isPopup = searchParams.get('popup') === '1';
 
   // Build the redirect target from the Host header, not request.url — in a Next
   // route handler request.url reports the server bind host (e.g. localhost),
@@ -25,16 +30,19 @@ export async function GET(request: Request) {
   const proto = request.headers.get('x-forwarded-proto') ?? (host.includes('localhost') ? 'http' : 'https');
   const redirectTo = (path: string) => NextResponse.redirect(`${proto}://${host}${path}`);
 
+  const failure = () =>
+    redirectTo(isPopup ? '/oauth/popup-done?status=error' : '/market?authError=social');
+
   if (error || !sessionToken) {
-    return redirectTo('/market?authError=social');
+    return failure();
   }
 
   try {
     const token = await establishOauthSession(sessionToken);
-    const response = redirectTo('/market');
+    const response = redirectTo(isPopup ? '/oauth/popup-done?status=success' : '/market');
     setSessionCookie(response, token);
     return response;
   } catch {
-    return redirectTo('/market?authError=social');
+    return failure();
   }
 }

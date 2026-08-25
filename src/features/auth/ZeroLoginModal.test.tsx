@@ -6,6 +6,10 @@ const h = vi.hoisted(() => ({
   signUp: vi.fn(),
   openLogin: vi.fn(),
   openCreate: vi.fn(),
+  // Hoisted so they keep identity across renders and can be asserted on. The
+  // Epic popup path calls both on success.
+  restore: vi.fn(async () => {}),
+  closeLogin: vi.fn(),
 }));
 
 vi.mock('./store', () => ({
@@ -15,8 +19,9 @@ vi.mock('./store', () => ({
       mode: h.mode,
       status: 'idle',
       error: null,
-      closeLogin: vi.fn(),
+      closeLogin: h.closeLogin,
       clearError: vi.fn(),
+      restore: h.restore,
       requestCode: vi.fn(),
       verifyCode: vi.fn(),
       signInWithPassword: vi.fn(),
@@ -45,6 +50,8 @@ beforeEach(() => {
   h.signUp.mockReset();
   h.openLogin.mockReset();
   h.openCreate.mockReset();
+  h.restore.mockClear();
+  h.closeLogin.mockClear();
   setUserAgent(DESKTOP);
 });
 afterEach(cleanup);
@@ -108,6 +115,135 @@ describe('ZeroLoginModal — login mode', () => {
     render(<ZeroLoginModal />);
     fireEvent.click(screen.getByRole('button', { name: /Create an account/i }));
     expect(h.openCreate).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('ZeroLoginModal — Epic runs in a popup', () => {
+  // epicSignIn no-ops without a zos base URL, so the flow needs one to run.
+  beforeEach(() => vi.stubEnv('NEXT_PUBLIC_ZOS_API_URL', 'https://zos.example'));
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+    // Restored here, not inline, so a failing test can't leak mode into the next.
+    h.mode = 'login';
+  });
+
+  const clickEpic = async () =>
+    fireEvent.click(await screen.findByRole('button', { name: /Continue with Epic Games/i }));
+
+  it('opens a popup and leaves the page underneath alone', async () => {
+    const fakePopup = { closed: false, close: vi.fn(), focus: vi.fn() };
+    const open = vi.fn(() => fakePopup);
+    vi.stubGlobal('open', open);
+
+    render(<ZeroLoginModal />);
+    await clickEpic();
+
+    // The whole point: the purchase page beneath is never navigated away from.
+    expect(open).toHaveBeenCalledTimes(1);
+    const [url, target] = open.mock.calls[0] as unknown as [string, string];
+    expect(url).toContain('/api/oauth/epic-games/login');
+    expect(url).toContain(encodeURIComponent('/oauth/callback?popup=1'));
+    expect(target).toBe('zero-epic-auth');
+
+    // And it says so, rather than looking like nothing happened.
+    expect(screen.getByRole('button', { name: /Waiting for Epic Games/i })).toBeDisabled();
+  });
+
+  it('falls back to a full page redirect when the popup is blocked', async () => {
+    vi.stubGlobal('open', vi.fn(() => null));
+    // jsdom will not let location.assign be redefined, so swap the object.
+    // unstubAllGlobals in afterEach puts the real one back.
+    const assign = vi.fn();
+    vi.stubGlobal('location', { origin: 'http://localhost:3000', assign });
+
+    render(<ZeroLoginModal />);
+    await clickEpic();
+
+    // A blocked popup must not leave a button that silently does nothing.
+    await waitFor(() => expect(assign).toHaveBeenCalledTimes(1));
+    const target = assign.mock.calls[0][0] as string;
+    expect(target).toContain('/api/oauth/epic-games/login');
+    expect(target).not.toContain('popup%3D1');
+  });
+
+  it('re-reads the session and closes once the popup reports success', async () => {
+    const fakePopup = { closed: false, close: vi.fn(), focus: vi.fn() };
+    vi.stubGlobal('open', vi.fn(() => fakePopup));
+
+    render(<ZeroLoginModal />);
+    await clickEpic();
+
+    fireEvent(
+      window,
+      new MessageEvent('message', {
+        data: { source: 'zero-epic-auth', status: 'success' },
+        origin: window.location.origin,
+      }),
+    );
+
+    // The cookie is already set by the popup's callback, so the opener only has
+    // to pick up the session that is now there.
+    await waitFor(() => expect(h.restore).toHaveBeenCalled());
+    expect(h.closeLogin).toHaveBeenCalled();
+    expect(fakePopup.close).toHaveBeenCalled();
+  });
+
+  it('surfaces a failure to load the account rather than looking idle', async () => {
+    const fakePopup = { closed: false, close: vi.fn(), focus: vi.fn() };
+    vi.stubGlobal('open', vi.fn(() => fakePopup));
+    h.restore.mockRejectedValueOnce(new Error('network'));
+
+    render(<ZeroLoginModal />);
+    await clickEpic();
+
+    fireEvent(
+      window,
+      new MessageEvent('message', {
+        data: { source: 'zero-epic-auth', status: 'success' },
+        origin: window.location.origin,
+      }),
+    );
+
+    // Sign-in worked and the cookie is set, so the advice has to be recoverable.
+    expect(await screen.findByText(/refresh the page/i)).toBeInTheDocument();
+    expect(h.closeLogin).not.toHaveBeenCalled();
+  });
+
+  it('uses the create-or-login path in create mode', async () => {
+    h.mode = 'create';
+    const fakePopup = { closed: false, close: vi.fn(), focus: vi.fn() };
+    const open = vi.fn(() => fakePopup);
+    vi.stubGlobal('open', open);
+
+    render(<ZeroLoginModal />);
+    fireEvent.click(await screen.findByRole('button', { name: /Create with Epic Games/i }));
+
+    // initiate findOrCreates the account; login would reject a new Epic user.
+    const [url] = open.mock.calls[0] as unknown as [string];
+    expect(url).toContain('/api/oauth/epic-games/initiate');
+    expect(url).toContain(encodeURIComponent('/oauth/callback?popup=1'));
+  });
+
+  it('ignores a message from another origin', async () => {
+    const fakePopup = { closed: false, close: vi.fn(), focus: vi.fn() };
+    vi.stubGlobal('open', vi.fn(() => fakePopup));
+
+    render(<ZeroLoginModal />);
+    await clickEpic();
+
+    fireEvent(
+      window,
+      new MessageEvent('message', {
+        data: { source: 'zero-epic-auth', status: 'success' },
+        origin: 'https://not-us.example',
+      }),
+    );
+
+    // Anyone can postMessage us; only our own origin may end the handshake.
+    await new Promise((r) => setTimeout(r, 20));
+    expect(h.restore).not.toHaveBeenCalled();
+    expect(h.closeLogin).not.toHaveBeenCalled();
   });
 });
 
