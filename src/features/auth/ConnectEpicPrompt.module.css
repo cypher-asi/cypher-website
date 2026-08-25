@@ -1,0 +1,110 @@
+/* Sits on the purchase-complete panel, so it has to read as a useful next step
+   rather than as a problem with the purchase that just succeeded. */
+.prompt,
+.warning {
+  width: 100%;
+  margin: 0.35rem 0 0;
+  padding: 0.85rem 0.95rem;
+  text-align: left;
+}
+
+.prompt {
+  background: rgba(255, 100, 52, 0.06);
+  border: 1px solid rgba(255, 100, 52, 0.35);
+}
+
+/* The consequence here is not reversible, so it is deliberately louder than the
+   ordinary prompt. */
+.warning {
+  background: rgba(255, 82, 82, 0.07);
+  border: 1px solid rgba(255, 82, 82, 0.4);
+}
+
+.prompt p,
+.warning p {
+  margin: 0 0 0.6rem;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.promptTitle,
+.warningTitle {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  letter-spacing: 0.03em;
+  color: var(--color-text-primary);
+}
+
+.connect,
+.danger,
+.secondary {
+  padding: 0.6rem 0.9rem;
+  appearance: none;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.connect {
+  width: 100%;
+  background: rgba(255, 100, 52, 0.1);
+  border: 1px solid rgba(255, 100, 52, 0.5);
+  color: var(--color-text-primary);
+}
+.connect:hover:not(:disabled) {
+  border-color: #ff6434;
+  background: rgba(255, 100, 52, 0.18);
+}
+
+.warningActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.secondary {
+  flex: 1;
+  background: transparent;
+  border: 1px solid var(--color-border, rgba(230, 232, 235, 0.25));
+  color: var(--color-text-secondary);
+}
+.secondary:hover {
+  color: var(--color-text-primary);
+}
+
+.danger {
+  flex: 1;
+  background: rgba(255, 82, 82, 0.12);
+  border: 1px solid rgba(255, 82, 82, 0.5);
+  color: #ff8a8a;
+}
+.danger:hover:not(:disabled) {
+  background: rgba(255, 82, 82, 0.2);
+}
+
+.connect:disabled,
+.danger:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* Confirms the account is already right, so it stays quiet — a single line
+   rather than a panel competing with the receipt. */
+.linked {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+}
+
+.prompt .error,
+.warning .error {
+  margin: 0.55rem 0 0;
+  color: #ff8a63;
+  font-size: 0.78rem;
+}
