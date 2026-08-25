@@ -7,6 +7,7 @@ import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import type { VehiclePass } from './vehicles';
 import type { SavedCard } from '@/features/vehicles/types';
 import { isDemoCheckout } from '@/features/vehicles/demo-checkout';
+import { ConnectEpicPrompt } from '@/features/auth/ConnectEpicPrompt';
 import { zscanTxUrl } from '@/lib/explorer';
 import styles from './VehicleCheckout.module.css';
 
@@ -190,6 +191,11 @@ export default function VehiclePaymentForm({
             <ArrowUpRight size={13} />
           </a>
         )}
+
+        {/* Offered here rather than before paying: it is only worth asking once
+            there is something delivered for it to matter to, and it stays hidden
+            for the buyers who signed in with Epic and are already linked. */}
+        <ConnectEpicPrompt />
 
         <Link href="/vehicles" className="sci-btn sci-btn-primary">
           Back to store <ArrowUpRight size={16} strokeWidth={2.4} />
