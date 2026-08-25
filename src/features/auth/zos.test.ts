@@ -1,5 +1,12 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { establishOauthSession, register, currentUserEmail } from './zos';
+import {
+  establishOauthSession,
+  register,
+  currentUserEmail,
+  linkedAccounts,
+  generateLinkToken,
+  AuthError,
+} from './zos';
 
 describe('establishOauthSession', () => {
   afterEach(() => {
@@ -164,5 +171,95 @@ describe('currentUserEmail', () => {
       throw new Error('econnrefused');
     }));
     await expect(currentUserEmail('tok')).resolves.toBeNull();
+  });
+});
+
+describe('linkedAccounts', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+  });
+
+  it('reads the account’s providers with the session token as a Bearer', async () => {
+    vi.stubEnv('ZOS_API_URL', 'https://zos.example');
+    const row = { providerName: 'epic-games', providerId: 'abc', handle: 'player1' };
+    const fetchMock = vi.fn(
+      async () => new Response(JSON.stringify([row]), { status: 200 }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    expect(await linkedAccounts('tok')).toEqual([row]);
+    const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toBe('https://zos.example/api/oauth/linked-accounts');
+    expect((init.headers as Record<string, string>).Authorization).toBe('Bearer tok');
+  });
+
+  it('normalises a missing handle to null rather than the string "undefined"', async () => {
+    vi.stubEnv('ZOS_API_URL', 'https://zos.example');
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(JSON.stringify([{ providerName: 'epic-games', providerId: 'a' }]), { status: 200 })),
+    );
+
+    expect((await linkedAccounts('tok'))[0].handle).toBeNull();
+  });
+
+  it('throws rather than reporting nothing linked when the answer is unreadable', async () => {
+    // Treating a failure as "no accounts" would prompt a buyer to connect an
+    // account they already have.
+    vi.stubEnv('ZOS_API_URL', 'https://zos.example');
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('not json', { status: 200 })));
+
+    await expect(linkedAccounts('tok')).rejects.toBeInstanceOf(AuthError);
+  });
+
+  it('throws when zos-api returns an object instead of a list', async () => {
+    vi.stubEnv('ZOS_API_URL', 'https://zos.example');
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('{}', { status: 200 })));
+
+    await expect(linkedAccounts('tok')).rejects.toBeInstanceOf(AuthError);
+  });
+
+  it('passes a 401 through so the caller can tell "signed out" from "broken"', async () => {
+    vi.stubEnv('ZOS_API_URL', 'https://zos.example');
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('{}', { status: 401 })));
+
+    await expect(linkedAccounts('tok')).rejects.toMatchObject({ statusCode: 401 });
+  });
+});
+
+describe('generateLinkToken', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+  });
+
+  it('POSTs with the session token and returns the link token', async () => {
+    vi.stubEnv('ZOS_API_URL', 'https://zos.example');
+    const fetchMock = vi.fn(
+      async () => new Response(JSON.stringify({ linkToken: 'lt-1' }), { status: 200 }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    expect(await generateLinkToken('tok')).toBe('lt-1');
+    const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toBe('https://zos.example/api/oauth/generate-link-token');
+    expect(init.method).toBe('POST');
+    expect((init.headers as Record<string, string>).Authorization).toBe('Bearer tok');
+    expect(init.body).toBe('{}'); // matches the JSON content type zosFetch sets
+  });
+
+  it('throws when the service returns no token, rather than handing back an empty one', async () => {
+    vi.stubEnv('ZOS_API_URL', 'https://zos.example');
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('{}', { status: 200 })));
+
+    await expect(generateLinkToken('tok')).rejects.toBeInstanceOf(AuthError);
+  });
+
+  it('passes a 401 through', async () => {
+    vi.stubEnv('ZOS_API_URL', 'https://zos.example');
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('{}', { status: 401 })));
+
+    await expect(generateLinkToken('tok')).rejects.toMatchObject({ statusCode: 401 });
   });
 });

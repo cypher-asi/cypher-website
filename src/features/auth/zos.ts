@@ -227,3 +227,73 @@ export async function revokeSession(token: string): Promise<void> {
     /* already unreachable or invalid — the cookie is cleared regardless */
   }
 }
+
+/** One OAuth provider connected to a ZERO account, as zos-api reports it. */
+export type LinkedAccount = {
+  providerName: string;
+  providerId: string;
+  handle: string | null;
+};
+
+/**
+ * The OAuth providers linked to this account.
+ *
+ * Used to decide whether to prompt at all: an account created through Epic is
+ * already linked at creation, so most buyers should never see the step. Fails
+ * loud — an unreadable answer must not be mistaken for "nothing is linked",
+ * which would prompt someone to connect an account they already have.
+ */
+export async function linkedAccounts(token: string): Promise<LinkedAccount[]> {
+  const res = await zosFetch('/api/oauth/linked-accounts', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new AuthError(res.status === 401 ? 401 : 502, 'Could not read linked accounts');
+
+  let data: unknown;
+  try {
+    data = await res.json();
+  } catch {
+    throw new AuthError(502, 'Malformed response from auth service');
+  }
+  if (!Array.isArray(data)) throw new AuthError(502, 'Malformed response from auth service');
+
+  return data.map((entry) => {
+    const row = (entry ?? {}) as Partial<LinkedAccount>;
+    return {
+      providerName: String(row.providerName ?? ''),
+      providerId: String(row.providerId ?? ''),
+      handle: typeof row.handle === 'string' ? row.handle : null,
+    };
+  });
+}
+
+/**
+ * Mint a short-lived token authorising one account-link handshake.
+ *
+ * zos-api's link `initiate` is authenticated by this token alone rather than by a
+ * session, which is what lets the browser be sent straight there. It is
+ * single-use and expires in 60 seconds, so mint it at the moment the buyer acts
+ * — never ahead of time.
+ */
+export async function generateLinkToken(token: string): Promise<string> {
+  const res = await zosFetch('/api/oauth/generate-link-token', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    // zosFetch always sends a JSON content type, so send a body to match it.
+    body: JSON.stringify({}),
+  });
+  if (!res.ok) {
+    throw new AuthError(res.status === 401 ? 401 : 502, 'Could not start account linking');
+  }
+
+  let data: { linkToken?: unknown };
+  try {
+    data = (await res.json()) as { linkToken?: unknown };
+  } catch {
+    throw new AuthError(502, 'Malformed response from auth service');
+  }
+  if (typeof data.linkToken !== 'string' || !data.linkToken) {
+    throw new AuthError(502, 'Auth service returned no link token');
+  }
+  return data.linkToken;
+}
