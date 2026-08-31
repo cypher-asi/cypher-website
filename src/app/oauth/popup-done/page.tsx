@@ -16,10 +16,9 @@ import { EPIC_POPUP_MESSAGE, type EpicPopupMessage } from '@/features/auth/epicP
  */
 export default function EpicPopupDonePage() {
   useEffect(() => {
+    const reported = new URLSearchParams(window.location.search).get('status');
     const status: EpicPopupMessage['status'] =
-      new URLSearchParams(window.location.search).get('status') === 'success'
-        ? 'success'
-        : 'error';
+      reported === 'success' || reported === 'no-account' ? reported : 'error';
 
     // Targeted at our own origin, never '*', so the token-bearing round trip
     // cannot be observed by another window.
