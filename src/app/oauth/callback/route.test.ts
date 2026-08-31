@@ -41,4 +41,29 @@ describe('GET /oauth/callback', () => {
     const res = await GET(req('?sessionEstablishmentToken=bad'));
     expect(res.headers.get('location')).toContain('/market?authError=social');
   });
+
+  it('sends USER_NOT_FOUND to create rather than treating it as a failure', async () => {
+    // Epic authenticated; there is just no ZERO account behind it. Retrying the
+    // same path can never succeed, so it must not look like an ordinary error.
+    const res = await GET(req('?error=USER_NOT_FOUND'));
+
+    const url = new URL(res.headers.get('location')!);
+    expect(url.pathname).toBe('/market');
+    expect(url.searchParams.get('authError')).toBe('no-account');
+    expect(mocked).not.toHaveBeenCalled();
+  });
+
+  it('reports no-account back through the popup when one was used', async () => {
+    const res = await GET(req('?popup=1&error=USER_NOT_FOUND'));
+
+    const url = new URL(res.headers.get('location')!);
+    expect(url.pathname).toBe('/oauth/popup-done');
+    expect(url.searchParams.get('status')).toBe('no-account');
+  });
+
+  it('still treats other provider errors as failures', async () => {
+    const res = await GET(req('?error=OAUTH_PROCESSING_ERROR'));
+
+    expect(new URL(res.headers.get('location')!).searchParams.get('authError')).toBe('social');
+  });
 });

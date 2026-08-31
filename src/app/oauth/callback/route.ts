@@ -33,6 +33,16 @@ export async function GET(request: Request) {
   const failure = () =>
     redirectTo(isPopup ? '/oauth/popup-done?status=error' : '/market?authError=social');
 
+  // zos-api reports this when the provider authenticated but no ZERO account is
+  // linked to it yet. Kept distinct from a failure: nothing went wrong and
+  // retrying cannot help, so the caller has to be pointed at creating an account
+  // rather than told to try again.
+  if (error === 'USER_NOT_FOUND') {
+    return redirectTo(
+      isPopup ? '/oauth/popup-done?status=no-account' : '/market?authError=no-account',
+    );
+  }
+
   if (error || !sessionToken) {
     return failure();
   }
