@@ -49,6 +49,8 @@ export function ZeroLoginModal() {
   const openLogin = useAuthStore((s) => s.openLogin);
   const openCreate = useAuthStore((s) => s.openCreate);
   const restore = useAuthStore((s) => s.restore);
+  const notice = useAuthStore((s) => s.notice);
+  const openCreateWithNotice = useAuthStore((s) => s.openCreateWithNotice);
 
   const [mounted, setMounted] = useState(false);
   const [tab, setTab] = useState<Tab>('code');
@@ -99,7 +101,16 @@ export function ZeroLoginModal() {
   // Cookies belong to the host rather than the window, so once the popup's
   // callback has set the session we only need to re-read it here.
   const epicPopup = useEpicPopup({
-    onResult: async () => {
+    onResult: async (result) => {
+      if (result === 'no-account') {
+        // They authenticated with Epic, there is just nothing behind it yet.
+        // Switch to create so the button under this message is the one that
+        // works, rather than leaving them on the path that cannot.
+        openCreateWithNotice(
+          'No Wilder World account is linked to that Epic account yet. Create one with Epic Games below.',
+        );
+        return;
+      }
       await restore();
       closeLogin();
     },
@@ -200,10 +211,15 @@ export function ZeroLoginModal() {
                   ? 'Create with Epic Games'
                   : 'Continue with Epic Games'}
             </button>
+            {/* Both the popup and the full-page fallback land here, and this is
+                the only screen shown before email is revealed, so a message set
+                by either has to render on it. */}
+            {notice && <div className={styles.epicNotice}>{notice}</div>}
             {/* The popup owns the screen while it is open, so this is only read
                 after it closes: either it reported a failure, or the buyer shut
                 it and needs to know the button is live again. */}
             {epicPopup.error && <div className={styles.error}>{epicPopup.error}</div>}
+            {error && !notice && <div className={styles.error}>{error}</div>}
             {isCreate ? (
               <button
                 type="button"
