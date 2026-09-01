@@ -71,7 +71,7 @@ export function ConnectEpicPrompt() {
             who already plays loses nothing by moving the vehicle, whereas
             connecting costs them the account they play on. */}
         <p>
-          <strong>Already play on that account?</strong> Don’t connect — send your vehicle there
+          <strong>Already play on that account?</strong> Don’t connect. Send your vehicle there
           instead, from your wallet in the ZERO app.
         </p>
         <p>

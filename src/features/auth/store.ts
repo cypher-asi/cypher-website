@@ -13,12 +13,19 @@ interface AuthState {
   /** Which form the modal shows: sign in, or create a new account. */
   mode: 'login' | 'create';
   error: string | null;
+  /** A non-failure message shown alongside the provider buttons. */
+  notice: string | null;
 
   openLogin: () => void;
   /** Open the modal in create-account mode. */
   openCreate: () => void;
   /** Open the login modal showing an error (e.g. a failed social-login redirect). */
   openLoginWithError: (message: string) => void;
+  /** Open the modal in create mode carrying a notice. For when signing in cannot
+   * succeed because there is no account yet: nothing failed, so it is not an
+   * error, and retrying is pointless. Kept apart from `error` so it can be shown
+   * on the provider-first screen, which has no error of its own to render. */
+  openCreateWithNotice: (message: string) => void;
   closeLogin: () => void;
   clearError: () => void;
 
@@ -46,12 +53,16 @@ export const useAuthStore = create<AuthState>((set) => ({
   isModalOpen: false,
   mode: 'login',
   error: null,
+  notice: null,
 
-  openLogin: () => set({ isModalOpen: true, mode: 'login', error: null }),
-  openCreate: () => set({ isModalOpen: true, mode: 'create', error: null }),
-  openLoginWithError: (msg) => set({ isModalOpen: true, mode: 'login', error: msg }),
-  closeLogin: () => set({ isModalOpen: false, error: null }),
-  clearError: () => set({ error: null }),
+  openLogin: () => set({ isModalOpen: true, mode: 'login', error: null, notice: null }),
+  openCreate: () => set({ isModalOpen: true, mode: 'create', error: null, notice: null }),
+  openLoginWithError: (msg) =>
+    set({ isModalOpen: true, mode: 'login', error: msg, notice: null }),
+  openCreateWithNotice: (msg) =>
+    set({ isModalOpen: true, mode: 'create', error: null, notice: msg }),
+  closeLogin: () => set({ isModalOpen: false, error: null, notice: null }),
+  clearError: () => set({ error: null, notice: null }),
 
   restore: async () => {
     set({ status: 'restoring' });

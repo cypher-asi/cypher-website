@@ -274,3 +274,16 @@
 .switch button:hover {
   opacity: 0.85;
 }
+
+/* Epic authenticated but there is no account behind it yet. Styled apart from
+   .error because nothing failed: it explains why the screen just switched to
+   create, and points at the button below it. */
+.epicNotice {
+  margin-top: 0.6rem;
+  padding: 0.6rem 0.7rem;
+  background: rgba(255, 100, 52, 0.08);
+  border-left: 2px solid #ff6434;
+  color: var(--color-text-primary);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}

@@ -6,6 +6,9 @@ const h = vi.hoisted(() => ({
   signUp: vi.fn(),
   openLogin: vi.fn(),
   openCreate: vi.fn(),
+  openCreateWithNotice: vi.fn(),
+  notice: null as string | null,
+  error: null as string | null,
   // Hoisted so they keep identity across renders and can be asserted on. The
   // Epic popup path calls both on success.
   restore: vi.fn(async () => {}),
@@ -18,10 +21,12 @@ vi.mock('./store', () => ({
       isModalOpen: true,
       mode: h.mode,
       status: 'idle',
-      error: null,
+      error: h.error,
       closeLogin: h.closeLogin,
       clearError: vi.fn(),
       restore: h.restore,
+      notice: h.notice,
+      openCreateWithNotice: h.openCreateWithNotice,
       requestCode: vi.fn(),
       verifyCode: vi.fn(),
       signInWithPassword: vi.fn(),
@@ -50,6 +55,9 @@ beforeEach(() => {
   h.signUp.mockReset();
   h.openLogin.mockReset();
   h.openCreate.mockReset();
+  h.openCreateWithNotice.mockReset();
+  h.notice = null;
+  h.error = null;
   h.restore.mockClear();
   h.closeLogin.mockClear();
   setUserAgent(DESKTOP);
@@ -223,6 +231,54 @@ describe('ZeroLoginModal — Epic runs in a popup', () => {
     const [url] = open.mock.calls[0] as unknown as [string];
     expect(url).toContain('/api/oauth/epic-games/initiate');
     expect(url).toContain(encodeURIComponent('/oauth/callback?popup=1'));
+  });
+
+  it('sends an Epic user with no account to create, rather than telling them to retry', async () => {
+    const fakePopup = { closed: false, close: vi.fn(), focus: vi.fn() };
+    vi.stubGlobal('open', vi.fn(() => fakePopup));
+
+    render(<ZeroLoginModal />);
+    await clickEpic();
+
+    fireEvent(
+      window,
+      new MessageEvent('message', {
+        data: { source: 'zero-epic-auth', status: 'no-account' },
+        origin: window.location.origin,
+      }),
+    );
+
+    // Nothing failed, so it must not read as a failure, and the modal has to
+    // move to the path that can actually succeed.
+    // Set on the store, not locally, so the full-page fallback renders it too.
+    expect(h.openCreateWithNotice).toHaveBeenCalled();
+    expect(h.openCreateWithNotice.mock.calls[0][0]).toMatch(/No Wilder World account is linked/i);
+    expect(h.closeLogin).not.toHaveBeenCalled();
+    expect(h.restore).not.toHaveBeenCalled();
+    expect(screen.queryByText(/Could not finish signing in/i)).toBeNull();
+  });
+
+  it('shows a notice set by the full-page fallback, on the screen before email is revealed', async () => {
+    // Regression: every store-error render site sits behind showEmail, which is
+    // false by default, so a message set from outside the modal had nowhere to
+    // appear and was silently swallowed.
+    h.notice = 'No Wilder World account is linked to that Epic account yet.';
+    h.mode = 'create';
+
+    render(<ZeroLoginModal />);
+
+    expect(await screen.findByText(/No Wilder World account is linked/i)).toBeInTheDocument();
+  });
+
+  it('shows a sign-in error on the screen before email is revealed', async () => {
+    // Same latent problem as the notice: every error render site sat behind
+    // showEmail, which is false by default, so a failed social sign-in set a
+    // message nothing could display.
+    h.error = 'Sign-in with Epic Games didn’t complete. Please try again.';
+
+    render(<ZeroLoginModal />);
+
+    expect(await screen.findByText(/didn’t complete/i)).toBeInTheDocument();
   });
 
   it('ignores a message from another origin', async () => {
