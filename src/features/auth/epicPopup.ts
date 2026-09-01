@@ -15,17 +15,21 @@ export const EPIC_POPUP_MESSAGE = 'zero-epic-auth';
 
 /**
  * `needs-confirmation` is linking-only: the Epic account is already attached to
- * a different ZERO account that would be left without a way in. Signing in
- * never produces it.
+ * a different ZERO account that would be left without a way in.
+ *
+ * `no-account` is sign-in only: the Epic account authenticated fine but has no
+ * Wilder World account behind it yet. Kept separate from `error` because it is
+ * not a failure and retrying will never fix it. The buyer needs the create path,
+ * not another attempt at the same one.
  */
-export type EpicPopupStatus = 'success' | 'error' | 'needs-confirmation';
+export type EpicPopupStatus = 'success' | 'error' | 'needs-confirmation' | 'no-account';
 
 export type EpicPopupMessage = {
   source: typeof EPIC_POPUP_MESSAGE;
   status: EpicPopupStatus;
 };
 
-const STATUSES: EpicPopupStatus[] = ['success', 'error', 'needs-confirmation'];
+const STATUSES: EpicPopupStatus[] = ['success', 'error', 'needs-confirmation', 'no-account'];
 
 /** Narrow an arbitrary postMessage payload to our own. */
 export function isEpicPopupMessage(data: unknown): data is EpicPopupMessage {
