@@ -3,6 +3,7 @@ import {
   establishOauthSession,
   register,
   currentUserEmail,
+  currentUser,
   linkedAccounts,
   generateLinkToken,
   AuthError,
@@ -81,7 +82,7 @@ describe('register', () => {
     const { token, user } = await register('a@b.com', 'pw', 'Ada');
 
     expect(token).toBe('jwt-new');
-    expect(user).toEqual({ id: 'u1', zeroWalletAddress: '0xabc', handle: 'h' });
+    expect(user).toEqual({ id: 'u1', zeroWalletAddress: '0xabc', handle: 'h', displayName: null });
     // createAndAuthorize carries the email as handle + the server-side invite slug.
     expect(bodyOf(callTo(fetchMock, '/createAndAuthorize'))).toEqual({
       user: { email: 'a@b.com', password: 'pw', handle: 'a@b.com' },
@@ -171,6 +172,44 @@ describe('currentUserEmail', () => {
       throw new Error('econnrefused');
     }));
     await expect(currentUserEmail('tok')).resolves.toBeNull();
+  });
+});
+
+describe('currentUser display name', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+  });
+
+  it('reads the display name zos holds as profileSummary.firstName', async () => {
+    vi.stubEnv('ZOS_API_URL', 'https://zos.example');
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        async () =>
+          new Response(
+            JSON.stringify({ id: 'u1', handle: 'h', profileSummary: { firstName: 'Greg' } }),
+            { status: 200 },
+          ),
+      ),
+    );
+
+    expect((await currentUser('tok'))?.displayName).toBe('Greg');
+  });
+
+  it('treats an empty display name as none, so callers fall back', async () => {
+    vi.stubEnv('ZOS_API_URL', 'https://zos.example');
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        async () =>
+          new Response(JSON.stringify({ id: 'u1', handle: 'h', profileSummary: { firstName: '' } }), {
+            status: 200,
+          }),
+      ),
+    );
+
+    expect((await currentUser('tok'))?.displayName).toBeNull();
   });
 });
 

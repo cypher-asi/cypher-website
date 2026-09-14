@@ -7,4 +7,8 @@ export interface AuthUser {
   zeroWalletAddress: string | null;
   /** Display handle / primary ZID, when set. */
   handle: string | null;
+  /** The name the account shows itself under. zos-api holds it as
+   * `profileSummary.firstName`, and maps it to `displayName` in its own external
+   * API. Null when the account has never been given one. */
+  displayName: string | null;
 }
