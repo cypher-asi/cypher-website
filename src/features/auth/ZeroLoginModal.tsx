@@ -199,6 +199,11 @@ export function ZeroLoginModal() {
                 ? 'Create your Wilder World account and its ZERO wallet using Epic Games. It’s the same account you’ll use in game.'
                 : 'Already play Wilder World?'}
             </p>
+            {/* Above the button on purpose. It explains why the buyer has landed
+                here, and it points at the button, so it has to be read first.
+                Both the popup and the full-page fallback set it, and this is the
+                only screen shown before email is revealed. */}
+            {notice && <div className={styles.epicNotice}>{notice}</div>}
             <button
               type="button"
               className={styles.social}
@@ -211,10 +216,6 @@ export function ZeroLoginModal() {
                   ? 'Create with Epic Games'
                   : 'Continue with Epic Games'}
             </button>
-            {/* Both the popup and the full-page fallback land here, and this is
-                the only screen shown before email is revealed, so a message set
-                by either has to render on it. */}
-            {notice && <div className={styles.epicNotice}>{notice}</div>}
             {/* The popup owns the screen while it is open, so this is only read
                 after it closes: either it reported a failure, or the buyer shut
                 it and needs to know the button is live again. */}

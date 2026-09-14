@@ -277,9 +277,10 @@
 
 /* Epic authenticated but there is no account behind it yet. Styled apart from
    .error because nothing failed: it explains why the screen just switched to
-   create, and points at the button below it. */
+   create, and points at the button below it. Sits between the intro copy and
+   that button, so it needs clearing on both sides. */
 .epicNotice {
-  margin-top: 0.6rem;
+  margin: 0.2rem 0 0.7rem;
   padding: 0.6rem 0.7rem;
   background: rgba(255, 100, 52, 0.08);
   border-left: 2px solid #ff6434;

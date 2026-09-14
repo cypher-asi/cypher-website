@@ -267,7 +267,13 @@ describe('ZeroLoginModal — Epic runs in a popup', () => {
 
     render(<ZeroLoginModal />);
 
-    expect(await screen.findByText(/No Wilder World account is linked/i)).toBeInTheDocument();
+    const message = await screen.findByText(/No Wilder World account is linked/i);
+    expect(message).toBeInTheDocument();
+
+    // It explains why they have landed here and points at the button, so it has
+    // to come before it. The copy says "below".
+    const button = screen.getByRole('button', { name: /Create with Epic Games/i });
+    expect(message.compareDocumentPosition(button)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
   });
 
   it('shows a sign-in error on the screen before email is revealed', async () => {
