@@ -168,6 +168,7 @@ export async function currentUser(token: string): Promise<AuthUser | null> {
     zeroWalletAddress?: string | null;
     handle?: string | null;
     primaryZID?: string | null;
+    profileSummary?: { firstName?: string | null } | null;
   };
   try {
     user = await res.json();
@@ -182,6 +183,7 @@ export async function currentUser(token: string): Promise<AuthUser | null> {
     id: user.id,
     zeroWalletAddress: user.zeroWalletAddress ?? null,
     handle: user.handle ?? user.primaryZID ?? null,
+    displayName: user.profileSummary?.firstName || null,
   };
 }
 

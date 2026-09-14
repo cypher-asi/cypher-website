@@ -28,7 +28,7 @@ describe('auth store — create account', () => {
   });
 
   it('signUp success sets the user and closes the modal', async () => {
-    const user = { id: 'u1', zeroWalletAddress: '0xabc', handle: null };
+    const user = { id: 'u1', zeroWalletAddress: '0xabc', handle: null, displayName: null };
     vi.mocked(client.register).mockResolvedValue(user);
     useAuthStore.setState({ isModalOpen: true, mode: 'create' });
 
