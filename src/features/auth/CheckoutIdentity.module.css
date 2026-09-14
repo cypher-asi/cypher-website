@@ -1,0 +1,70 @@
+/* Stated as facts to check, not as a subtitle to skim. Bordered and set apart
+   from the copy around it so it reads as a panel about the account rather than
+   a note about the payment. */
+.identity {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0.2rem 0 0.3rem;
+  padding: 0.85rem 0.95rem;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.15rem 1rem;
+}
+
+/* Sentence case rather than the uppercase used elsewhere: these labels are full
+   phrases, and uppercasing a sentence is hard to read and reads as shouting. */
+.label {
+  font-size: 0.78rem;
+  color: rgba(230, 232, 235, 0.5);
+}
+
+/* The values carry the weight, since they are the part being checked. */
+.value,
+.connected,
+.notConnected {
+  font-size: 0.85rem;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.value {
+  color: var(--color-text-primary);
+}
+
+/* The address itself is the link, so the strongest check available is one click
+   from the fact it qualifies: an account bought on by mistake is visibly near
+   empty next to the one they actually play on. */
+.walletLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 0.85rem;
+  color: #ff6434;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.walletLink:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.connected {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--color-text-primary);
+}
+
+/* Stated, not alarmed. The orange notice below this one is what explains the
+   consequence and what to do about it. */
+.notConnected {
+  color: rgba(230, 232, 235, 0.55);
+}
