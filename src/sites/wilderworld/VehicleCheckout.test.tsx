@@ -78,8 +78,14 @@ describe('VehicleCheckout — the panel follows the session', () => {
   });
 
   it('offers a way back to the store from every state', async () => {
-    const backToStore = () =>
-      screen.getByRole('link', { name: /Back to store/i }).getAttribute('href');
+    const backToStore = () => {
+      const link = screen.getByRole('link', { name: /Back to store/i });
+      // Inside the panel, beside its title, rather than floating above it
+      // attached to nothing. getByRole is singular, so this also proves no
+      // panel offers the same way out twice.
+      expect(link.closest('section')).toHaveAttribute('aria-label');
+      return link.getAttribute('href');
+    };
 
     render(<VehicleCheckout pass={pass} />); // signed out
     expect(backToStore()).toBe('/vehicles');

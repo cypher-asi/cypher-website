@@ -1,12 +1,12 @@
 'use client';
 
-import Link from 'next/link';
 import { ArrowUpRight, Check } from 'lucide-react';
 import { Elements } from '@stripe/react-stripe-js';
 import { useAuthStore } from '@/features/auth/store';
 import { getStripePromise } from '@/features/vehicles/stripe-client';
 import type { VehiclePass } from './vehicles';
 import VehiclePaymentForm from './VehiclePaymentForm';
+import { CheckoutPanelHeader } from './CheckoutPanelHeader';
 import styles from './VehicleCheckout.module.css';
 
 /** Single-panel buy flow. What the panel shows follows the session rather than a
@@ -51,17 +51,13 @@ export default function VehicleCheckout({ pass }: { pass: VehiclePass }) {
 
         {/* ── Account, or payment once the account can receive the vehicle ── */}
         <div className={styles.flow}>
-          <Link href="/vehicles" className={styles.backToStore}>
-            {'‹'} Back to store
-          </Link>
-
           {user?.zeroWalletAddress ? (
             <Elements stripe={getStripePromise()}>
               <VehiclePaymentForm pass={pass} walletAddress={user.zeroWalletAddress} />
             </Elements>
           ) : user ? (
             <section className={styles.panel} aria-label="Account">
-              <h1 className={styles.panelTitle}>Your account</h1>
+              <CheckoutPanelHeader title="Your account" />
               <p className={styles.panelSub}>
                 Your pass and everything in it gets delivered to this account.
               </p>
@@ -84,7 +80,7 @@ export default function VehicleCheckout({ pass }: { pass: VehiclePass }) {
             </section>
           ) : (
             <section className={styles.panel} aria-label="Account">
-              <h1 className={styles.panelTitle}>Sign in to checkout</h1>
+              <CheckoutPanelHeader title="Sign in to checkout" />
               <p className={styles.panelSub}>
                 Your Wilder World account is powered by ZERO. Your pass and everything in it gets
                 delivered to your account&apos;s wallet.
