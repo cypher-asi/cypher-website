@@ -35,7 +35,7 @@
 
 .backToStore { display: inline-block; margin-bottom: 8px; font-size: 13.5px; color: rgba(230,232,235,0.55); text-decoration: none; }
 .backToStore:hover { color: #e6e8eb; }
-.panel { border: 1px solid rgba(255,255,255,0.14); background: #0a0a0a; padding: 30px 32px 32px; display: grid; gap: 14px; }
+.panel { border: 1px solid rgba(255,255,255,0.14); background: #0a0a0a; padding: 24px; display: grid; gap: 14px; }
 .panelTitle { margin: 0; font-size: 1.7rem; font-weight: 700; line-height: 1.05; }
 .panelSub { margin: 0 0 6px; font-size: 14px; color: rgba(230,232,235,0.6); line-height: 1.5; }
 
@@ -90,6 +90,18 @@
 .field input:focus { outline: none; border-color: var(--ww-orange, #ff6434); }
 .field input::placeholder { color: rgba(230,232,235,0.3); }
 .fieldRow { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+/* Label on the left, the way back to a saved card hard right on the same line,
+   so it reads as an option on this field rather than a step after it. */
+.fieldHeader { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.fieldAction {
+  appearance: none; background: none; border: none; padding: 0;
+  font: inherit; letter-spacing: inherit; text-transform: inherit;
+  color: rgba(230, 232, 235, 0.55);
+  cursor: pointer;
+}
+.fieldAction:hover:not(:disabled) { color: #e6e8eb; }
+.fieldAction:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .cardElement {
   width: 100%;

@@ -9,6 +9,7 @@ import type { SavedCard } from '@/features/vehicles/types';
 import { isDemoCheckout } from '@/features/vehicles/demo-checkout';
 import { ConnectEpicPrompt } from '@/features/auth/ConnectEpicPrompt';
 import { EpicCheckoutNotice } from '@/features/auth/EpicCheckoutNotice';
+import { CheckoutIdentity } from '@/features/auth/CheckoutIdentity';
 import { zscanTxUrl } from '@/lib/explorer';
 import styles from './VehicleCheckout.module.css';
 
@@ -226,12 +227,12 @@ export default function VehiclePaymentForm({
   return (
     <section className={styles.panel} aria-label="Payment">
       <h1 className={styles.panelTitle}>Payment</h1>
-      <p className={styles.panelSub}>
-        {walletAddress ? `Delivering to ${shortWallet(walletAddress)}.` : 'Delivering to your account.'}
-      </p>
-      {/* Directly under where the vehicle is going, because that is what it
-          qualifies — and before paying, which is the last point where landing on
-          the wrong account is still free to avoid. */}
+      {/* Replaces a single truncated address, which was easy to skim past and
+          impossible to actually check. Each row here is something a buyer can
+          verify, before paying, which is the last point where landing on the
+          wrong account is still free to avoid. */}
+      <CheckoutIdentity walletAddress={walletAddress} />
+      {/* Directly beneath, so the instruction sits with the fact it follows from. */}
       <EpicCheckoutNotice />
 
       <label className={styles.field}>
@@ -246,7 +247,7 @@ export default function VehiclePaymentForm({
           disabled={busy}
         />
       </label>
-      <p className={styles.hint}>Where your payment receipt is sent — not your on-chain confirmation.</p>
+      <p className={styles.hint}>Where your payment receipt is sent, not your on-chain confirmation.</p>
 
       {cards === null ? (
         <p className={styles.loadingNote}>Loading payment options…</p>
@@ -266,24 +267,27 @@ export default function VehiclePaymentForm({
           </div>
         </div>
       ) : (
-        <>
-          <label className={styles.field}>
+        <div className={styles.field}>
+          {/* A div rather than a label, since the way back to the saved card now
+              sits in this header row and a label would claim clicks on it. The
+              card field is a Stripe iframe, so the association was cosmetic. */}
+          <div className={styles.fieldHeader}>
             <span>Card details</span>
-            <div className={styles.cardElement}>
-              <CardElement options={CARD_OPTIONS} />
-            </div>
-          </label>
-          {savedCard && (
-            <button
-              type="button"
-              className={styles.backLink}
-              onClick={() => setUseNewCard(false)}
-              disabled={processing}
-            >
-              {'‹'} Use your saved card
-            </button>
-          )}
-        </>
+            {savedCard && (
+              <button
+                type="button"
+                className={styles.fieldAction}
+                onClick={() => setUseNewCard(false)}
+                disabled={processing}
+              >
+                {'‹'} Use your saved card
+              </button>
+            )}
+          </div>
+          <div className={styles.cardElement}>
+            <CardElement options={CARD_OPTIONS} />
+          </div>
+        </div>
       )}
 
       {state.kind === 'error' && (

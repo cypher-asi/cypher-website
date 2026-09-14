@@ -187,7 +187,10 @@ describe('VehiclePaymentForm', () => {
     expect(await screen.findByTestId('card-element')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('you@example.com')).toBeInTheDocument();
     expect(screen.getByText(/payment receipt is sent/i)).toBeInTheDocument();
-    expect(screen.getByText(/Delivering to 0x1234…5678/)).toBeInTheDocument();
+    // Label and wallet are separate elements in the identity panel, so the
+    // destination is stated as something checkable rather than a sentence.
+    expect(screen.getByText(/Delivering to/i)).toBeInTheDocument();
+    expect(screen.getByText('0x1234…5678')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Pay \$19/ })).toBeInTheDocument();
   });
 
