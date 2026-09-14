@@ -60,7 +60,10 @@ describe('VehicleCheckout — the panel follows the session', () => {
 
     expect(await screen.findByTestId('card-element')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Pay \$19/ })).toBeInTheDocument();
-    expect(screen.getByText(/Delivering to 0x1234…5678/)).toBeInTheDocument();
+    // Label and wallet are separate elements in the identity panel, so the
+    // destination is stated as something checkable rather than a sentence.
+    expect(screen.getByText(/Delivering to/i)).toBeInTheDocument();
+    expect(screen.getByText('0x1234…5678')).toBeInTheDocument();
     // The interstitial step is gone entirely.
     expect(screen.queryByRole('button', { name: /Continue to payment/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Back to account/i })).not.toBeInTheDocument();
