@@ -33,7 +33,11 @@
 
 /* ── Flow ── */
 
-.backToStore { display: inline-block; margin-bottom: 8px; font-size: 13.5px; color: rgba(230,232,235,0.55); text-decoration: none; }
+/* Title left, the way out hard right on the same line, so the link belongs to
+   the panel rather than floating above it attached to nothing. Baseline so the
+   small link sits on the title's baseline rather than its box. */
+.panelHeader { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+.backToStore { flex: none; font-size: 13.5px; color: rgba(230,232,235,0.55); text-decoration: none; }
 .backToStore:hover { color: #e6e8eb; }
 .panel { border: 1px solid rgba(255,255,255,0.14); background: #0a0a0a; padding: 24px; display: grid; gap: 14px; }
 .panelTitle { margin: 0; font-size: 1.7rem; font-weight: 700; line-height: 1.05; }

@@ -10,6 +10,7 @@ import { isDemoCheckout } from '@/features/vehicles/demo-checkout';
 import { ConnectEpicPrompt } from '@/features/auth/ConnectEpicPrompt';
 import { EpicCheckoutNotice } from '@/features/auth/EpicCheckoutNotice';
 import { CheckoutIdentity } from '@/features/auth/CheckoutIdentity';
+import { CheckoutPanelHeader } from './CheckoutPanelHeader';
 import { zscanTxUrl } from '@/lib/explorer';
 import styles from './VehicleCheckout.module.css';
 
@@ -211,7 +212,7 @@ export default function VehiclePaymentForm({
   if (state.kind === 'pending') {
     return (
       <section className={styles.panel} aria-label="Payment received">
-        <h1 className={styles.panelTitle}>Payment received</h1>
+        <CheckoutPanelHeader title="Payment received" />
         <p className={styles.panelSub}>{state.message}</p>
       </section>
     );
@@ -226,7 +227,7 @@ export default function VehiclePaymentForm({
 
   return (
     <section className={styles.panel} aria-label="Payment">
-      <h1 className={styles.panelTitle}>Payment</h1>
+      <CheckoutPanelHeader title="Payment" />
       {/* Replaces a single truncated address, which was easy to skim past and
           impossible to actually check. Each row here is something a buyer can
           verify, before paying, which is the last point where landing on the
