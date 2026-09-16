@@ -8,9 +8,25 @@ import {
   VehicleCheckoutError,
   wwTxServerUrl,
 } from './config';
+import { recordVehicleOrder, type RecordVehicleOrderInput } from './orders';
 
 /** How long to wait on the mint before treating it as pending (mirrors packs). */
 const MINT_TIMEOUT_MS = 60_000;
+
+/**
+ * Record an order without letting a failure reach the buyer.
+ *
+ * recordVehicleOrder is documented never to throw and is tested for it. This
+ * enforces the same thing at the call site rather than trusting another module
+ * to keep its promise, because every call below happens after the card has been
+ * charged: a bug in recording must never be able to fail a paid-for purchase.
+ * Loud if the impossible happens, so it cannot rot silently.
+ */
+function record(input: RecordVehicleOrderInput): Promise<void> {
+  return recordVehicleOrder(input).catch((err) => {
+    console.error('[vehicles] order write threw, which should not be possible:', err);
+  });
+}
 
 export type CheckoutInput = {
   passId: string;
@@ -86,12 +102,39 @@ export async function processVehicleCheckout(input: CheckoutInput): Promise<Chec
     throw new VehicleCheckoutError(402, reason);
   }
 
+  // The money is taken, so from here every exit records where the purchase got
+  // to. Recorded before the mint rather than only after it, because the failure
+  // worth protecting against is this process dying mid-delivery: that is exactly
+  // the case where nothing else would ever know the charge happened.
+  //
+  // Awaiting these is safe because record() cannot reject. Billing keys on the
+  // payment intent id and will not move a status backwards, so the second write
+  // advances the same row rather than creating another.
+  const order = {
+    zeroUserId: userId,
+    stripePaymentIntentId: paymentIntent.id,
+    amountCents: purchase.priceCents,
+    walletAddress,
+    details: { passId, modelId: purchase.modelId },
+  };
+  await record({ ...order, status: 'paid' });
+
   // Paid. Deliver the NFT.
   try {
     const transactionHash = await mintVehicle(walletAddress, purchase.modelId);
+    await record({ ...order, status: 'delivered', transactionHash });
     return { status: 'delivered', transactionHash };
   } catch (err) {
     if (err instanceof MintTimeoutError) {
+      // Deliberately not refunded, because the mint may still land. This is the
+      // outcome the order store exists for: before it, a purchase that ended
+      // here left no trace and nobody knew to look unless the buyer complained.
+      await record({
+        ...order,
+        status: 'undelivered',
+        errorCode: 'MINT_TIMEOUT',
+        errorMessage: `No response from the mint executor within ${MINT_TIMEOUT_MS}ms`,
+      });
       return {
         status: 'pending',
         message:
@@ -99,6 +142,14 @@ export async function processVehicleCheckout(input: CheckoutInput): Promise<Chec
       };
     }
     const refunded = await tryRefund(paymentIntent.id);
+    // A failed refund is the worst outcome there is: charged, nothing delivered,
+    // nothing given back. It needs a person, so it has to be findable.
+    await record({
+      ...order,
+      status: refunded ? 'refunded' : 'refund_failed',
+      errorCode: refunded ? 'MINT_FAILED' : 'MINT_FAILED_REFUND_FAILED',
+      errorMessage: err instanceof Error ? err.message : String(err),
+    });
     throw new VehicleCheckoutError(
       502,
       refunded

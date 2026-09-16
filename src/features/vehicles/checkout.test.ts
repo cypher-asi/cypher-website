@@ -15,6 +15,11 @@ const customerMock = vi.hoisted(() => ({
 }));
 vi.mock('./customer', () => customerMock);
 
+// Mocked so the order writes do not consume the fetch stub the mint asserts on,
+// and so each recorded outcome can be asserted directly.
+const ordersMock = vi.hoisted(() => ({ recordVehicleOrder: vi.fn() }));
+vi.mock('./orders', () => ordersMock);
+
 import { processVehicleCheckout } from './checkout';
 import { VehicleCheckoutError } from './config';
 
@@ -37,6 +42,7 @@ beforeEach(() => {
   stripeMock.refunds.create.mockReset();
   customerMock.resolveStripeCustomer.mockReset().mockResolvedValue('cus_9');
   customerMock.resolveCustomerForSavedCard.mockReset().mockResolvedValue('cus_saved');
+  ordersMock.recordVehicleOrder.mockReset().mockResolvedValue(undefined);
   vi.stubEnv('WW_TX_SERVER_URL', 'http://tx.local/');
   vi.stubEnv('VEHICLE_ADMIN_SALE_API_KEY', 'secret-key');
 });
@@ -144,5 +150,107 @@ describe('processVehicleCheckout', () => {
 
     expect(result.status).toBe('pending');
     expect(stripeMock.refunds.create).not.toHaveBeenCalled();
+  });
+});
+
+/**
+ * Every exit after the charge must leave a row, because the whole point of the
+ * order store is that a purchase which took money is never invisible.
+ */
+describe('recording the order', () => {
+  const recorded = () => ordersMock.recordVehicleOrder.mock.calls.map(([o]) => o);
+
+  it('records the payment before attempting delivery, then the delivery', async () => {
+    // Recorded first on purpose: if this process dies mid-mint, the charge is
+    // still the only thing that definitely happened, and it has to be findable.
+    stripeMock.paymentIntents.create.mockResolvedValueOnce({ id: 'pi_1', status: 'succeeded' });
+    fetchReturning({ error: null, data: { transactionHash: '0xTX' } });
+
+    await processVehicleCheckout(INPUT);
+
+    expect(recorded()).toEqual([
+      {
+        zeroUserId: 'user-1',
+        stripePaymentIntentId: 'pi_1',
+        amountCents: 1900,
+        walletAddress: '0xBuyer',
+        details: { passId: 'ghostline', modelId: 1 },
+        status: 'paid',
+      },
+      expect.objectContaining({ status: 'delivered', transactionHash: '0xTX' }),
+    ]);
+  });
+
+  it('records a timed-out mint as undelivered, not as a failure', async () => {
+    // Money taken, nothing refunded, delivery unknown. This is the state the
+    // table exists for, and the only place it is ever written down.
+    stripeMock.paymentIntents.create.mockResolvedValueOnce({ id: 'pi_1', status: 'succeeded' });
+    global.fetch = vi.fn(async () => {
+      const e = new Error('timed out');
+      e.name = 'TimeoutError';
+      throw e;
+    }) as typeof fetch;
+
+    await processVehicleCheckout(INPUT);
+
+    expect(recorded()[1]).toMatchObject({
+      status: 'undelivered',
+      errorCode: 'MINT_TIMEOUT',
+    });
+    expect(recorded()[1]).not.toHaveProperty('transactionHash');
+  });
+
+  it('records a refunded order when the mint fails and the refund works', async () => {
+    stripeMock.paymentIntents.create.mockResolvedValueOnce({ id: 'pi_1', status: 'succeeded' });
+    stripeMock.refunds.create.mockResolvedValueOnce({ id: 're_1' });
+    fetchReturning({ error: 'mint blew up', data: null }, 500);
+
+    await expect(processVehicleCheckout(INPUT)).rejects.toBeInstanceOf(VehicleCheckoutError);
+
+    expect(recorded()[1]).toMatchObject({
+      status: 'refunded',
+      errorCode: 'MINT_FAILED',
+      errorMessage: 'mint blew up',
+    });
+  });
+
+  it('records refund_failed when the refund fails too', async () => {
+    // The worst outcome: charged, nothing delivered, nothing given back. It
+    // needs a person, so it must be distinguishable from a clean refund.
+    stripeMock.paymentIntents.create.mockResolvedValueOnce({ id: 'pi_1', status: 'succeeded' });
+    stripeMock.refunds.create.mockRejectedValueOnce(new Error('refund declined'));
+    fetchReturning({ error: 'mint blew up', data: null }, 500);
+
+    await expect(processVehicleCheckout(INPUT)).rejects.toBeInstanceOf(VehicleCheckoutError);
+
+    expect(recorded()[1]).toMatchObject({
+      status: 'refund_failed',
+      errorCode: 'MINT_FAILED_REFUND_FAILED',
+    });
+  });
+
+  it('records nothing when the card was never charged', async () => {
+    stripeMock.paymentIntents.create.mockResolvedValueOnce({
+      id: 'pi_1',
+      status: 'requires_payment_method',
+      last_payment_error: { message: 'Your card was declined.' },
+    });
+
+    await expect(processVehicleCheckout(INPUT)).rejects.toMatchObject({ statusCode: 402 });
+    expect(ordersMock.recordVehicleOrder).not.toHaveBeenCalled();
+  });
+
+  it('delivers the vehicle even if recording throws', async () => {
+    // recordVehicleOrder is built never to throw, but the purchase must not
+    // depend on that holding: the card is already charged by this point.
+    stripeMock.paymentIntents.create.mockResolvedValueOnce({ id: 'pi_1', status: 'succeeded' });
+    ordersMock.recordVehicleOrder.mockRejectedValue(new Error('order store exploded'));
+    fetchReturning({ error: null, data: { transactionHash: '0xTX' } });
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const result = await processVehicleCheckout(INPUT);
+
+    expect(result).toEqual({ status: 'delivered', transactionHash: '0xTX' });
+    expect(console.error).toHaveBeenCalled();
   });
 });
