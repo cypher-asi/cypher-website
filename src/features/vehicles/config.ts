@@ -64,3 +64,20 @@ export function zeroPaymentsUrl(): string {
   if (!url) throw new VehicleCheckoutError(503, 'ZERO_PAYMENTS_URL is not configured');
   return url.replace(/\/+$/, '');
 }
+
+/**
+ * Shared secret for zero-payments-server's internal endpoints. Fails loud if unset.
+ *
+ * Server-only, like everything in this module: no NEXT_PUBLIC_ prefix, so Next
+ * never inlines it into the client bundle, and the `server-only` import above
+ * turns any client-side import of this file into a build error.
+ *
+ * Unlike its neighbours, the 503 this throws is not meant to reach a buyer. Its
+ * only caller records orders AFTER the card is charged and swallows everything,
+ * so an unset token is loud in the logs and invisible to the purchase.
+ */
+export function internalServiceToken(): string {
+  const token = process.env.INTERNAL_SERVICE_TOKEN;
+  if (!token) throw new VehicleCheckoutError(503, 'INTERNAL_SERVICE_TOKEN is not configured');
+  return token;
+}
