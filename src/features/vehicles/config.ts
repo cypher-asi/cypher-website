@@ -11,11 +11,27 @@ const MODEL_ID_BY_PASS: Record<string, number> = {
   'vera-solis': 2,
 };
 
+/**
+ * Outcomes the buyer's screen has to treat differently, named rather than left
+ * for the client to infer from the wording of a message.
+ *
+ * Both mean the card was charged and no vehicle arrived, but they are not the
+ * same situation: one has the money back and can be retried, the other does not
+ * and must not be. These match the codes recorded against the order, so a row
+ * support is reading and the screen the buyer saw line up.
+ */
+export type VehicleCheckoutCode = 'MINT_FAILED_REFUNDED' | 'MINT_FAILED_REFUND_FAILED';
+
 /** A carrier for an HTTP-shaped failure so the route can map it to a status. */
 export class VehicleCheckoutError extends Error {
   constructor(
     readonly statusCode: number,
     message: string,
+    /**
+     * Only set for failures that happen AFTER the charge. Its absence is
+     * meaningful: no code means nothing was taken and retrying is safe.
+     */
+    readonly code?: VehicleCheckoutCode,
   ) {
     super(message);
     this.name = 'VehicleCheckoutError';

@@ -144,17 +144,21 @@ export async function processVehicleCheckout(input: CheckoutInput): Promise<Chec
     const refunded = await tryRefund(paymentIntent.id);
     // A failed refund is the worst outcome there is: charged, nothing delivered,
     // nothing given back. It needs a person, so it has to be findable.
+    const code = refunded ? 'MINT_FAILED_REFUNDED' : 'MINT_FAILED_REFUND_FAILED';
     await record({
       ...order,
       status: refunded ? 'refunded' : 'refund_failed',
-      errorCode: refunded ? 'MINT_FAILED' : 'MINT_FAILED_REFUND_FAILED',
+      errorCode: code,
       errorMessage: err instanceof Error ? err.message : String(err),
     });
+    // The same code goes to the buyer's screen and onto the order, so the two
+    // cannot drift into describing the same purchase differently.
     throw new VehicleCheckoutError(
       502,
       refunded
         ? 'We could not deliver your vehicle, so your payment was refunded. Please try again.'
         : 'We could not deliver your vehicle. Please contact support to resolve your payment.',
+      code,
     );
   }
 }
