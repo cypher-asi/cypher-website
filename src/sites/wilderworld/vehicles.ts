@@ -110,3 +110,17 @@ export const VEHICLE_PASSES: VehiclePass[] = [
 export function getVehiclePass(id: string): VehiclePass | undefined {
   return VEHICLE_PASSES.find((p) => p.id === id);
 }
+
+/**
+ * Where a buyer goes when a purchase has taken their money and not delivered.
+ *
+ * Deliberately not the site's /contact address, which is a shared company
+ * enquiry route and nothing to do with purchases.
+ *
+ * Null until there is an address someone actually watches. An unmonitored inbox
+ * would be worse than none here, because it turns a recoverable problem into
+ * being ignored by someone who has paid and received nothing. The copy is
+ * written to read correctly either way: with an address it becomes a mailto,
+ * without one it says to contact support and nothing is broken.
+ */
+export const VEHICLE_SUPPORT_EMAIL: string | null = null;
