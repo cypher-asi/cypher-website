@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowUpRight, Check, Lock } from 'lucide-react';
+import { AlertTriangle, ArrowUpRight, Check, Clock, Lock } from 'lucide-react';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import type { VehiclePass } from './vehicles';
+import { VEHICLE_SUPPORT_EMAIL, type VehiclePass } from './vehicles';
 import type { SavedCard } from '@/features/vehicles/types';
 import { isDemoCheckout } from '@/features/vehicles/demo-checkout';
 import { ConnectEpicPrompt } from '@/features/auth/ConnectEpicPrompt';
@@ -28,7 +28,44 @@ type PayState =
   | { kind: 'processing' }
   | { kind: 'delivered'; transactionHash?: string }
   | { kind: 'pending'; message: string }
+  /**
+   * Charged, nothing delivered, and the refund did not go through either. Its
+   * own state rather than an error, because an error belongs in the form next
+   * to a Pay button, and this is the one outcome that must never be retried.
+   */
+  | { kind: 'charged'; message: string }
   | { kind: 'error'; message: string };
+
+/**
+ * How to reach a person, for the two states where the money has gone and the
+ * vehicle has not arrived. Reads correctly whether or not we have an address
+ * yet: see VEHICLE_SUPPORT_EMAIL.
+ *
+ * It asks for the receipt email because that is the one thing the buyer
+ * definitely has (Stripe sends it on the charge) and it is enough for support to
+ * find the payment, and from there the order.
+ */
+function SupportLine({ prefix }: { prefix?: string }) {
+  const verb = prefix ? 'email' : 'Email';
+  const fallback = prefix ? 'contact support' : 'Contact support';
+
+  return (
+    <p className={styles.panelSub}>
+      {prefix ? `${prefix}, ` : ''}
+      {VEHICLE_SUPPORT_EMAIL ? (
+        <>
+          {verb}{' '}
+          <a className={styles.explorerLink} href={`mailto:${VEHICLE_SUPPORT_EMAIL}`}>
+            {VEHICLE_SUPPORT_EMAIL}
+          </a>
+        </>
+      ) : (
+        fallback
+      )}
+      {' and give them the email address on your payment receipt, so we can find your purchase.'}
+    </p>
+  );
+}
 
 /**
  * TEMPORARY — goes with isDemoCheckout. Stands in for a transaction hash so the
@@ -36,6 +73,13 @@ type PayState =
  * link does not resolve, because no transaction was made.
  */
 const DEMO_TX_HASH = `0x${'0'.repeat(64)}`;
+
+/**
+ * When the wait note switches from taking payment to delivering. The charge
+ * itself resolves in a second or two, so anything past this is the mint, and
+ * saying so is both more accurate and more reassuring than a stuck spinner.
+ */
+const WAIT_HANDOVER_SECONDS = 8;
 
 const CARD_OPTIONS = {
   style: {
@@ -67,8 +111,19 @@ export default function VehiclePaymentForm({
   // null while the saved cards are loading; then the buyer's cards ([] if none).
   const [cards, setCards] = useState<SavedCard[] | null>(null);
   const [useNewCard, setUseNewCard] = useState(false);
+  /** Seconds spent waiting, so the wait note can change rather than sit still. */
+  const [waited, setWaited] = useState(0);
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+
+  useEffect(() => {
+    if (state.kind !== 'processing') {
+      setWaited(0);
+      return;
+    }
+    const id = setInterval(() => setWaited((s) => s + 1), 1000);
+    return () => clearInterval(id);
+  }, [state.kind]);
 
   useEffect(() => {
     let active = true;
@@ -142,6 +197,8 @@ export default function VehiclePaymentForm({
         status?: string;
         message?: string;
         error?: string;
+        /** Only present when the card was already charged. See VehicleCheckoutCode. */
+        code?: string;
         transactionHash?: string;
       } | null;
 
@@ -152,7 +209,13 @@ export default function VehiclePaymentForm({
           kind: 'pending',
           message: body.message ?? 'Payment received. Your vehicle is on its way.',
         });
+      } else if (body?.code === 'MINT_FAILED_REFUND_FAILED') {
+        // The only outcome that leaves the buyer out of pocket. It gets a panel
+        // rather than a line above a Pay button, because retrying makes it worse.
+        setState({ kind: 'charged', message: body.error ?? 'Your payment was taken.' });
       } else {
+        // Everything else is safe to try again: either nothing was charged, or
+        // it was charged and refunded.
         setState({ kind: 'error', message: body?.error ?? 'Payment failed. Please try again.' });
       }
     } catch {
@@ -212,8 +275,65 @@ export default function VehiclePaymentForm({
   if (state.kind === 'pending') {
     return (
       <section className={styles.panel} aria-label="Payment received">
-        <CheckoutPanelHeader title="Payment received" />
+        <div className={styles.successHeader}>
+          <span className={styles.noticeBadge} aria-hidden>
+            <Clock size={20} strokeWidth={2.5} />
+          </span>
+          <h1 className={styles.panelTitle}>Payment received</h1>
+        </div>
         <p className={styles.panelSub}>{state.message}</p>
+
+        {/* The buyer has just waited a long time and been told something went
+            slightly wrong. What they need is the two things they cannot see: that
+            paying again would be a mistake, and that this has not been lost. */}
+        <ul className={styles.noticeList}>
+          <li>
+            <span className={styles.noticeStrong}>You have been charged once.</span> Buying again
+            will not make this one arrive any sooner, and you would pay twice.
+          </li>
+          <li>
+            We have a record of this purchase and we are getting it delivered. Your {pass.name} will
+            appear in your ZERO wallet
+            {walletAddress ? ` (${shortWallet(walletAddress)})` : ''} when it does.
+          </li>
+        </ul>
+
+        <SupportLine prefix="If it has not arrived within a few hours" />
+
+        <Link href="/vehicles" className="sci-btn sci-btn-primary">
+          Back to store <ArrowUpRight size={16} strokeWidth={2.4} />
+        </Link>
+      </section>
+    );
+  }
+
+  if (state.kind === 'charged') {
+    return (
+      <section className={styles.panel} aria-label="Payment taken, vehicle not delivered">
+        <div className={styles.successHeader}>
+          <span className={styles.noticeBadge} aria-hidden>
+            <AlertTriangle size={20} strokeWidth={2.5} />
+          </span>
+          <h1 className={styles.panelTitle}>Payment taken, vehicle not delivered</h1>
+        </div>
+        <p className={styles.panelSub}>{state.message}</p>
+
+        <ul className={styles.noticeList}>
+          <li>
+            <span className={styles.noticeStrong}>Please do not buy again.</span> This one needs
+            sorting by hand, and a second purchase would charge you again without fixing it.
+          </li>
+          <li>
+            We have a record of what happened, including that the refund did not go through, so this
+            can be put right.
+          </li>
+        </ul>
+
+        <SupportLine />
+
+        <Link href="/vehicles" className="sci-btn sci-btn-primary">
+          Back to store <ArrowUpRight size={16} strokeWidth={2.4} />
+        </Link>
       </section>
     );
   }
@@ -313,6 +433,19 @@ export default function VehiclePaymentForm({
           </>
         )}
       </button>
+      {/* Delivery can run to a full minute, and a button that only says
+          "Processing…" for that long reads as a crash. This is the only thing
+          on screen that changes, so it is what says the page is still alive.
+          It also asks them not to leave, which is the one action that would
+          genuinely lose them the outcome of a purchase already paid for. */}
+      {processing && (
+        <p className={styles.waitNote} role="status">
+          {waited < WAIT_HANDOVER_SECONDS
+            ? 'Taking payment. Please do not close this page.'
+            : 'Payment taken. Delivering your vehicle now, which can take up to a minute. Please do not close this page.'}
+        </p>
+      )}
+
       <p className={styles.secureLine}>
         <Lock size={12} aria-hidden /> Secured by Stripe. Your card details never touch our servers.
       </p>

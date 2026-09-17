@@ -97,7 +97,8 @@ describe('what the buyer receives when delivery fails', () => {
 
     expect(res.status).toBe(502);
     expect(await res.json()).toEqual({
-      error: 'We could not deliver your vehicle. Please contact support to resolve your payment.',
+      error:
+        'Your payment was taken and we could not deliver your vehicle. We were not able to return your payment automatically either.',
       code: 'MINT_FAILED_REFUND_FAILED',
     });
   });

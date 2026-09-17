@@ -285,6 +285,97 @@ describe('VehiclePaymentForm', () => {
     await waitFor(() => expect(screen.getByText(/Payment received/i)).toBeInTheDocument());
   });
 
+  it('tells a pending buyer not to buy again, and where the vehicle will land', async () => {
+    // They have paid, waited a long time, and been told it has not arrived. The
+    // one mistake available to them now is paying a second time.
+    mockFetch({ cards: [], checkout: { body: { status: 'pending', message: 'on its way' }, status: 202 } });
+    renderForm('0xAbCdEf0000000000000000000000000000001234');
+    await screen.findByTestId('card-element');
+    fillEmail();
+    fireEvent.click(screen.getByRole('button', { name: /Pay \$19/ }));
+
+    await screen.findByText(/You have been charged once/i);
+    expect(screen.getByText(/will not make this one arrive/i)).toBeInTheDocument();
+    // The wallet it is going to, so they know where to look.
+    expect(screen.getByText(/0xAbCd…1234/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Back to store/i })).toBeInTheDocument();
+    // No way to pay again from here.
+    expect(screen.queryByRole('button', { name: /Pay \$19/ })).not.toBeInTheDocument();
+  });
+
+  it('gives its own panel to a charge that was not delivered and not refunded', async () => {
+    // The worst outcome: money gone, nothing delivered, refund failed too. It
+    // must not look like a retryable form error.
+    mockFetch({
+      cards: [],
+      checkout: {
+        body: { error: 'Your payment was taken.', code: 'MINT_FAILED_REFUND_FAILED' },
+        status: 502,
+      },
+    });
+    renderForm();
+    await screen.findByTestId('card-element');
+    fillEmail();
+    fireEvent.click(screen.getByRole('button', { name: /Pay \$19/ }));
+
+    await screen.findByText(/Payment taken, vehicle not delivered/i);
+    expect(screen.getByText(/Please do not buy again/i)).toBeInTheDocument();
+    // Retrying this one charges them twice and fixes nothing.
+    expect(screen.queryByRole('button', { name: /Pay \$19/ })).not.toBeInTheDocument();
+  });
+
+  it('keeps a refunded failure in the form, because trying again is safe', async () => {
+    // Same 502, opposite handling: the money is back, so the buyer should be
+    // able to press Pay again rather than be sent to a dead end.
+    mockFetch({
+      cards: [],
+      checkout: {
+        body: {
+          error: 'We could not deliver your vehicle, so your payment was refunded. Please try again.',
+          code: 'MINT_FAILED_REFUNDED',
+        },
+        status: 502,
+      },
+    });
+    renderForm();
+    await screen.findByTestId('card-element');
+    fillEmail();
+    fireEvent.click(screen.getByRole('button', { name: /Pay \$19/ }));
+
+    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('was refunded'));
+    expect(screen.getByRole('button', { name: /Pay \$19/ })).toBeEnabled();
+    expect(screen.queryByText(/Payment taken, vehicle not delivered/i)).not.toBeInTheDocument();
+  });
+
+  it('keeps telling the buyer it is alive through a long wait', async () => {
+    // A minute of a static "Processing…" reads as a crash, and the buyer has
+    // already been charged by then.
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    let release: (r: Response) => void = () => {};
+    global.fetch = vi.fn(async (url: RequestInfo | URL) => {
+      if (String(url).includes('/payment-methods')) {
+        return new Response(JSON.stringify({ cards: [], email: null }), { status: 200 });
+      }
+      return new Promise<Response>((resolve) => {
+        release = resolve;
+      });
+    }) as typeof fetch;
+
+    renderForm();
+    await screen.findByTestId('card-element');
+    fillEmail();
+    fireEvent.click(screen.getByRole('button', { name: /Processing|Pay \$19/ }));
+
+    await screen.findByText(/Taking payment/i);
+
+    await vi.advanceTimersByTimeAsync(9000);
+    await waitFor(() => expect(screen.getByText(/Delivering your vehicle now/i)).toBeInTheDocument());
+    expect(screen.getByText(/can take up to a minute/i)).toBeInTheDocument();
+
+    release(new Response(JSON.stringify({ status: 'delivered' }), { status: 200 }));
+    vi.useRealTimers();
+  });
+
   it('shows the server error message on a failed charge', async () => {
     mockFetch({ cards: [], checkout: { body: { error: 'Your card was declined.' }, status: 402 } });
     renderForm();

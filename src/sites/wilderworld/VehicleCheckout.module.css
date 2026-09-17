@@ -167,6 +167,31 @@
 .explorerLink { display: inline-flex; align-items: center; gap: 5px; font-size: 13.5px; color: var(--ww-orange, #ff6434); text-decoration: none; }
 .explorerLink:hover { text-decoration: underline; }
 
+/* ── Outcomes that are not a completed purchase ── */
+
+/* Deliberately unlike .successBadge: outlined rather than filled, and without
+   the clipped corner, so a buyer who has seen the success screen cannot mistake
+   one for the other at a glance. Same orange, because this is still our voice
+   and not an alarm. */
+.noticeBadge {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  color: var(--ww-orange, #ff6434);
+  background: transparent;
+  border: 1px solid var(--ww-orange, #ff6434);
+  border-radius: 1px;
+}
+.noticeList { list-style: none; margin: 0; padding: 14px 0 2px; display: grid; gap: 11px; border-top: 1px solid rgba(255,255,255,0.1); }
+.noticeList li { font-size: 14px; line-height: 1.55; color: rgba(230,232,235,0.7); }
+/* Lifts the one clause in each line that a skimming buyer must not miss. */
+.noticeStrong { color: #e6e8eb; }
+
+.waitNote { margin: 2px 0 0; font-size: 12.5px; line-height: 1.5; color: rgba(230,232,235,0.55); }
+
 .secureLine { margin: 2px 0 0; display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: rgba(230,232,235,0.45); }
 .backLink { background: none; border: none; color: rgba(230,232,235,0.55); font: inherit; font-size: 13.5px; cursor: pointer; padding: 0; text-align: left; }
 .backLink:hover { color: #e6e8eb; }

@@ -135,10 +135,11 @@ export async function processVehicleCheckout(input: CheckoutInput): Promise<Chec
         errorCode: 'MINT_TIMEOUT',
         errorMessage: `No response from the mint executor within ${MINT_TIMEOUT_MS}ms`,
       });
+      // The lead line only. What the buyer should do about it belongs on the
+      // panel, which knows what they bought and where it was going.
       return {
         status: 'pending',
-        message:
-          'Payment received. Delivery is taking longer than expected — if your vehicle does not arrive shortly, please contact support.',
+        message: 'Your payment went through and your vehicle is taking longer than usual to arrive.',
       };
     }
     const refunded = await tryRefund(paymentIntent.id);
@@ -157,7 +158,9 @@ export async function processVehicleCheckout(input: CheckoutInput): Promise<Chec
       502,
       refunded
         ? 'We could not deliver your vehicle, so your payment was refunded. Please try again.'
-        : 'We could not deliver your vehicle. Please contact support to resolve your payment.',
+        : // Lead line only, as with pending: the panel owns what to do next, and
+          // saying "contact support" here would say it twice.
+          'Your payment was taken and we could not deliver your vehicle. We were not able to return your payment automatically either.',
       code,
     );
   }
