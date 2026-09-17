@@ -209,9 +209,39 @@ describe('recording the order', () => {
 
     expect(recorded()[1]).toMatchObject({
       status: 'refunded',
-      errorCode: 'MINT_FAILED',
+      errorCode: 'MINT_FAILED_REFUNDED',
       errorMessage: 'mint blew up',
     });
+  });
+
+  it('names the outcome on the error the same way it names it on the order', async () => {
+    // The buyer's screen and the support row must not describe one purchase two
+    // different ways, so both come from the same value.
+    stripeMock.paymentIntents.create.mockResolvedValueOnce({ id: 'pi_1', status: 'succeeded' });
+    stripeMock.refunds.create.mockRejectedValueOnce(new Error('refund declined'));
+    fetchReturning({ error: 'mint blew up', data: null }, 500);
+
+    await expect(processVehicleCheckout(INPUT)).rejects.toMatchObject({
+      statusCode: 502,
+      code: 'MINT_FAILED_REFUND_FAILED',
+    });
+    expect(recorded()[1].errorCode).toBe('MINT_FAILED_REFUND_FAILED');
+  });
+
+  it('leaves the code unset when the card was never charged', async () => {
+    // No code means nothing was taken, which is what tells the screen a retry is
+    // safe. A declined card must never look like a failed delivery.
+    stripeMock.paymentIntents.create.mockResolvedValueOnce({
+      id: 'pi_1',
+      status: 'requires_payment_method',
+      last_payment_error: { message: 'Your card was declined.' },
+    });
+
+    const err = await processVehicleCheckout(INPUT).catch((e) => e);
+
+    expect(err).toBeInstanceOf(VehicleCheckoutError);
+    expect(err.statusCode).toBe(402);
+    expect(err.code).toBeUndefined();
   });
 
   it('records refund_failed when the refund fails too', async () => {

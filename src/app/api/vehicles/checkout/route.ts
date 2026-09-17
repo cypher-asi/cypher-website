@@ -64,7 +64,12 @@ export async function POST(request: Request): Promise<NextResponse> {
     return NextResponse.json(result, { status: result.status === 'pending' ? 202 : 200 });
   } catch (err) {
     if (err instanceof VehicleCheckoutError) {
-      return NextResponse.json({ error: err.message }, { status: err.statusCode });
+      // The code only exists for failures after the charge, so it is sent only
+      // when set: the client treats its absence as "nothing was taken".
+      return NextResponse.json(
+        err.code ? { error: err.message, code: err.code } : { error: err.message },
+        { status: err.statusCode },
+      );
     }
     return authErrorResponse(err);
   }

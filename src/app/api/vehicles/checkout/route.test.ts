@@ -97,7 +97,25 @@ describe('POST /api/vehicles/checkout', () => {
     h.processVehicleCheckout.mockRejectedValueOnce(new VehicleCheckoutError(402, 'declined'));
     const res = await POST(post(validBody));
     expect(res.status).toBe(402);
+    // No code, because nothing was charged. The buyer's screen reads that
+    // absence as "retrying is safe".
     expect(await res.json()).toEqual({ error: 'declined' });
+  });
+
+  it('passes on the outcome code when the charge already happened', async () => {
+    // Without this the screen cannot tell a refunded failure from one where the
+    // refund also failed, and would offer a retry for both.
+    h.processVehicleCheckout.mockRejectedValueOnce(
+      new VehicleCheckoutError(502, 'could not deliver', 'MINT_FAILED_REFUND_FAILED'),
+    );
+
+    const res = await POST(post(validBody));
+
+    expect(res.status).toBe(502);
+    expect(await res.json()).toEqual({
+      error: 'could not deliver',
+      code: 'MINT_FAILED_REFUND_FAILED',
+    });
   });
 
   it('rejects a cross-origin POST before any work (403)', async () => {
