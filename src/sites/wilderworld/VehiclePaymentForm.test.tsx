@@ -15,7 +15,7 @@ vi.mock('@stripe/react-stripe-js', () => ({
 }));
 
 import VehiclePaymentForm from './VehiclePaymentForm';
-import { VEHICLE_PASSES } from './vehicles';
+import { VEHICLE_PASSES, VEHICLE_SUPPORT_EMAIL } from './vehicles';
 
 const pass = VEHICLE_PASSES[0]; // Radeon Ghostline, $19
 
@@ -322,6 +322,12 @@ describe('VehiclePaymentForm', () => {
     expect(screen.getByText(/Please do not buy again/i)).toBeInTheDocument();
     // Retrying this one charges them twice and fixes nothing.
     expect(screen.queryByRole('button', { name: /Pay \$19/ })).not.toBeInTheDocument();
+
+    // Somewhere to actually go. Without a reachable address this panel tells a
+    // buyer who is out of pocket that it needs a person, and then offers none.
+    const support = screen.getByRole('link', { name: VEHICLE_SUPPORT_EMAIL! });
+    expect(support).toHaveAttribute('href', `mailto:${VEHICLE_SUPPORT_EMAIL}`);
+    expect(screen.getByText(/email address on your payment receipt/i)).toBeInTheDocument();
   });
 
   it('keeps a refunded failure in the form, because trying again is safe', async () => {

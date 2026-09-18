@@ -117,10 +117,10 @@ export function getVehiclePass(id: string): VehiclePass | undefined {
  * Deliberately not the site's /contact address, which is a shared company
  * enquiry route and nothing to do with purchases.
  *
- * Null until there is an address someone actually watches. An unmonitored inbox
- * would be worse than none here, because it turns a recoverable problem into
- * being ignored by someone who has paid and received nothing. The copy is
- * written to read correctly either way: with an address it becomes a mailto,
- * without one it says to contact support and nothing is broken.
+ * The type stays nullable on purpose. The copy is written to read correctly
+ * either way, so if this ever needs pulling (an inbox nobody watches is worse
+ * than none here, since it turns a recoverable problem into being ignored by
+ * someone who has paid and received nothing) it is a one-line change with no
+ * broken sentence left behind.
  */
-export const VEHICLE_SUPPORT_EMAIL: string | null = null;
+export const VEHICLE_SUPPORT_EMAIL: string | null = 'info@wilderworld.com';
