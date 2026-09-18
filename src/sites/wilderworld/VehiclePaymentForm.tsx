@@ -62,7 +62,7 @@ function SupportLine({ prefix }: { prefix?: string }) {
       ) : (
         fallback
       )}
-      {' and give them the email address on your payment receipt, so we can find your purchase.'}
+      {' and include the email address on your payment receipt, so we can find your purchase.'}
     </p>
   );
 }
