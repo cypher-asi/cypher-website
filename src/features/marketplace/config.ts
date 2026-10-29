@@ -30,6 +30,8 @@ export interface MarketplaceConfig {
   rpcUrl: string;
   thirdwebClientId: string;
   thirdwebSecretKey: string;
+  /** Shared secret for signing the Thirdweb custom-auth token. */
+  authSigningSecret: string;
   /** Deployed NFTMarketplace contract address on the active chain. */
   marketplaceAddress: string;
   /** WILD ERC-20 settlement token on the active chain. */
@@ -60,6 +62,7 @@ export function getMarketplaceConfig(): MarketplaceConfig {
     rpcUrl: requireEnv('ZCHAIN_RPC_URL'),
     thirdwebClientId: requireEnv('THIRDWEB_CLIENT_ID'),
     thirdwebSecretKey: requireEnv('THIRDWEB_SECRET_KEY'),
+    authSigningSecret: requireEnv('TW_AUTH_SIGNING_SECRET'),
     marketplaceAddress: requireEnv('NFT_MARKETPLACE_ADDRESS'),
     zosApiUrl: requireEnv('ZOS_API_URL').replace(/\/+$/, ''),
   };

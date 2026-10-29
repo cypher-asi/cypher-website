@@ -31,12 +31,18 @@ Object.defineProperty(globalThis, 'localStorage', {
   value: memoryStorage,
   configurable: true,
 });
-Object.defineProperty(window, 'localStorage', {
-  value: memoryStorage,
-  configurable: true,
-});
+// `window` only exists in the jsdom environment. Tests that opt into the node
+// environment (server-only modules) skip the DOM-specific setup and teardown.
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'localStorage', {
+    value: memoryStorage,
+    configurable: true,
+  });
+}
 
 afterEach(() => {
-  cleanup();
+  if (typeof window !== 'undefined') {
+    cleanup();
+  }
   memoryStorage.clear();
 });
