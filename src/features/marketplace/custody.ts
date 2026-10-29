@@ -27,6 +27,7 @@ import {
 } from 'thirdweb';
 import { inAppWallet, type Account } from 'thirdweb/wallets';
 import { getMarketplaceConfig, type MarketplaceConfig } from './config';
+import { signAuthToken } from './thirdweb-auth-token';
 import type { ZeroIdentity } from './auth';
 
 /**
@@ -96,7 +97,7 @@ export async function getCustodialSigner(identity: ZeroIdentity): Promise<Custod
   const account = await wallet.connect({
     client,
     strategy: 'auth_endpoint',
-    payload: JSON.stringify({ userId: identity.userId }),
+    payload: await signAuthToken(identity.userId, config.authSigningSecret),
   });
 
   if (account.address.toLowerCase() !== identity.zeroWalletAddress.toLowerCase()) {
