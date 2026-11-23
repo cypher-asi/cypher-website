@@ -1,6 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   devIndicators: false,
+  // Clothing browse/token images are served from the CDN that fronts the asset
+  // bucket, not committed to the repo, so next/image must be allowed to load them.
+  images: {
+    remotePatterns: [
+      { protocol: 'https', hostname: 'assets.wilderworldinfra.net', pathname: '/clothing/**' },
+    ],
+  },
   // Windows/virtualized filesystems often miss native file-change events, so
   // Fast Refresh wouldn't pick up edits without a manual restart. Polling the
   // source tree in dev makes hot reload reliable. (node_modules is excluded to

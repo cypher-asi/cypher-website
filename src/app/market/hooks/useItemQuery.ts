@@ -18,12 +18,12 @@ export function useItemQuery(
       nft?.chain ?? '',
     ],
     enabled: Boolean(nft),
-    queryFn: () =>
+    queryFn: ({signal}) =>
       fetchItem({
         slug,
         identifier: nft!.identifier,
         contract: nft!.contract,
         chain: nft!.chain,
-      }),
+      }, signal),
   });
 }

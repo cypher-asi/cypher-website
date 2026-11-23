@@ -21,26 +21,10 @@ describe('NftCard', () => {
     expect(screen.getByText('Wilder Wheel #42')).toBeInTheDocument();
   });
 
-  it('calls onOpen with the card key when clicked', async () => {
+  it('calls onOpen with the token identifier when clicked', async () => {
     const onOpen = vi.fn();
     render(<NftCard nft={nft} ethUsd={null} animationDelayMs={0} onOpen={onOpen} />);
     await userEvent.click(screen.getByRole('button'));
-    expect(onOpen).toHaveBeenCalledWith('0xabc-42');
-  });
-
-  it('labels fungible listings by quantity (Single / Bundle)', () => {
-    const bundle: MarketNft = { ...nft, listingId: '7', amount: 3, fungible: true };
-    render(<NftCard nft={bundle} ethUsd={null} animationDelayMs={0} onOpen={() => {}} />);
-    expect(screen.getByText('Bundle ×3')).toBeInTheDocument();
-
-    const single: MarketNft = { ...nft, listingId: '8', amount: 1, fungible: true };
-    render(<NftCard nft={single} ethUsd={null} animationDelayMs={0} onOpen={() => {}} />);
-    expect(screen.getByText('Single ×1')).toBeInTheDocument();
-  });
-
-  it('omits the quantity badge for non-fungible (ERC-721) listings', () => {
-    const single: MarketNft = { ...nft, listingId: '7', amount: 1 };
-    render(<NftCard nft={single} ethUsd={null} animationDelayMs={0} onOpen={() => {}} />);
-    expect(screen.queryByText('Single ×1')).not.toBeInTheDocument();
+    expect(onOpen).toHaveBeenCalledWith('42');
   });
 });

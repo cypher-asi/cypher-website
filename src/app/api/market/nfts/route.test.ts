@@ -1,9 +1,6 @@
+vi.mock('@/lib/originals-data', async (importActual) => { const actual=await importActual<typeof import('@/lib/originals-data')>(); return {...actual,fetchExplorerPage:vi.fn().mockResolvedValue(null),fetchExplorerItem:vi.fn().mockResolvedValue(null),fetchExplorerCollection:vi.fn().mockResolvedValue(null)}; });
 import { beforeEach, describe, expect, it, vi, type MockedFunction } from 'vitest';
-import type {
-  IndexerAsset,
-  IndexerInventoryResponse,
-  MarketplaceListingsResponse,
-} from '@/lib/indexer';
+import type { IndexerAsset, IndexerInventoryResponse } from '@/lib/indexer';
 
 vi.mock('@/lib/indexer', async (importActual) => {
   const actual = await importActual<typeof import('@/lib/indexer')>();
@@ -23,46 +20,37 @@ vi.mock('@/lib/opensea', async (importActual) => {
 
 import { indexerFetch } from '@/lib/indexer';
 import { GET } from './route';
+import { objectArray, readJsonObject } from '../testResponse';
+
+async function readNftsResponse(response: { json(): Promise<unknown> }) {
+  const body = await readJsonObject(response);
+  return { items: objectArray(body.items), next: body.next, error: body.error };
+}
 
 // `indexerFetch` is generic, so type the mock against a concrete signature.
 const mockedFetch = indexerFetch as MockedFunction<
   (path: string) => Promise<unknown>
 >;
 
-// `pack-weapons` is a non-fungible indexer collection, so status=unlisted takes the
-// ERC-721 path: paginate the collection inventory (offset cursor) minus tokens that
-// have an active listing. That's the inventory-pagination logic under test here.
-const SLUG = 'pack-weapons';
-const CONTRACT = '0x693de821fc5999ac3738720f53763fe8aafaf6ac';
-
 function makeAsset(tokenId: string): IndexerAsset {
   return {
     id: `asset-${tokenId}`,
-    collectionAddress: CONTRACT,
-    collectionName: 'Weapons',
+    collectionAddress: '0x5ce3a764cc43e891d8bd068dd16c1b08db4ad0d4',
+    collectionName: 'Packs',
     tokenId,
     ownerAddress: '0xowner',
     chainId: 9369,
     tokenStandard: 'ERC721',
     balance: '1',
     tokenUri: null,
-    metadata: { name: `Weapon #${tokenId}`, attributes: [] },
+    metadata: { name: `Pack #${tokenId}`, attributes: [] },
   };
 }
 
-/** The inventory calls (the ones under test); the ERC-721 unlisted path also makes
- *  a listings-exclusion call, which we filter out of call-index assertions. */
-const inventoryCalls = () =>
-  mockedFetch.mock.calls.filter((c) => String(c[0]).includes('/v1/inventory'));
-
-/** Serves pages of `total` synthetic assets from ?limit=&offset=, and returns an
- *  empty active-listing set for the exclusion query so the full page shows. */
+/** Serves pages of `total` synthetic assets from ?limit=&offset= params. */
 function servePages(total: number) {
   const all = Array.from({ length: total }, (_, i) => makeAsset(String(i)));
   mockedFetch.mockImplementation(async (path: string) => {
-    if (path.includes('/v1/marketplace/listings')) {
-      return { items: [], total: 0, limit: 0, offset: 0 } satisfies MarketplaceListingsResponse;
-    }
     const params = new URLSearchParams(path.split('?')[1] ?? '');
     const limit = parseInt(params.get('limit') ?? '50', 10);
     const offset = parseInt(params.get('offset') ?? '0', 10);
@@ -76,159 +64,84 @@ function servePages(total: number) {
   });
 }
 
-function request(extra = '') {
-  return new Request(`http://localhost/api/market/nfts?slug=${SLUG}&status=unlisted${extra}`);
+function request(query: string) {
+  return new Request(`http://localhost/api/market/nfts?${query}`);
 }
 
 beforeEach(() => {
   mockedFetch.mockReset();
 });
 
-describe('GET /api/market/nfts (indexer unlisted branch)', () => {
+describe('GET /api/market/nfts (indexer branch)', () => {
   it('returns the first page of 50 with next="50" when more remain', async () => {
     servePages(450);
-    const res = await GET(request());
-    const body = await res.json();
+    const res = await GET(request('slug=packs'));
+    const body = await readNftsResponse(res);
     expect(body.error).toBe(false);
     expect(body.items).toHaveLength(50);
     expect(body.items[0].identifier).toBe('0');
     expect(body.next).toBe('50');
-    expect(inventoryCalls()).toHaveLength(1);
-    expect(inventoryCalls()[0][0]).toContain('limit=50');
-    expect(inventoryCalls()[0][0]).toContain('offset=0');
+    expect(mockedFetch).toHaveBeenCalledTimes(1);
+    expect(mockedFetch.mock.calls[0][0]).toContain('limit=50');
+    expect(mockedFetch.mock.calls[0][0]).toContain('offset=0');
   });
 
   it('walks subsequent pages via next and terminates with next=null', async () => {
     servePages(450);
-    const page2 = await (await GET(request('&next=50'))).json();
+    const page2 = await readNftsResponse(await GET(request('slug=packs&next=50')));
     expect(page2.items[0].identifier).toBe('50');
     expect(page2.next).toBe('100');
 
-    const last = await (await GET(request('&next=400'))).json();
+    const last = await readNftsResponse(await GET(request('slug=packs&next=400')));
     expect(last.items).toHaveLength(50);
     expect(last.next).toBeNull();
   });
 
   it('uses the short-page heuristic when total is missing', async () => {
-    // Inventory is awaited before the exclusion call, so the once-mock feeds it;
-    // the exclusion call then resolves undefined → treated as no listings.
     mockedFetch.mockResolvedValueOnce({
       items: Array.from({ length: 50 }, (_, i) => makeAsset(String(i))),
     } satisfies IndexerInventoryResponse);
-    const body = await (await GET(request())).json();
+    const body = await readNftsResponse(await GET(request('slug=packs')));
     expect(body.next).toBe('50');
 
     mockedFetch.mockResolvedValueOnce({
       items: [makeAsset('50')],
     } satisfies IndexerInventoryResponse);
-    const tail = await (await GET(request('&next=50'))).json();
+    const tail = await readNftsResponse(await GET(request('slug=packs&next=50')));
     expect(tail.next).toBeNull();
   });
 
   it('treats a NaN or negative next cursor as offset 0', async () => {
     servePages(10);
-    const body = await (await GET(request('&next=bogus'))).json();
+    const body = await readNftsResponse(await GET(request('slug=packs&next=bogus')));
     expect(body.items).toHaveLength(10);
-    expect(inventoryCalls()[0][0]).toContain('offset=0');
+    expect(mockedFetch.mock.calls[0][0]).toContain('offset=0');
 
-    const neg = await (await GET(request('&next=-5'))).json();
+    const neg = await readNftsResponse(await GET(request('slug=packs&next=-5')));
     expect(neg.items).toHaveLength(10);
-    expect(inventoryCalls()[1][0]).toContain('offset=0');
+    expect(mockedFetch.mock.calls[1][0]).toContain('offset=0');
   });
 
   it('forwards trait selections to the indexer as an attributes filter', async () => {
     servePages(10);
     const attrs = JSON.stringify({ Rarity: ['Rare', 'Common'] });
-    await GET(request(`&attributes=${encodeURIComponent(attrs)}`));
-    const url = inventoryCalls()[0][0];
+    await GET(request(`slug=packs&attributes=${encodeURIComponent(attrs)}`));
+    const url = mockedFetch.mock.calls[0][0];
     expect(url).toContain('attributes=');
     expect(decodeURIComponent(url)).toContain(attrs);
   });
 
   it('omits the attributes param when no traits are selected', async () => {
     servePages(10);
-    await GET(request());
-    expect(inventoryCalls()[0][0]).not.toContain('attributes=');
+    await GET(request('slug=packs'));
+    expect(mockedFetch.mock.calls[0][0]).not.toContain('attributes=');
   });
 
   it('reports a failed page as a failed request (502, error: true)', async () => {
     mockedFetch.mockResolvedValue(null);
-    const res = await GET(request());
+    const res = await GET(request('slug=packs'));
     expect(res.status).toBe(502);
     const body = await res.json();
     expect(body).toEqual({ items: [], next: null, error: true });
-  });
-});
-
-describe('GET /api/market/nfts (indexer listed branch — fungible grouping)', () => {
-  const PACKS = 'packs'; // fungible: true in wilderCollections
-  const WEAPONS = 'pack-weapons'; // non-fungible
-
-  function makeListing(
-    tokenId: string,
-    listingId: string,
-    priceRaw: string,
-    amount = 1
-  ) {
-    return {
-      id: `listing-${listingId}`,
-      listingId,
-      sellerAddress: '0xseller',
-      collectionAddress: CONTRACT,
-      tokenId,
-      amount,
-      chainId: 9369,
-      paymentToken: '0xwild',
-      priceRaw,
-      priceFormatted: null,
-      status: 'active',
-      buyerAddress: null,
-      createdAt: '2026-01-01T00:00:00.000Z',
-      expiresAt: null,
-      nft: { tokenUri: null, metadata: { name: 'Pack', image: null } },
-    };
-  }
-
-  function listed(slug: string) {
-    return new Request(`http://localhost/api/market/nfts?slug=${slug}&status=listed`);
-  }
-
-  it('fungible: shows every active listing of the same token, cheapest first', async () => {
-    // Three single-unit listings of one tokenId at different prices.
-    mockedFetch.mockResolvedValue({
-      items: [
-        makeListing('1', 'a', '300000000000000000000'),
-        makeListing('1', 'b', '500000000000000000000'),
-        makeListing('1', 'c', '400000000000000000000'),
-      ],
-      total: 3,
-      limit: 200,
-      offset: 0,
-    });
-    const body = await (await GET(listed(PACKS))).json();
-    // All three shown (not collapsed to the floor), and ascending by price.
-    expect(body.items).toHaveLength(3);
-    expect(body.items.map((i: { priceWild: { raw: string } }) => i.priceWild.raw)).toEqual([
-      '300000000000000000000',
-      '400000000000000000000',
-      '500000000000000000000',
-    ]);
-    // Distinct listingIds so each is its own card.
-    expect(new Set(body.items.map((i: { listingId: string }) => i.listingId)).size).toBe(3);
-  });
-
-  it('non-fungible: collapses multiple listings of one token to the floor card', async () => {
-    mockedFetch.mockResolvedValue({
-      items: [
-        makeListing('7', 'a', '300000000000000000000'),
-        makeListing('7', 'b', '500000000000000000000'),
-      ],
-      total: 2,
-      limit: 200,
-      offset: 0,
-    });
-    const body = await (await GET(listed(WEAPONS))).json();
-    expect(body.items).toHaveLength(1);
-    expect(body.items[0].priceWild.raw).toBe('300000000000000000000');
   });
 });

@@ -137,16 +137,11 @@ const zeroNav: NavSection[] = [
 ];
 
 /* Wilder World runs its own product-site nav (not the ecosystem chrome). */
-const wilderNav: NavSection[] = [
-  { id: 'universe', label: 'Universe', href: '/universe', noPanel: true },
-  { id: 'gameplay', label: 'Gameplay', href: '/gameplay', noPanel: true },
-  { id: 'city', label: 'City', href: '/city', noPanel: true },
-  { id: 'industries', label: 'Industries', href: '/industries', noPanel: true },
-  { id: 'economy', label: 'Economy', href: '/economy', noPanel: true },
-  { id: 'market', label: 'Market', href: '/market', noPanel: true },
-  { id: 'store', label: 'Store', href: '/vehicles', noPanel: true },
-  { id: 'news', label: 'News', href: 'https://zine.live', external: true, noPanel: true },
-];
+// The new marketplace replaces the Store and Market tabs, and
+// the secondary navigation / browsing links move into the footer (where they are
+// all already present). The shopping homepage leads with the marketplace's own
+// product nav, so the top brand nav carries no centre links.
+const wilderNav: NavSection[] = [];
 
 const sharedFooterColumns: FooterColumn[] = [
   {
@@ -230,7 +225,7 @@ const wilderFooter: FooterConfig = {
     {
       heading: 'Game',
       links: [
-        { label: 'Overview', href: '/' },
+        { label: 'Overview', href: '/discover' },
         { label: 'Universe', href: '/universe' },
         { label: 'Gameplay', href: '/gameplay' },
         { label: 'City', href: '/city' },
@@ -256,6 +251,7 @@ const wilderFooter: FooterConfig = {
     {
       heading: 'Community',
       links: [
+        { label: 'Trinity', href: '/community/trinity' },
         { label: 'News', href: 'https://www.wilderworld.com/news', external: true },
         { label: 'X', href: 'https://x.com/WilderWorld', external: true },
         { label: 'Instagram', href: 'https://www.instagram.com/wilder.world/', external: true },
@@ -461,7 +457,7 @@ export const COMPANIES: Record<CompanyKey, CompanyConfig> = {
       alt: 'Wilder World',
     },
     cta: {
-      label: 'Early Access',
+      label: 'Play Now',
       href: 'https://store.epicgames.com/p/wilder-world-wilder-world-alpha-b4ccf8?lang=en-US',
       external: true,
     },
@@ -526,6 +522,10 @@ export const PATH_TO_COMPANY: Record<string, CompanyKey> = {
   industries: 'wilderworld',
   economy: 'wilderworld',
   market: 'wilderworld',
+  discover: 'wilderworld',
+  community: 'wilderworld',
+  store: 'wilderworld',
+  portfolio: 'wilderworld',
   messenger: 'zero',
   social: 'zero',
   id: 'zero',

@@ -40,7 +40,7 @@ describe('useMarketTraitsQuery', () => {
     });
 
     await waitFor(() => expect(result.current.data).toEqual(categories));
-    expect(fetchMock).toHaveBeenCalledWith('/api/market/traits?slug=pack-weapons');
+    expect(fetchMock).toHaveBeenCalledWith('/api/market/traits?slug=pack-weapons', expect.objectContaining({signal: expect.any(AbortSignal)}));
   });
 
   it('is disabled without a slug', () => {

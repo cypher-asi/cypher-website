@@ -1,0 +1,19 @@
+'use client';
+
+import {usePathname} from 'next/navigation';
+import {MarketHeader} from './MarketHeader';
+
+/** Store pages own their header so search can filter their current collection. */
+export function hasPageShoppingNavigation(pathname:string):boolean {
+  return ['/', '/store', '/store/browse', '/store/account', '/markets', '/markets/social', '/portfolio'].includes(pathname)
+    || pathname.startsWith('/traders/')
+    || /^\/store\/collections\/(vehicles|rims|clothing|furniture|statues|totems)\/?$/.test(pathname)
+    || pathname==='/store/market' || pathname.startsWith('/store/market/')
+    || pathname.startsWith('/store/products/');
+}
+
+export default function WilderShoppingNav(){
+  const pathname=usePathname()??'/';
+  const department=pathname.startsWith('/store/collections/furniture/')?'furniture':/^\/store\/[^/]+$/.test(pathname)?'clothing':'none';
+  return hasPageShoppingNavigation(pathname)?null:<MarketHeader department={department}/>;
+}

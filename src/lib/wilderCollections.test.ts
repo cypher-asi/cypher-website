@@ -6,14 +6,15 @@ const ZCHAIN_SLUG_TO_CONTRACT: Record<string, string> = {
   'pack-weapons': '0x693de821fc5999ac3738720f53763fe8aafaf6ac',
   'pack-wheels': '0x6c6e92c542b525043926028cbfa61bfe0e76e69b',
   'pack-avatars': '0xa5908ee83b7f61e92e0a68b22372cbca78751cb2',
+  clothing: '0xae4df382b85cc8c6585f3701b0334b52845af393',
 };
 
 describe('wilderCollections config invariants', () => {
   describe('indexer-backed Z-Chain entries', () => {
     const indexerEntries = ALL_ENTRIES.filter((e) => getEntrySource(e) === 'indexer');
 
-    it('has exactly 4 indexer entries', () => {
-      expect(indexerEntries).toHaveLength(4);
+    it('has exactly 5 indexer entries', () => {
+      expect(indexerEntries).toHaveLength(5);
     });
 
     it('every indexer entry is on Z-Chain (chainId 9369, chain "zchain", explicit source)', () => {
@@ -57,11 +58,11 @@ describe('wilderCollections config invariants', () => {
       for (const entry of defaulted) {
         expect(getEntrySource(entry)).toBe('opensea');
       }
-      expect(defaulted).toHaveLength(11);
+      expect(defaulted).toHaveLength(12);
     });
 
     it('locks the total entry count', () => {
-      expect(ALL_ENTRIES).toHaveLength(15);
+      expect(ALL_ENTRIES).toHaveLength(17);
     });
   });
 });

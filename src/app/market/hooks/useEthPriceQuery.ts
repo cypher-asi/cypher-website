@@ -5,7 +5,7 @@ import { fetchEthPrice } from '../api/fetchers';
 export function useEthPriceQuery(): UseQueryResult<number | null> {
   return useQuery({
     queryKey: ['market', 'eth-price'],
-    queryFn: fetchEthPrice,
+    queryFn: ({signal}) => fetchEthPrice(signal),
     staleTime: 5 * 60_000,
   });
 }

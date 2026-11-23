@@ -332,3 +332,6 @@
     grid-auto-flow: row;
   }
 }
+
+/* Wilder World: charcoal background (Frank, 2026-11-24) */
+:global(body[data-company='wilderworld']) .rowFacts { background-color: var(--ww-background, #101113); }

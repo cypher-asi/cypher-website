@@ -1,0 +1,66 @@
+/* Inline store checkout form. Same vocabulary as the marketplace and the vehicle
+   checkout: near-black surfaces, 1px rgba borders, orange primary accent. No panel
+   border or background of its own — it renders inside the product purchase panel,
+   which already provides the frame. */
+
+.form {
+  display: grid;
+  gap: 14px;
+}
+
+.field { display: grid; gap: 7px; font-size: 12.5px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(230, 232, 235, 0.55); }
+.field input {
+  width: 100%; padding: 13px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #e6e8eb;
+  font-size: 15px; font-family: inherit;
+  border-radius: 1px;
+}
+.field input:focus { outline: none; border-color: var(--ww-orange, #ff6434); }
+.field input::placeholder { color: rgba(230, 232, 235, 0.3); }
+.field input:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Label on the left, the way back to the saved card hard right on the same line,
+   so it reads as an option on this field rather than a step after it. */
+.fieldHeader { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.fieldAction {
+  appearance: none; background: none; border: none; padding: 0;
+  font: inherit; letter-spacing: inherit; text-transform: inherit;
+  color: rgba(230, 232, 235, 0.55);
+  cursor: pointer;
+}
+.fieldAction:hover:not(:disabled) { color: #e6e8eb; }
+.fieldAction:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.cardElement {
+  width: 100%;
+  padding: 13px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 1px;
+}
+.cardElement:focus-within { border-color: var(--ww-orange, #ff6434); }
+
+.savedCard {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  width: 100%; padding: 13px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 1px;
+}
+.savedCardLabel {
+  font-size: 15px; font-weight: 600; letter-spacing: 0.04em;
+  color: #e6e8eb; font-variant-numeric: tabular-nums; text-transform: none;
+}
+
+.btnBusy { opacity: 0.55; cursor: not-allowed; }
+.loadingNote { margin: 0 0 6px; font-size: 14px; line-height: 1.5; color: var(--ww-orange, #ff6434); }
+.payError { margin: 0; font-size: 13px; color: var(--ww-orange, #ff6434); }
+.hint { margin: -5px 0 2px; font-size: 12px; color: rgba(230, 232, 235, 0.45); text-transform: none; letter-spacing: normal; }
+
+.backLink { background: none; border: none; color: rgba(230, 232, 235, 0.55); font: inherit; font-size: 13.5px; cursor: pointer; padding: 0; text-align: left; text-transform: none; letter-spacing: normal; }
+.backLink:hover { color: #e6e8eb; }
+
+.secureLine { margin: 2px 0 0; display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: rgba(230, 232, 235, 0.45); }
+.waitNote { margin: 2px 0 0; font-size: 12.5px; line-height: 1.5; color: rgba(230, 232, 235, 0.55); }

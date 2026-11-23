@@ -1,10 +1,15 @@
 import { useInfiniteQuery, type UseInfiniteQueryResult } from '@tanstack/react-query';
+import type { OriginalDataProvenance } from '@/lib/originals-data';
 import type { MarketNft } from '@/lib/opensea';
-import { fetchNftsPage, type NftsPage } from '../api/fetchers';
+import { fetchNftsPage, fetchOriginalGroupsPage, type NftsPage } from '../api/fetchers';
 import { dedupeItems } from '../lib/items';
 import type { Availability, SelectedTraits } from '../types';
 
 export type MarketNftsData = {
+  traitCategories?:NftsPage['traitCategories'];
+  totalProducts?:number;
+  observedAt?:string;
+  provenance?: OriginalDataProvenance;
   items: MarketNft[];
   /** Index where the most recently loaded page begins, so only new cards
    *  stagger in on "load more" (not the whole list). */
@@ -23,7 +28,7 @@ export function useMarketNftsQuery(
   slug: string,
   availability: Availability,
   attributes?: SelectedTraits,
-  owner?: string | null
+  grouping?:{enabled:boolean;query:string;sort:string}
 ): UseInfiniteQueryResult<MarketNftsData> {
   const active = attributes
     ? Object.fromEntries(
@@ -31,27 +36,19 @@ export function useMarketNftsQuery(
       )
     : {};
   const activeFilters = Object.keys(active).length > 0 ? active : null;
-  // "Yours" is keyed by the connected wallet so switching account refetches, and
-  // only runs once there is a wallet.
-  const ownerKey = availability === 'yours' ? (owner ?? null) : null;
   return useInfiniteQuery({
-    queryKey: ['market', 'nfts', slug, availability, activeFilters, ownerKey],
-    enabled: slug.length > 0 && (availability !== 'yours' || !!owner),
+    queryKey: ['market', 'nfts', slug, availability, activeFilters,...(grouping?.enabled?['grouped',grouping.query,grouping.sort]:[])],
+    enabled: slug.length > 0,
     initialPageParam: null as string | null,
-    queryFn: ({ pageParam }) =>
-      fetchNftsPage(slug, availability, pageParam, activeFilters ?? undefined, owner),
+    queryFn: ({ pageParam, signal }) =>
+      grouping?.enabled?fetchOriginalGroupsPage(slug,pageParam,activeFilters??undefined,grouping.query,grouping.sort,signal):fetchNftsPage(slug, availability, pageParam, activeFilters ?? undefined, signal),
     getNextPageParam: (lastPage: NftsPage) => lastPage.next ?? undefined,
-    // Grid tabs are live surfaces (the server reads them no-store). A trade
-    // invalidates + polls them immediately; this staleTime is the throttle for
-    // ordinary browsing so re-renders within 5s reuse the cache instead of
-    // re-hitting the indexer.
-    staleTime: 5_000,
     select: (data) => {
       const items = dedupeItems(data.pages.flatMap((page) => page.items));
       const prior = dedupeItems(
         data.pages.slice(0, -1).flatMap((page) => page.items)
       );
-      return { items, batchBase: prior.length };
+      return { items, batchBase: prior.length, provenance: data.pages.at(-1)?.provenance,totalProducts:data.pages[0]?.totalProducts,observedAt:data.pages[0]?.observedAt,traitCategories:data.pages[0]?.traitCategories };
     },
   });
 }

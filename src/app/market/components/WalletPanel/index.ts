@@ -1,1 +1,0 @@
-export { WalletPanel } from './WalletPanel';

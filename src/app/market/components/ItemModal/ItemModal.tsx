@@ -5,11 +5,13 @@ import { createPortal } from 'react-dom';
 import { ArrowUpRight, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import type { MarketNft } from '@/lib/opensea';
 import { getEntryBySlug, getEntrySource } from '@/lib/wilderCollections';
-import { formatUsd, formatEth, formatWild } from '@/lib/price';
+import { formatUsd, formatEth } from '@/lib/price';
 import { FadeInImage } from '@/components/FadeInImage';
+import ProductMarketPanel from '@/sites/wilderworld/marketplace/ProductMarketPanel';
+import ProductReviews from '@/sites/wilderworld/marketplace/ProductReviews';
+import { STORE_SECONDARY_PANELS_ENABLED } from '@/sites/wilderworld/marketplace/launch-flags';
 import { useItemQuery } from '../../hooks/useItemQuery';
-import { TradeSection } from './TradeSection';
-import { useTradeStore } from '@/features/marketplace/tradeStore';
+import { configuredTokenIdentity } from '../../lib/items';
 import styles from '../../ItemModal.module.css';
 
 type Props = {
@@ -48,21 +50,7 @@ export function ItemModal({
   const [loaderVisible, setLoaderVisible] = useState(false);
   const loaderStartRef = useRef(0);
 
-  const isTradePending = useTradeStore((s) => s.phase) === 'pending';
-
   useEffect(() => setMounted(true), []);
-
-  // Clear the trade flow when the modal unmounts so reopening an item starts
-  // fresh (a card action can prime it first). Reconciling a settled trade with
-  // the grids is handled by useTradeReconciler at the market level, so it no
-  // longer depends on this modal's lifecycle.
-  useEffect(() => () => useTradeStore.getState().reset(), []);
-
-  // A trade in flight can't be abandoned mid-way — the tx is already mining.
-  const requestClose = () => {
-    if (useTradeStore.getState().phase === 'pending') return;
-    onClose();
-  };
 
   // Reset media state when the active NFT changes.
   useEffect(() => {
@@ -72,8 +60,9 @@ export function ItemModal({
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (useTradeStore.getState().phase === 'pending') return;
       if (e.key === 'Escape') onClose();
+      // Market draft inputs and controls own their arrow keys.
+      if (e.target instanceof Element && e.target.closest('input,textarea,select,button,a,[contenteditable="true"]')) return;
       if (e.key === 'ArrowLeft' && hasPrev) onPrev();
       if (e.key === 'ArrowRight' && hasNext) onNext();
     };
@@ -113,28 +102,27 @@ export function ItemModal({
 
   const priceEth = item?.priceEth ?? nft.priceEth ?? null;
   const priceUsd = formatUsd(priceEth, ethUsd);
-  // Z-Chain listings settle in WILD (from the grid's MarketNft); prefer it.
-  const priceWild = nft.priceWild ? formatWild(nft.priceWild.formatted) : null;
   const image = item?.image ?? nft.image;
   const name = item?.name ?? nft.name;
   const isLoading = status === 'pending';
   const isError = status === 'error';
+  const boundIdentity = configuredTokenIdentity(nft);
+  const legacyProductId = `legacy:${boundIdentity?.chainId??nft.chain}:${nft.contract.toLowerCase()}:${nft.identifier}`;
 
   return createPortal(
-    <div className={styles.overlay} onClick={requestClose} role="dialog" aria-modal="true">
+    <div className={styles.overlay} onClick={onClose} role="dialog" aria-modal="true">
       <button
         className={styles.close}
         onClick={(e) => {
           e.stopPropagation();
-          requestClose();
+          onClose();
         }}
-        disabled={isTradePending}
         aria-label="Close"
       >
         <X size={22} />
       </button>
 
-      {hasPrev && !isTradePending && (
+      {hasPrev && (
         <button
           className={`${styles.nav} ${styles.navPrev}`}
           onClick={(e) => {
@@ -146,7 +134,7 @@ export function ItemModal({
           <ChevronLeft size={28} />
         </button>
       )}
-      {hasNext && !isTradePending && (
+      {hasNext && (
         <button
           className={`${styles.nav} ${styles.navNext}`}
           onClick={(e) => {
@@ -223,18 +211,9 @@ export function ItemModal({
               <div className={styles.priceRow}>
                 <span className={styles.priceLabel}>Price</span>
                 <span className={styles.priceValue}>
-                  {priceWild ?? priceUsd ?? formatEth(priceEth) ?? '—'}
+                  {priceUsd ?? formatEth(priceEth) ?? '—'}
                 </span>
               </div>
-
-              {nft.fungible && nft.amount != null && (
-                <div className={styles.priceRow}>
-                  <span className={styles.priceLabel}>Quantity</span>
-                  <span className={styles.priceValue}>{nft.amount}</span>
-                </div>
-              )}
-
-              <TradeSection nft={nft} name={name} onClose={requestClose} />
 
               {!hideOpenSea && (
                 <a
@@ -290,6 +269,18 @@ export function ItemModal({
             </>
           )}
         </div>
+        {STORE_SECONDARY_PANELS_ENABLED && (
+        <div className={styles.marketSection}>
+          <ProductMarketPanel
+            key={`${nft.chain}:${nft.contract}:${nft.identifier}`}
+            productId={legacyProductId}
+            variantId={nft.identifier}
+            variantName={`${name} · Existing collectible`}
+            identity={boundIdentity && boundIdentity.chainId > 0 ? boundIdentity : undefined}
+          />
+          <ProductReviews productId={legacyProductId} variantId={nft.identifier} variantName={name} variantOptions={[{id:nft.identifier,name}]}/>
+        </div>
+        )}
       </div>
     </div>,
     document.body

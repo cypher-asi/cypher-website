@@ -1,0 +1,895 @@
+{
+  "schemaVersion": 1,
+  "status": "approved_for_preview_only",
+  "currency": "USD",
+  "approvedOn": "2026-11-08",
+  "approval": "Use these as preview prices",
+  "sourceProposal": "outputs/edition-supply/Full-Pricebook-Draft.json",
+  "sourceSha256": "f05e349183dcbcc113c3a3547a539ab64f2709261b4a67d920d4d1d00e70c523",
+  "productionPriceApproved": true,
+  "checkoutEnabled": true,
+  "mintingEnabled": true,
+  "pricingUnit": "One selected finish; all variants of each product share the same preview price.",
+  "products": {
+    "rim-preview-wertone-wantide-2010": {
+      "priceCents": 1200,
+      "rationale": "Signature rim-set price; one compatible set, with no performance upgrade premium."
+    },
+    "rim-preview-worsche-911-wt1-98": {
+      "priceCents": 1200,
+      "rationale": "Signature rim-set price; one compatible set, with no performance upgrade premium."
+    },
+    "rim-preview-wertone-v1": {
+      "priceCents": 1200,
+      "rationale": "Signature rim-set price; one compatible set, with no performance upgrade premium."
+    },
+    "rim-preview-wertone-v2": {
+      "priceCents": 1200,
+      "rationale": "Signature rim-set price; one compatible set, with no performance upgrade premium."
+    },
+    "rim-preview-wheel-001": {
+      "priceCents": 900,
+      "rationale": "Entry rim-set price within the existing signature price band."
+    },
+    "rim-preview-wheel-003": {
+      "priceCents": 900,
+      "rationale": "Entry rim-set price within the existing signature price band."
+    },
+    "rim-preview-lambos-v1": {
+      "priceCents": 1200,
+      "rationale": "Signature rim-set price; one compatible set, with no performance upgrade premium."
+    },
+    "rim-preview-lambos-v2": {
+      "priceCents": 1200,
+      "rationale": "Signature rim-set price; one compatible set, with no performance upgrade premium."
+    },
+    "furniture-sofa": {
+      "priceCents": 1900,
+      "rationale": "Apartment anchor piece at the current statement-piece price point."
+    },
+    "furniture-chair": {
+      "priceCents": 1200,
+      "rationale": "Signature lounge seating."
+    },
+    "furniture-workchair": {
+      "priceCents": 900,
+      "rationale": "Everyday workspace seating."
+    },
+    "furniture-coffetable": {
+      "priceCents": 900,
+      "rationale": "Everyday apartment table."
+    },
+    "furniture-workdesk": {
+      "priceCents": 1200,
+      "rationale": "Signature workspace anchor."
+    },
+    "vehicle-ghostline": {
+      "priceCents": 2900,
+      "rationale": "A separate vehicle tier above the $19 fashion statement ceiling; fitment and gameplay approval remain pending."
+    },
+    "vehicle-vera-solis": {
+      "priceCents": 2900,
+      "rationale": "A separate vehicle tier above the $19 fashion statement ceiling; fitment and gameplay approval remain pending."
+    },
+    "totem-fw-hermes-ii": {
+      "priceCents": 1500,
+      "rationale": "One Frank Wilder digital pendant edition. Physical jewelry prices and speculative resale value are excluded."
+    },
+    "totem-fw-hercules-ii": {
+      "priceCents": 1500,
+      "rationale": "One Frank Wilder digital pendant edition. Physical jewelry prices and speculative resale value are excluded."
+    },
+    "totem-fw-hercules": {
+      "priceCents": 1500,
+      "rationale": "One Frank Wilder digital pendant edition. Physical jewelry prices and speculative resale value are excluded."
+    },
+    "totem-fw-deadusa": {
+      "priceCents": 1500,
+      "rationale": "One Frank Wilder digital pendant edition. Physical jewelry prices and speculative resale value are excluded."
+    },
+    "totem-fw-da-vinci": {
+      "priceCents": 1500,
+      "rationale": "One Frank Wilder digital pendant edition. Physical jewelry prices and speculative resale value are excluded."
+    },
+    "totem-fw-emperor": {
+      "priceCents": 1500,
+      "rationale": "One Frank Wilder digital pendant edition. Physical jewelry prices and speculative resale value are excluded."
+    },
+    "totem-fw-achilles": {
+      "priceCents": 1500,
+      "rationale": "One Frank Wilder digital pendant edition. Physical jewelry prices and speculative resale value are excluded."
+    },
+    "totem-fw-queen-isis": {
+      "priceCents": 1500,
+      "rationale": "One Frank Wilder digital pendant edition. Physical jewelry prices and speculative resale value are excluded."
+    },
+    "totem-fw-faceless-pharaoh": {
+      "priceCents": 1500,
+      "rationale": "One Frank Wilder digital pendant edition. Physical jewelry prices and speculative resale value are excluded."
+    },
+    "totem-fw-fragment": {
+      "priceCents": 1500,
+      "rationale": "One Frank Wilder digital pendant edition. Physical jewelry prices and speculative resale value are excluded."
+    },
+    "home-object-043-sm-bench": {
+      "priceCents": 700,
+      "rationale": "Everyday complete seating at the essentials price point."
+    },
+    "home-assembled-bar-stool": {
+      "priceCents": 700,
+      "rationale": "Everyday complete seating at the essentials price point."
+    },
+    "home-object-044-sm-bench-02": {
+      "priceCents": 700,
+      "rationale": "Everyday complete seating at the essentials price point."
+    },
+    "home-object-123-sm-shelf-01": {
+      "priceCents": 900,
+      "rationale": "Complete shelving unit; no storage-capacity gameplay benefit assumed."
+    },
+    "home-object-206-workbench-02": {
+      "priceCents": 700,
+      "rationale": "Everyday complete table or work surface."
+    },
+    "home-object-060-sm-clubchair02": {
+      "priceCents": 700,
+      "rationale": "Everyday complete seating at the essentials price point."
+    },
+    "home-object-041-sm-bar-table-01a": {
+      "priceCents": 700,
+      "rationale": "Everyday complete table or work surface."
+    },
+    "home-object-093-sm-lobbytable": {
+      "priceCents": 700,
+      "rationale": "Everyday complete table or work surface."
+    },
+    "home-object-205-sofa": {
+      "priceCents": 1500,
+      "rationale": "Complete sofa below the apartment hero piece."
+    },
+    "home-object-057-sm-chair": {
+      "priceCents": 700,
+      "rationale": "Everyday complete seating at the essentials price point."
+    },
+    "home-object-038-sm-armory-table": {
+      "priceCents": 700,
+      "rationale": "Everyday complete table or work surface."
+    },
+    "home-object-080-sm-floor-mat-01a": {
+      "priceCents": 300,
+      "rationale": "Entry-level floor accessory."
+    },
+    "home-object-050-sm-carpet": {
+      "priceCents": 700,
+      "rationale": "Patterned room accent within the essentials band."
+    },
+    "home-object-061-sm-coffeemug-01": {
+      "priceCents": 300,
+      "rationale": "Small placeable accessory at the lowest existing price point."
+    },
+    "home-object-072-sm-cutting-board-01a": {
+      "priceCents": 300,
+      "rationale": "Small placeable accessory at the lowest existing price point."
+    },
+    "home-object-113-sm-philosopher": {
+      "priceCents": 900,
+      "rationale": "Accessible collectible bust price, independent of depicted material or lore."
+    },
+    "home-object-099-sm-monitor": {
+      "priceCents": 500,
+      "rationale": "Decorative display object; no functional screen claim."
+    },
+    "home-object-196-sm-trashbin": {
+      "priceCents": 300,
+      "rationale": "Small placeable accessory at the lowest existing price point."
+    },
+    "statue-abstract-sculpture": {
+      "priceCents": 1200,
+      "rationale": "Signature complete display object; no guild or business permission included."
+    },
+    "statue-black-cat": {
+      "priceCents": 1200,
+      "rationale": "Signature complete display object; no guild or business permission included."
+    },
+    "statue-classical-bust": {
+      "priceCents": 900,
+      "rationale": "Accessible collectible bust price, independent of depicted material or lore."
+    },
+    "statue-gold-bust-02": {
+      "priceCents": 900,
+      "rationale": "Accessible collectible bust price, independent of depicted material or lore."
+    },
+    "statue-green-marble-bust": {
+      "priceCents": 900,
+      "rationale": "Accessible collectible bust price, independent of depicted material or lore."
+    },
+    "statue-lion-head-bust": {
+      "priceCents": 900,
+      "rationale": "Accessible collectible bust price, independent of depicted material or lore."
+    },
+    "statue-metallic-crab-claw": {
+      "priceCents": 1200,
+      "rationale": "Signature complete display object; no guild or business permission included."
+    },
+    "statue-ringed-sculpture-01": {
+      "priceCents": 1200,
+      "rationale": "Signature complete display object; no guild or business permission included."
+    },
+    "statue-roman-bust": {
+      "priceCents": 900,
+      "rationale": "Accessible collectible bust price, independent of depicted material or lore."
+    },
+    "statue-roman-face-02": {
+      "priceCents": 900,
+      "rationale": "Accessible collectible bust price, independent of depicted material or lore."
+    },
+    "statue-roman-face-sculpture": {
+      "priceCents": 900,
+      "rationale": "Accessible collectible bust price, independent of depicted material or lore."
+    },
+    "statue-tiger-head": {
+      "priceCents": 900,
+      "rationale": "Accessible collectible bust price, independent of depicted material or lore."
+    },
+    "statue-winged-bust": {
+      "priceCents": 900,
+      "rationale": "Accessible collectible bust price, independent of depicted material or lore."
+    },
+    "guild-memelord": {
+      "priceCents": 1200,
+      "rationale": "Signature complete display object; no guild or business permission included."
+    },
+    "guild-satoshi": {
+      "priceCents": 1200,
+      "rationale": "Signature complete display object; no guild or business permission included."
+    },
+    "totem-chain-jwlr-002": {
+      "priceCents": 900,
+      "rationale": "Native triangular pendant at the signature entry price."
+    },
+    "totem-chain-jwlr-002-a": {
+      "priceCents": 500,
+      "rationale": "Standalone chain at an accessible accessory price."
+    },
+    "TPWR_001": {
+      "priceCents": 500,
+      "rationale": "Final catalogue price."
+    },
+    "TPWR_002": {
+      "priceCents": 500,
+      "rationale": "Final catalogue price."
+    },
+    "TPWR_002_A": {
+      "priceCents": 500,
+      "rationale": "Final catalogue price."
+    },
+    "TPWR_002_A_F": {
+      "priceCents": 500,
+      "rationale": "Final catalogue price."
+    },
+    "TPWR_002_F": {
+      "priceCents": 500,
+      "rationale": "Final catalogue price."
+    },
+    "TPWR_003": {
+      "priceCents": 500,
+      "rationale": "Final catalogue price."
+    },
+    "TPWR_003_A": {
+      "priceCents": 500,
+      "rationale": "Final catalogue price."
+    },
+    "TPWR_003_F": {
+      "priceCents": 500,
+      "rationale": "Final catalogue price."
+    },
+    "TPWR_004": {
+      "priceCents": 500,
+      "rationale": "Final catalogue price."
+    },
+    "TPWR_005": {
+      "priceCents": 500,
+      "rationale": "Final catalogue price."
+    },
+    "TPWR_006": {
+      "priceCents": 500,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_A": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_B": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_C": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_D": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_E": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_F": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_G": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_H": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_I": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_J": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_K": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_L": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_M": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_N": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_O": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_002": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_002_1": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_002_2": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_002_3": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_002_4": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_002_B": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_002_C": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_002_D": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_002_E": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_002_F": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_003": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_005": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_005_A": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_005_B": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_010": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_010_A": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_010_B": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_013": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_N30": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_N30_A": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_N30_B": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_N30_C": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_N30_D": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_N30_E": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_N30_F": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_PNX_0": {
+      "priceCents": 1900,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_PNX_1": {
+      "priceCents": 1900,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_PNX_2": {
+      "priceCents": 1900,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_PNX_3": {
+      "priceCents": 1900,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_PNX_4": {
+      "priceCents": 1900,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_PNX_5": {
+      "priceCents": 1900,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_PNX_6": {
+      "priceCents": 1900,
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_PNX_7": {
+      "priceCents": 1900,
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_001": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_001_A": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_001_B": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_001_F": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_002": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_002_A": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_002_A_F": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_002_F": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_003_F": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_004": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_004_A": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_004_A_F": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_004_F": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_006": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_007": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_010": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_010_A": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_010_B": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_010_C": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_010_D": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_010_E": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_010_F": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_010_G": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_N30": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "SUIT_001": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "SUIT_001_A": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "SUIT_002": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "SUIT_002_A": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "SUIT_003": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "SUIT_003_A": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "SUIT_004": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "SUIT_004_A": {
+      "priceCents": 1200,
+      "rationale": "Final catalogue price."
+    },
+    "FTWR_001": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "FTWR_003": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "FTWR_004_A": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "FTWR_005": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "FTWR_005_A": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "FTWR_010": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "FTWR_N30": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_008": {
+      "priceCents": 500,
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_009": {
+      "priceCents": 900,
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_009_A": {
+      "priceCents": 900,
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_010": {
+      "priceCents": 900,
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_010_A": {
+      "priceCents": 900,
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_011": {
+      "priceCents": 900,
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_011_A": {
+      "priceCents": 900,
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_012": {
+      "priceCents": 900,
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_012_A": {
+      "priceCents": 900,
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_013": {
+      "priceCents": 500,
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_015": {
+      "priceCents": 900,
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_015_A": {
+      "priceCents": 900,
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_016": {
+      "priceCents": 500,
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_001_A": {
+      "priceCents": 1500,
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_001_B": {
+      "priceCents": 900,
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_002": {
+      "priceCents": 1500,
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_002_A": {
+      "priceCents": 1500,
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_003_A": {
+      "priceCents": 1500,
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_006_A": {
+      "priceCents": 1500,
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_006_B": {
+      "priceCents": 1500,
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_006_C": {
+      "priceCents": 1500,
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_007": {
+      "priceCents": 900,
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_007_A": {
+      "priceCents": 900,
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_FRD": {
+      "priceCents": 1500,
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_002": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_006": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_006_A": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_006_B": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_008": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_009": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_010": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_011": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_012": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_012_A": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_013": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_014": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_015": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_H01": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_H03": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "JWLR_H03": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "JWLR_H06": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "JWLR_H07": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "JWLR_H14": {
+      "priceCents": 700,
+      "rationale": "Final catalogue price."
+    },
+    "MASK_001_A": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "MASK_002": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "MASK_002_A": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "MASK_002_B": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "MASK_002_C": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "MASK_002_FE": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "MASK_002_FRANK": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "MASK_002_GP": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "MASK_003": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "MASK_003_A": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "MASK_003_B": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "MASK_003_C": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "MASK_H01": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "XTRA_003": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "XTRA_003_A": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "XTRA_004": {
+      "priceCents": 300,
+      "rationale": "Final catalogue price."
+    },
+    "XTRA_010_C": {
+      "priceCents": 1500,
+      "rationale": "Final catalogue price."
+    },
+    "XTRA_010_A": {
+      "priceCents": 900,
+      "rationale": "Final catalogue price."
+    }
+  }
+}

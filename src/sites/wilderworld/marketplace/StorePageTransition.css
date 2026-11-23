@@ -1,0 +1,21 @@
+.ww-transition-image {
+  transform-origin: top left;
+  will-change: transform, opacity;
+  position: fixed;
+  display: block;
+  z-index: 10000;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  max-width: none;
+  max-height: none;
+  pointer-events: none;
+  user-select: none;
+  object-fit: contain;
+  background: transparent;
+}
+html[data-store-transition] body { background: var(--ww-background, #101113); }
+html[data-store-transition='loading'] { cursor: progress; }
+@media (prefers-reduced-motion: reduce) {
+  .ww-transition-image { display: none; }
+}

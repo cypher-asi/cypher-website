@@ -463,6 +463,13 @@ body[data-company='wilderworld'] img {
   -webkit-touch-callout: none;
 }
 
+/* Wilder World: charcoal background (Frank, 2026-11-24) */
+html:has(body[data-company='wilderworld']) {
+  --site-bg-from: #101113;
+  --site-bg-to: #101113;
+}
+
+
 /* ZERO: teal hover accent matching zero.tech (rgb(1, 244, 203)). */
 body[data-company='zero'] {
   --color-link-hover: #01f4cb;

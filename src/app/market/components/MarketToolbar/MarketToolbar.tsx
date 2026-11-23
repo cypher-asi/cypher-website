@@ -1,13 +1,4 @@
-import {
-  BarChart3,
-  Grid2x2,
-  Grid3x3,
-  LayoutGrid,
-  List,
-  SlidersHorizontal,
-  User,
-} from 'lucide-react';
-import type { MarketDrawer } from '../../store/marketStore';
+import { Grid2x2, Grid3x3, LayoutGrid, List, SlidersHorizontal } from 'lucide-react';
 import type { GridSize, ViewMode } from '../../types';
 import styles from '../../market.module.css';
 
@@ -15,10 +6,8 @@ type Props = {
   gridSize: GridSize;
   viewMode: ViewMode;
   selectedCount: number;
-  /** Whether to offer the wallet (Profile) drawer — shown whenever signed in. */
-  showWallet: boolean;
-  activeDrawer: MarketDrawer | null;
-  onOpenDrawer: (drawer: MarketDrawer) => void;
+  filtersOpen: boolean;
+  onOpenFilters: () => void;
   onGridSize: (size: GridSize) => void;
   onShowList: () => void;
 };
@@ -27,52 +16,25 @@ export function MarketToolbar({
   gridSize,
   viewMode,
   selectedCount,
-  showWallet,
-  activeDrawer,
-  onOpenDrawer,
+  filtersOpen,
+  onOpenFilters,
   onGridSize,
   onShowList,
 }: Props) {
   const isGrid = (size: GridSize) => viewMode === 'grid' && gridSize === size;
   return (
     <div className={styles.toolbar}>
-      {/* Mobile-only drawer triggers (the rail panels move here on small screens):
-          Profile → Your Wallets, sliders → Filters, chart → collection stats. */}
-      <div className={styles.toolbarActions}>
-        {showWallet && (
-          <button
-            type="button"
-            className={styles.toolbarIconBtn}
-            onClick={() => onOpenDrawer('wallet')}
-            aria-label="Your wallets"
-            aria-haspopup="dialog"
-            aria-expanded={activeDrawer === 'wallet'}
-          >
-            <User size={16} />
-          </button>
-        )}
-        <button
-          type="button"
-          className={styles.toolbarIconBtn}
-          onClick={() => onOpenDrawer('filters')}
-          aria-label="Filters"
-          aria-haspopup="dialog"
-          aria-expanded={activeDrawer === 'filters'}
-        >
-          <SlidersHorizontal size={16} />
-          {selectedCount > 0 && <span className={styles.filterBadge}>{selectedCount}</span>}
-        </button>
-        <button
-          type="button"
-          className={styles.toolbarIconBtn}
-          onClick={() => onOpenDrawer('collection')}
-          aria-label="Collection info"
-          aria-haspopup="dialog"
-          aria-expanded={activeDrawer === 'collection'}
-        >
-          <BarChart3 size={16} />
-        </button>
-      </div>
+      <button
+        type="button"
+        className={styles.filterIconBtn}
+        onClick={onOpenFilters}
+        aria-label="Filters"
+        aria-haspopup="dialog"
+        aria-expanded={filtersOpen}
+      >
+        <SlidersHorizontal size={16} />
+        {selectedCount > 0 && <span className={styles.filterBadge}>{selectedCount}</span>}
+      </button>
       <div className={styles.sizeToggle} role="group" aria-label="View mode">
         <button
           type="button"

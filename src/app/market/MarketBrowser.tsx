@@ -1,33 +1,27 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ChevronLeft } from 'lucide-react';
 import type { WilderIndustry } from '@/lib/wilderCollections';
 import { getEntrySource } from '@/lib/wilderCollections';
 import { getStaticTraits } from '@/lib/wilderTraits';
-import { CollapsiblePanel } from './components/CollapsiblePanel';
+import { AnimatedPanel } from '@/components/AnimatedPanel';
 import { CustomScrollbar } from '@/components/CustomScrollbar';
 import { useMarketStore } from './store/marketStore';
 import { useCollectionsQuery } from './hooks/useCollectionsQuery';
 import { useEthPriceQuery } from './hooks/useEthPriceQuery';
 import { useMarketNftsQuery } from './hooks/useMarketNftsQuery';
-import { useHoldingsQuery } from './hooks/useHoldingsQuery';
-import { useEthHoldingsQuery } from './hooks/useEthHoldingsQuery';
-import { useAuthStore } from '@/features/auth/store';
 import { useMarketTraitsQuery } from './hooks/useMarketTraitsQuery';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { useInfiniteScroll } from './hooks/useInfiniteScroll';
 import { useMarketUrlSync } from './hooks/useMarketUrlSync';
-import { useTradeReconciler } from './hooks/useTradeReconciler';
-import { countSelectedTraits, filterByTraits, itemKey } from './lib/items';
+import { countSelectedTraits, filterByTraits, searchLoadedItems } from './lib/items';
 import type { Availability } from './types';
 import { CollectionNav } from './components/CollectionNav';
 import { MobileCollectionMenu } from './components/MobileCollectionMenu';
 import { MarketToolbar } from './components/MarketToolbar';
 import { MarketFilters } from './components/MarketFilters';
-import { RailDrawer } from './components/RailDrawer';
+import { FiltersDrawer } from './components/FiltersDrawer';
 import { CollectionInfoPanel } from './components/CollectionInfoPanel';
-import { WalletPanel } from './components/WalletPanel';
 import { NftGrid } from './components/NftGrid';
 import { NftList } from './components/NftList';
 import { MarketSkeleton } from './components/MarketSkeleton';
@@ -36,9 +30,16 @@ import { LoadMoreSentinel } from './components/LoadMoreSentinel';
 import { ItemModal } from './components/ItemModal';
 import styles from './market.module.css';
 
-type Props = { industries: WilderIndustry[] };
+type Props = { industries: WilderIndustry[]; embedded?: boolean; initialQuery?: string };
 
-export default function MarketBrowser({ industries }: Props) {
+export default function MarketBrowser({ industries, embedded = false, initialQuery = '' }: Props) {
+  const [query, setQuery] = useState(initialQuery);
+  useEffect(() => {
+    const readQuery = () => setQuery(new URLSearchParams(window.location.search).get('q') ?? '');
+    readQuery();
+    window.addEventListener('popstate', readQuery);
+    return () => window.removeEventListener('popstate', readQuery);
+  }, []);
   const allEntries = useMemo(
     () => industries.flatMap((i) => i.collections),
     [industries]
@@ -54,7 +55,7 @@ export default function MarketBrowser({ industries }: Props) {
   const gridSize = useMarketStore((s) => s.gridSize);
   const viewMode = useMarketStore((s) => s.viewMode);
   const modalId = useMarketStore((s) => s.modalId);
-  const activeDrawer = useMarketStore((s) => s.activeDrawer);
+  const filtersOpen = useMarketStore((s) => s.filtersOpen);
   const collectionMenuOpen = useMarketStore((s) => s.collectionMenuOpen);
   const openNavGroup = useMarketStore((s) => s.openNavGroup);
 
@@ -64,7 +65,7 @@ export default function MarketBrowser({ industries }: Props) {
   const toggleTraitGroup = useMarketStore((s) => s.toggleTraitGroup);
   const setGridSize = useMarketStore((s) => s.setGridSize);
   const setViewMode = useMarketStore((s) => s.setViewMode);
-  const setActiveDrawer = useMarketStore((s) => s.setActiveDrawer);
+  const setFiltersOpen = useMarketStore((s) => s.setFiltersOpen);
   const setCollectionMenuOpen = useMarketStore((s) => s.setCollectionMenuOpen);
   const setOpenNavGroup = useMarketStore((s) => s.setOpenNavGroup);
 
@@ -74,10 +75,6 @@ export default function MarketBrowser({ industries }: Props) {
     firstSlug
   );
 
-  // Refetch the grids + stats whenever a trade settles (mounted here, not in the
-  // modal, so it survives every modal dismissal path).
-  useTradeReconciler();
-
   /* ----- Server data (TanStack Query) ------------------------------------ */
   const { data: meta } = useCollectionsQuery();
   const { data: ethUsd = null } = useEthPriceQuery();
@@ -85,50 +82,24 @@ export default function MarketBrowser({ industries }: Props) {
   const isIndexerSource =
     activeEntry != null && getEntrySource(activeEntry) === 'indexer';
 
-  // "Yours" (your holdings) is only offered on a Z-Chain collection with a
-  // connected wallet.
-  const walletAddress = useAuthStore((s) => s.user?.zeroWalletAddress ?? null);
-  const userId = useAuthStore((s) => s.user?.id ?? null);
-  const showYours = walletAddress != null && isIndexerSource;
-
-  // "Your Holdings" — a consolidated view of all tradeable Z-Chain assets, opened
-  // from the wallet panel. A local view flag, not a collection.
-  const [holdingsOpen, setHoldingsOpen] = useState(false);
-  // "Your Ethereum Holdings" — the parallel consolidated view of ETH-mainnet
-  // assets across the user's linked EOAs. Mutually exclusive with holdingsOpen.
-  const [ethHoldingsOpen, setEthHoldingsOpen] = useState(false);
-  // Either consolidated holdings view (shared grid/empty/skeleton behavior).
-  const inHoldingsView = holdingsOpen || ethHoldingsOpen;
-
   // Indexer collections filter server-side across the whole collection, so the
   // trait selections drive the query. ETH keeps filtering client-side over the
   // loaded page, so it passes no attributes here.
-  const nftsQuery = useMarketNftsQuery(
+  const {
+    data: nftsData,
+    isLoading,
+    isError,
+    hasNextPage = false,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useMarketNftsQuery(
     activeSlug,
     availability,
-    isIndexerSource ? selectedTraits : undefined,
-    availability === 'yours' ? walletAddress : null
+    isIndexerSource ? selectedTraits : undefined
   );
-  const holdingsQuery = useHoldingsQuery(walletAddress, holdingsOpen);
-  const ethHoldingsQuery = useEthHoldingsQuery(userId, ethHoldingsOpen);
-
-  // The grid reads from whichever view is active; all three queries share a shape.
-  const gridQuery = ethHoldingsOpen ? ethHoldingsQuery : holdingsOpen ? holdingsQuery : nftsQuery;
-  const nftsData = gridQuery.data;
-  const isLoading = gridQuery.isLoading;
-  const isError = gridQuery.isError;
-  const hasNextPage = gridQuery.hasNextPage ?? false;
-  const isFetchingNextPage = gridQuery.isFetchingNextPage;
-  const fetchNextPage = gridQuery.fetchNextPage;
 
   const items = nftsData?.items ?? [];
   const batchBase = nftsData?.batchBase ?? 0;
-
-  // If "Yours" stops being available (disconnect, or switching to an ETH
-  // collection) while it's the active filter, fall back to Listed.
-  useEffect(() => {
-    if (availability === 'yours' && !showYours) setAvailability('listed');
-  }, [availability, showYours, setAvailability]);
 
   const staticTraits = useMemo(() => getStaticTraits(activeSlug), [activeSlug]);
   const { data: indexerTraits } = useMarketTraitsQuery(isIndexerSource ? activeSlug : '');
@@ -137,8 +108,8 @@ export default function MarketBrowser({ industries }: Props) {
   // loaded page client-side.
   const filtered = useMemo(
     () =>
-      inHoldingsView || isIndexerSource ? items : filterByTraits(items, selectedTraits),
-    [inHoldingsView, isIndexerSource, items, selectedTraits]
+      searchLoadedItems(isIndexerSource ? items : filterByTraits(items, selectedTraits), query),
+    [isIndexerSource, items, selectedTraits, query]
   );
   const selectedCount = countSelectedTraits(selectedTraits);
 
@@ -177,41 +148,6 @@ export default function MarketBrowser({ industries }: Props) {
     [availability, setAvailability]
   );
 
-  /* ----- Holdings view: open from the wallet panel, exit back to a grid --- */
-  const openHoldings = useCallback(() => {
-    setEthHoldingsOpen(false);
-    setHoldingsOpen(true);
-    setActiveDrawer(null); // in case it was opened from the mobile wallet drawer
-    window.scrollTo({ top: 0, behavior: 'auto' });
-  }, [setActiveDrawer]);
-
-  const openEthHoldings = useCallback(() => {
-    setHoldingsOpen(false);
-    setEthHoldingsOpen(true);
-    setActiveDrawer(null);
-    window.scrollTo({ top: 0, behavior: 'auto' });
-  }, [setActiveDrawer]);
-
-  // Picking a collection leaves either holdings view for that collection.
-  const selectCollection = useCallback(
-    (slug: string) => {
-      setHoldingsOpen(false);
-      setEthHoldingsOpen(false);
-      navigateCollection(slug);
-    },
-    [navigateCollection]
-  );
-
-  // Holdings is wallet-scoped: dropping the wallet exits the view.
-  useEffect(() => {
-    if (holdingsOpen && !walletAddress) setHoldingsOpen(false);
-  }, [holdingsOpen, walletAddress]);
-
-  // ETH holdings is scoped to the signed-in user: signing out exits the view.
-  useEffect(() => {
-    if (ethHoldingsOpen && !userId) setEthHoldingsOpen(false);
-  }, [ethHoldingsOpen, userId]);
-
   /* ----- Nav dropdown: close on outside click / Escape ------------------- */
   useEffect(() => {
     if (!openNavGroup) return;
@@ -248,37 +184,35 @@ export default function MarketBrowser({ industries }: Props) {
     };
   }, [collectionMenuOpen, setCollectionMenuOpen]);
 
-  /* ----- Mobile rail drawer: close on Escape ----------------------------- */
+  /* ----- Mobile filters drawer: close on Escape -------------------------- */
   useEffect(() => {
-    if (!activeDrawer) return;
+    if (!filtersOpen) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setActiveDrawer(null);
+      if (e.key === 'Escape') setFiltersOpen(false);
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [activeDrawer, setActiveDrawer]);
+  }, [filtersOpen, setFiltersOpen]);
 
   /* ----- Tidy up mobile-only overlays when leaving the mobile layout ----- */
   useEffect(() => {
     if (!isMobile) {
-      setActiveDrawer(null);
+      setFiltersOpen(false);
       setCollectionMenuOpen(false);
     }
-  }, [isMobile, setActiveDrawer, setCollectionMenuOpen]);
+  }, [isMobile, setFiltersOpen, setCollectionMenuOpen]);
 
   /* ----- Item modal navigation ------------------------------------------- */
-  // Identify the open item by its full card key, not the bare token id: a 1155
-  // can surface several cards (floor + bundles) sharing one token id.
-  const modalIndex = modalId ? filtered.findIndex((n) => itemKey(n) === modalId) : -1;
+  const modalIndex = modalId ? filtered.findIndex((n) => n.identifier === modalId) : -1;
   const modalNft = modalIndex >= 0 ? filtered[modalIndex] : null;
 
   const goPrev = useCallback(() => {
-    if (modalIndex > 0) openModal(itemKey(filtered[modalIndex - 1]), { replace: true });
+    if (modalIndex > 0) openModal(filtered[modalIndex - 1].identifier, { replace: true });
   }, [modalIndex, filtered, openModal]);
 
   const goNext = useCallback(() => {
     if (modalIndex >= 0 && modalIndex < filtered.length - 1) {
-      openModal(itemKey(filtered[modalIndex + 1]), { replace: true });
+      openModal(filtered[modalIndex + 1].identifier, { replace: true });
     } else if (hasNextPage) {
       loadMore();
     }
@@ -286,24 +220,18 @@ export default function MarketBrowser({ industries }: Props) {
 
   /* ----- Derived view flags ---------------------------------------------- */
   const showSkeleton = activeSlug === '' || isLoading;
-  const hasActiveFilters = selectedCount > 0;
   // A live floor price means the collection has at least one active listing, so
   // an empty "listed" result there is almost certainly a fetch hiccup rather
-  // than a truly empty collection. But an empty *filtered* result is a legitimate
-  // "no matches" — a trait can exclude every listing while the collection still
-  // has a floor — so a filtered-empty grid is never "unavailable".
+  // than a truly empty collection. Don't claim "no listed items" in that case.
   const floorSuggestsListings =
     availability === 'listed' && (activeMeta?.floorPrice ?? 0) > 0;
-  const showUnavailable =
-    isError ||
-    (!inHoldingsView && items.length === 0 && floorSuggestsListings && !hasActiveFilters);
+  const showUnavailable = isError || (items.length === 0 && floorSuggestsListings);
 
   const filters = (
     <MarketFilters
       activeSlug={activeSlug}
       availability={availability}
-      showAvailability={true}
-      showYours={showYours}
+      showAvailability={!isIndexerSource}
       traitCategories={traitCategories}
       selectedTraits={selectedTraits}
       openTraitGroups={openTraitGroups}
@@ -315,62 +243,30 @@ export default function MarketBrowser({ industries }: Props) {
     />
   );
 
-  // Shared between the desktop rail (in a collapsible panel) and the mobile
-  // collection drawer.
-  const collectionInfo = (
-    <CollectionInfoPanel
-      launched={activeMeta?.launched ?? activeEntry?.launched ?? null}
-      floorPrice={activeMeta?.floorPrice ?? null}
-      topOfferEth={activeMeta?.topOfferEth ?? null}
-      totalVolume={activeMeta?.totalVolume ?? null}
-      listedCount={activeMeta?.listedCount ?? null}
-      owners={activeMeta?.owners ?? null}
-      ethUsd={ethUsd}
-      wildDenominated={isIndexerSource}
-      openseaSlug={isIndexerSource ? undefined : activeEntry?.slug}
-    />
-  );
-
-  // A trait filter is active but nothing came back (server- or client-side): a
-  // real "no matches", whichever availability tab we're on. Otherwise fall back
-  // to the per-tab "nothing here" copy.
-  const emptyCopy = ethHoldingsOpen
-    ? {
-        title: 'No Wilder World assets found',
-        body: 'Wilder World assets held in your linked Ethereum wallets show up here.',
-      }
-    : holdingsOpen
-    ? {
-        title: 'No tradeable assets yet',
-        body: 'Items you hold across the Z-Chain collections show up here, ready to list for sale.',
-      }
-    : hasActiveFilters
-    ? {
-        title: 'No items match your filters',
-        body: 'Try clearing or adjusting the selected trait filters.',
-      }
-    : availability === 'listed'
-      ? {
-          title: 'No items currently listed',
-          body: isIndexerSource
-            ? 'Nothing in this collection is listed for sale right now. Try the Unlisted filter to browse the collection.'
-            : 'Nothing in this collection is listed for sale right now. Try the Unlisted filter or browse on OpenSea.',
-        }
-      : availability === 'yours'
+  const emptyCopy = query.trim()
+    ? { title: 'No matches in loaded items', body: 'Search matches names, token IDs and traits in this collection. Load more items or try another collection.' }
+    : isIndexerSource && items.length === 0
+    ? { title: 'No items to display', body: 'No collectible inventory was returned for this collection.' }
+    : items.length === 0
+      ? availability === 'listed'
         ? {
-            title: "You don't own anything here yet",
-            body: 'Items you own in this collection will show up here, ready to list for sale.',
+            title: 'No items currently listed',
+            body: 'Nothing in this collection is listed for sale right now. Try the Unlisted filter or browse on OpenSea.',
           }
         : {
             title: 'No unlisted items found',
             body: 'Every token in this collection appears to be listed. Switch back to the Listed filter to see them.',
-          };
+          }
+      : {
+          title: 'No items match your filters',
+          body: 'Try clearing or adjusting the selected trait filters.',
+        };
 
   return (
     <>
-      <div className={styles.topbar}>
+      <div className={`${styles.topbar} ${embedded ? styles.embeddedTopbar : ''}`}>
         <div className={styles.titleRow}>
-          <h1 className={styles.headerTitle}>Wilder Market</h1>
+          <h1 className={styles.headerTitle}>{embedded ? 'Originals' : 'Wilder Market'}</h1>
           <MobileCollectionMenu
             industries={industries}
             entries={allEntries}
@@ -379,7 +275,7 @@ export default function MarketBrowser({ industries }: Props) {
             open={collectionMenuOpen}
             menuRef={collRef}
             onToggle={() => setCollectionMenuOpen(!collectionMenuOpen)}
-            onSelect={selectCollection}
+            onSelect={navigateCollection}
           />
         </div>
 
@@ -389,16 +285,15 @@ export default function MarketBrowser({ industries }: Props) {
           openNavGroup={openNavGroup}
           navRef={navRef}
           onToggleNavGroup={setOpenNavGroup}
-          onSelect={selectCollection}
+          onSelect={navigateCollection}
         />
 
         <MarketToolbar
           gridSize={gridSize}
           viewMode={viewMode}
           selectedCount={selectedCount}
-          showWallet={walletAddress != null}
-          activeDrawer={activeDrawer}
-          onOpenDrawer={setActiveDrawer}
+          filtersOpen={filtersOpen}
+          onOpenFilters={() => setFiltersOpen(true)}
           onGridSize={setGridSize}
           onShowList={() => setViewMode('list')}
         />
@@ -406,57 +301,39 @@ export default function MarketBrowser({ industries }: Props) {
 
       <div className={styles.layout}>
         <aside className={styles.rail} ref={railRef}>
-          {/* On small screens the rail panels move into toolbar-triggered drawers
-              (below), so the rail itself only renders on the desktop layout. */}
           {!isMobile && (
-            <>
-              {walletAddress && (
-                <div className={styles.railGroup}>
-                  <p className={styles.railGroupLabel}>User</p>
-                  <CollapsiblePanel title="Your Wallets" measureDeps={[walletAddress]}>
-                    <WalletPanel address={walletAddress} onOpenHoldings={openHoldings} onOpenEthHoldings={openEthHoldings} />
-                  </CollapsiblePanel>
-                </div>
-              )}
-
-              {/* The collection filters + stats don't apply to the cross-collection
-                  holdings views, so hide that group while either is open. */}
-              {!inHoldingsView && (
-                <div className={styles.railGroup}>
-                  <p className={styles.railGroupLabel}>Collection</p>
-                  <CollapsiblePanel title="Filters" measureDeps={[activeSlug, openTraitGroups]}>
-                    {filters}
-                  </CollapsiblePanel>
-                  <CollapsiblePanel title={collectionName} measureDeps={[activeSlug, activeMeta]}>
-                    {collectionInfo}
-                  </CollapsiblePanel>
-                </div>
-              )}
-            </>
+            <AnimatedPanel
+              className={styles.panel}
+              bodyClassName={styles.panelBody}
+              measureDeps={[activeSlug, openTraitGroups]}
+            >
+              {filters}
+            </AnimatedPanel>
           )}
+
+          <AnimatedPanel
+            className={styles.panel}
+            bodyClassName={styles.panelBody}
+            measureDeps={[activeSlug, activeMeta]}
+          >
+            <CollectionInfoPanel
+              name={collectionName}
+              launched={activeMeta?.launched ?? activeEntry?.launched ?? null}
+              floorPrice={activeMeta?.floorPrice ?? null}
+              topOfferEth={activeMeta?.topOfferEth ?? null}
+              totalVolume={activeMeta?.totalVolume ?? null}
+              listedCount={activeMeta?.listedCount ?? null}
+              owners={activeMeta?.owners ?? null}
+              ethUsd={ethUsd}
+              openseaSlug={isIndexerSource ? undefined : activeEntry?.slug}
+            />
+          </AnimatedPanel>
 
           <CustomScrollbar targetRef={railRef} showOnHoverOnly />
         </aside>
 
         <div className={styles.main}>
-          {inHoldingsView && (
-            <div className={styles.holdingsHead}>
-              <button
-                type="button"
-                className={styles.holdingsBack}
-                onClick={() => {
-                  setHoldingsOpen(false);
-                  setEthHoldingsOpen(false);
-                }}
-              >
-                <ChevronLeft size={16} aria-hidden />
-                Back
-              </button>
-              <h2 className={styles.holdingsTitle}>
-                {ethHoldingsOpen ? 'Your Ethereum Holdings' : 'Your Holdings'}
-              </h2>
-            </div>
-          )}
+          {query.trim() && <div className={styles.searchScope}><span>“{query}” · {filtered.length} matches in {items.length} loaded items</span><span>Current collection only</span></div>}
           {showSkeleton ? (
             <MarketSkeleton viewMode={viewMode} gridSize={gridSize} />
           ) : showUnavailable ? (
@@ -465,7 +342,7 @@ export default function MarketBrowser({ industries }: Props) {
               body={
                 isIndexerSource
                   ? 'Live data is unavailable right now. Please try again shortly.'
-                  : 'Live NFT data is unavailable right now. Check that the OpenSea API key is configured, or view the collection directly on OpenSea.'
+                  : 'Collection data is unavailable right now. Please try again later, or view this collection on OpenSea.'
               }
               openseaSlug={isIndexerSource ? undefined : activeEntry?.slug}
             />
@@ -482,12 +359,7 @@ export default function MarketBrowser({ industries }: Props) {
           ) : (
             <>
               {viewMode === 'list' ? (
-                <NftList
-                  items={filtered}
-                  ethUsd={ethUsd}
-                  onOpen={openModal}
-                  showListedBadge={holdingsOpen || (!inHoldingsView && availability === 'yours')}
-                />
+                <NftList items={filtered} ethUsd={ethUsd} onOpen={openModal} />
               ) : (
                 <NftGrid
                   items={filtered}
@@ -495,7 +367,6 @@ export default function MarketBrowser({ industries }: Props) {
                   ethUsd={ethUsd}
                   batchBase={batchBase}
                   onOpen={openModal}
-                  showListedBadge={holdingsOpen || (!inHoldingsView && availability === 'yours')}
                 />
               )}
               {hasNextPage && (
@@ -507,36 +378,18 @@ export default function MarketBrowser({ industries }: Props) {
               )}
             </>
           )}
+          {query.trim() && !showSkeleton && !showUnavailable && hasNextPage && filtered.length === 0 && <button className={styles.searchMore} onClick={loadMore} disabled={isFetchingNextPage}>{isFetchingNextPage ? 'Loading items…' : 'Load more items to search'}</button>}
         </div>
       </div>
 
-      {isMobile && activeDrawer && (
-        <RailDrawer
-          title={
-            activeDrawer === 'wallet'
-              ? 'Your Wallets'
-              : activeDrawer === 'collection'
-                ? collectionName
-                : 'Filters'
-          }
-          onClose={() => setActiveDrawer(null)}
-        >
-          {activeDrawer === 'wallet'
-            ? walletAddress && (
-                <WalletPanel address={walletAddress} onOpenHoldings={openHoldings} onOpenEthHoldings={openEthHoldings} />
-              )
-            : activeDrawer === 'collection'
-              ? collectionInfo
-              : filters}
-        </RailDrawer>
+      {isMobile && filtersOpen && (
+        <FiltersDrawer onClose={() => setFiltersOpen(false)}>{filters}</FiltersDrawer>
       )}
 
       {modalNft && (
         <ItemModal
           nft={modalNft}
-          // Holdings span collections, so key the item's detail/trade to its own
-          // collection, not the (last) active grid slug.
-          slug={inHoldingsView ? modalNft.collectionSlug : activeSlug}
+          slug={activeSlug}
           ethUsd={ethUsd}
           hasPrev={modalIndex > 0}
           hasNext={modalIndex < filtered.length - 1 || hasNextPage}

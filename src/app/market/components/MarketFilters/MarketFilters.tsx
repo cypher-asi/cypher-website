@@ -7,8 +7,6 @@ type Props = {
   activeSlug: string;
   availability: Availability;
   showAvailability: boolean;
-  /** "Yours" tab — shown only when a wallet is connected (Z-Chain collections). */
-  showYours: boolean;
   traitCategories: readonly TraitCategory[];
   selectedTraits: SelectedTraits;
   openTraitGroups: Record<string, boolean>;
@@ -23,7 +21,6 @@ export function MarketFilters({
   activeSlug,
   availability,
   showAvailability,
-  showYours,
   traitCategories,
   selectedTraits,
   openTraitGroups,
@@ -35,15 +32,14 @@ export function MarketFilters({
 }: Props) {
   return (
     <>
-      {/* The "Filters" title now lives on the collapsible panel header (rail) or
-          the drawer head (mobile); only the Clear action remains here. */}
-      {selectedCount > 0 && (
-        <div className={styles.filtersHead}>
+      <div className={styles.filtersHead}>
+        <p className={styles.railHeading}>Filters</p>
+        {selectedCount > 0 && (
           <button className={styles.clearBtn} onClick={onClear}>
             Clear ({selectedCount})
           </button>
-        </div>
-      )}
+        )}
+      </div>
       {showAvailability && (
         <div className={styles.statusFilter} role="group" aria-label="Availability">
           <button
@@ -66,18 +62,6 @@ export function MarketFilters({
           >
             Unlisted
           </button>
-          {showYours && (
-            <button
-              type="button"
-              className={`${styles.statusBtn} ${
-                availability === 'yours' ? styles.statusBtnActive : ''
-              }`}
-              onClick={() => onAvailabilityChange('yours')}
-              aria-pressed={availability === 'yours'}
-            >
-              Yours
-            </button>
-          )}
         </div>
       )}
       <div key={activeSlug} className={styles.filterSwap}>

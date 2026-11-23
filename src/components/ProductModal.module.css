@@ -257,3 +257,7 @@
     animation: none;
   }
 }
+
+/* Wilder World: charcoal background (Frank, 2026-11-24) */
+:global(body[data-company='wilderworld']) .panel { background-color: var(--ww-background, #101113); }
+:global(body[data-company='wilderworld']) .media { background-color: var(--ww-background, #101113); }

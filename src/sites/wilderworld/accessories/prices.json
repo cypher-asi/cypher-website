@@ -1,0 +1,869 @@
+{
+  "schema_version": 1,
+  "currency": "USD",
+  "status": "Preview",
+  "pricing_source": "pricing-research.json",
+  "pricing_unit": "One individual product style; each offered color uses its parent product price.",
+  "rules": [
+    "All three proposed colors share the product price.",
+    "Equivalent gender cuts have price parity.",
+    "No surcharge for brand, lore, invented materials or fictional crafting components.",
+    "Prices do not change purchase entitlement or enable checkout."
+  ],
+  "summary": {
+    "products": 163,
+    "colorways": 489,
+    "price_counts_usd": {
+      "3": 33,
+      "5": 12,
+      "7": 34,
+      "9": 15,
+      "12": 51,
+      "15": 10,
+      "19": 8
+    },
+    "tier_counts": {
+      "essentials": 79,
+      "signature": 66,
+      "statement": 18
+    },
+    "below_15": 145
+  },
+  "products": {
+    "TPWR_001": {
+      "priceCents": 500,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "TPWR_002": {
+      "priceCents": 500,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "TPWR_002_A": {
+      "priceCents": 500,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "TPWR_002_A_F": {
+      "priceCents": 500,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "TPWR_002_F": {
+      "priceCents": 500,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "TPWR_003": {
+      "priceCents": 500,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "TPWR_003_A": {
+      "priceCents": 500,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "TPWR_003_F": {
+      "priceCents": 500,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "TPWR_004": {
+      "priceCents": 500,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "TPWR_005": {
+      "priceCents": 500,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "TPWR_006": {
+      "priceCents": 500,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_A": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_B": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_C": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_D": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_E": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_F": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_G": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_H": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_I": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_J": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_K": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_L": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_M": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_N": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_001_O": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_002": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_002_1": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_002_2": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_002_3": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_002_4": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_002_B": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_002_C": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_002_D": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_002_E": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_002_F": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_003": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_005": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_005_A": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_005_B": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_010": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_010_A": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_010_B": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_013": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_N30": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_N30_A": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_N30_B": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_N30_C": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_N30_D": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_N30_E": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_N30_F": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_PNX_0": {
+      "priceCents": 1900,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_PNX_1": {
+      "priceCents": 1900,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_PNX_2": {
+      "priceCents": 1900,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_PNX_3": {
+      "priceCents": 1900,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_PNX_4": {
+      "priceCents": 1900,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_PNX_5": {
+      "priceCents": 1900,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_PNX_6": {
+      "priceCents": 1900,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JCKT_PNX_7": {
+      "priceCents": 1900,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_001": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_001_A": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_001_B": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_001_F": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_002": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_002_A": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_002_A_F": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_002_F": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_003_F": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_004": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_004_A": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_004_A_F": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_004_F": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_006": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_007": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_010": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_010_A": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_010_B": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_010_C": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_010_D": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_010_E": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_010_F": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_010_G": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "BTWR_N30": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "SUIT_001": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "SUIT_001_A": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "SUIT_002": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "SUIT_002_A": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "SUIT_003": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "SUIT_003_A": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "SUIT_004": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "SUIT_004_A": {
+      "priceCents": 1200,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "FTWR_001": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "FTWR_003": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "FTWR_004_A": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "FTWR_005": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "FTWR_005_A": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "FTWR_010": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "FTWR_N30": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_008": {
+      "priceCents": 500,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_009": {
+      "priceCents": 900,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_009_A": {
+      "priceCents": 900,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_010": {
+      "priceCents": 900,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_010_A": {
+      "priceCents": 900,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_011": {
+      "priceCents": 900,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_011_A": {
+      "priceCents": 900,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_012": {
+      "priceCents": 900,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_012_A": {
+      "priceCents": 900,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_013": {
+      "priceCents": 500,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_015": {
+      "priceCents": 900,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_015_A": {
+      "priceCents": 900,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_016": {
+      "priceCents": 500,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_001_A": {
+      "priceCents": 1500,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_001_B": {
+      "priceCents": 900,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_002": {
+      "priceCents": 1500,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_002_A": {
+      "priceCents": 1500,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_003_A": {
+      "priceCents": 1500,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_006_A": {
+      "priceCents": 1500,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_006_B": {
+      "priceCents": 1500,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_006_C": {
+      "priceCents": 1500,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_007": {
+      "priceCents": 900,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_007_A": {
+      "priceCents": 900,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "HDWR_FRD": {
+      "priceCents": 1500,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_002": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_006": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_006_A": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_006_B": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_008": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_009": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_010": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_011": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_012": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_012_A": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_013": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_014": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_015": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_H01": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "EYWR_H03": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JWLR_H03": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JWLR_H06": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JWLR_H07": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "JWLR_H14": {
+      "priceCents": 700,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "MASK_001_A": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "MASK_002": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "MASK_002_A": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "MASK_002_B": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "MASK_002_C": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "MASK_002_FE": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "MASK_002_FRANK": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "MASK_002_GP": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "MASK_003": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "MASK_003_A": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "MASK_003_B": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "MASK_003_C": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "MASK_H01": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "XTRA_003": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "XTRA_003_A": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "XTRA_004": {
+      "priceCents": 300,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "XTRA_010_C": {
+      "priceCents": 1500,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    },
+    "XTRA_010_A": {
+      "priceCents": 900,
+      "tier": "catalogue",
+      "rationale": "Final catalogue price."
+    }
+  },
+  "override_image_evidence": {
+    "JCKT_PNX_0": "product-images/JCKT_PNX_0-isolated-v2.png",
+    "JCKT_PNX_1": "product-images/JCKT_PNX_1-isolated-v2.png",
+    "JCKT_PNX_2": "product-images/JCKT_PNX_2-isolated-v2.png",
+    "JCKT_PNX_3": "product-images/JCKT_PNX_3-isolated-v1.png",
+    "JCKT_PNX_4": "product-images/JCKT_PNX_4-isolated-v2.png",
+    "JCKT_PNX_5": "product-images/JCKT_PNX_5-isolated-v1.png",
+    "JCKT_PNX_6": "product-images/JCKT_PNX_6-isolated-v2.png",
+    "JCKT_PNX_7": "product-images/JCKT_PNX_7-isolated-v1.png",
+    "HDWR_001_A": "product-images/HDWR_001_A-isolated-v1.png",
+    "HDWR_003_A": "product-images/HDWR_003_A-individual-v2.png",
+    "HDWR_002": "product-images/HDWR_002-isolated-v1.png",
+    "HDWR_002_A": "product-images/HDWR_002_A-isolated-v1.png",
+    "HDWR_006_A": "product-images/HDWR_006_A-isolated-v1.png",
+    "HDWR_006_B": "product-images/HDWR_006_B-isolated-v1.png",
+    "HDWR_006_C": "product-images/HDWR_006_C-isolated-v1.png",
+    "HDWR_FRD": "product-images/HDWR_FRD-isolated-v1.png",
+    "HDWR_009": "product-images/HDWR_009-isolated-v1.png",
+    "HDWR_009_A": "product-images/HDWR_009_A-isolated-v1.png",
+    "HDWR_010": "product-images/HDWR_010-isolated-v1.png",
+    "HDWR_010_A": "product-images/HDWR_010_A-isolated-v1.png",
+    "HDWR_011": "product-images/HDWR_011-isolated-v1.png",
+    "HDWR_011_A": "product-images/HDWR_011_A-isolated-v1.png",
+    "HDWR_012": "product-images/HDWR_012-isolated-v1.png",
+    "HDWR_012_A": "product-images/HDWR_012_A-isolated-v1.png",
+    "HDWR_015": "product-images/HDWR_015-isolated-v1.png",
+    "HDWR_015_A": "product-images/HDWR_015_A-isolated-v1.png",
+    "HDWR_001_B": "product-images/HDWR_001_B-isolated-v1.png",
+    "HDWR_007": "product-images/HDWR_007-individual-v2.png",
+    "HDWR_007_A": "product-images/HDWR_007_A-individual-v2.png",
+    "XTRA_002_A": "product-images/XTRA_002_A-individual-v2.png",
+    "XTRA_010_A": "product-images/XTRA_010_A-isolated-v1.png",
+    "XTRA_010_C": "product-images/XTRA_010_C-isolated-v1.png",
+    "XTRA_010_D": "product-images/XTRA_010_D-isolated-v1.png"
+  }
+}

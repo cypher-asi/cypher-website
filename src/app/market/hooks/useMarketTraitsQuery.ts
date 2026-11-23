@@ -9,7 +9,7 @@ import { fetchTraits } from '../api/fetchers';
 export function useMarketTraitsQuery(slug: string): UseQueryResult<TraitCategory[]> {
   return useQuery({
     queryKey: ['market', 'traits', slug],
-    queryFn: () => fetchTraits(slug),
+    queryFn: ({signal}) => fetchTraits(slug, signal),
     enabled: slug !== '',
     staleTime: 5 * 60_000,
   });

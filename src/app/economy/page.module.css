@@ -16,7 +16,7 @@
 .hero {
   position: relative;
   aspect-ratio: 16 / 9;
-  background: #000;
+  background: var(--ww-background, #101113);
   border: 1px solid var(--color-border);
   overflow: hidden;
 }
@@ -43,7 +43,7 @@
 .media {
   position: relative;
   aspect-ratio: 16 / 9;
-  background: #000;
+  background: var(--ww-background, #101113);
   border: 1px solid var(--color-border);
   overflow: hidden;
 }
@@ -64,7 +64,7 @@
   align-items: center;
   justify-content: center;
   padding: clamp(1.25rem, 4vw, 3rem);
-  background: #000;
+  background: var(--ww-background, #101113);
   border: 1px solid var(--color-border);
 }
 

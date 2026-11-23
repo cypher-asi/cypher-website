@@ -9,7 +9,7 @@
   min-height: calc(100dvh - var(--nav-height, 84px));
   padding: calc(var(--nav-height, 84px) + 24px) 28px 80px;
   overflow: hidden;
-  background: #0a0a0a;
+  background: var(--ww-background, #101113);
   text-align: center;
 }
 

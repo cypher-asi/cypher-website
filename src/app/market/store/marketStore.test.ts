@@ -10,7 +10,7 @@ const reset = () =>
     gridSize: 'md',
     viewMode: 'grid',
     modalId: null,
-    activeDrawer: null,
+    filtersOpen: false,
     collectionMenuOpen: false,
     openNavGroup: null,
   });

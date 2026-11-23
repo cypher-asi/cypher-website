@@ -15,6 +15,8 @@ import { ZodeShell } from '@/sites/zode/ZodeShell';
 import { ZodeGate } from '@/sites/zode/ZodeGate';
 import { themeInitScript } from '@/sites/zode/lib/theme/theme-script';
 import { Providers } from './providers';
+import WilderShoppingNav from '@/sites/wilderworld/marketplace/WilderShoppingNav';
+import StorePageTransition from '@/sites/wilderworld/marketplace/StorePageTransition';
 
 export async function generateMetadata(): Promise<Metadata> {
   const company = await getCurrentCompany();
@@ -57,6 +59,12 @@ export default async function RootLayout({
   }
   if (company.fonts?.display) {
     (fontStyle as Record<string, string>)['--font-display'] = company.fonts.display;
+  }
+  if (company.key === 'wilderworld') {
+    // The brand nav is not rendered for wilderworld (the marketplace supplies its
+    // own header), so collapse the space normally reserved for the fixed nav.
+    (fontStyle as Record<string, string>)['--nav-height'] = '0px';
+    (fontStyle as Record<string, string>)['--site-nav-offset'] = '0px';
   }
 
   /* Chromeless routes render standalone (no nav/footer/scrollbar) — the page
@@ -101,6 +109,16 @@ export default async function RootLayout({
       style={fontStyle}
     >
       <body data-company={company.key}>
+        {/* Capture the outgoing product before the router restores a history entry.
+            Installed as early as the body parses so the popstate listener is live
+            before the first Back. Static string, no interpolation. Wilderworld only. */}
+        {company.key === 'wilderworld' && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `if(!window.__wwHistoryBridgeInstalled){window.__wwHistoryBridgeInstalled=true;window.addEventListener('popstate',function(event){window.__wwHandlePopstate?.(event);},true);}`,
+            }}
+          />
+        )}
         <Providers company={company.key}>
           <ThemeWrapper
             defaultTheme={company.defaultTheme}
@@ -108,17 +126,27 @@ export default async function RootLayout({
             storageKey={`zui-theme-${company.key}`}
           >
             <MusicProvider>
-              <CustomScrollbar />
-              <Nav
-                wordmark={company.wordmark}
-                wordmarkLogo={company.wordmarkLogo}
-                cta={company.cta}
-                sections={company.nav}
-                navStyle={company.navStyle}
-                pageSections={company.pageSections}
-                homeHref={homeHref}
-                brandParam={brandParam}
-              />
+              {/* Wilderworld renders the marketplace shopping header in place of the
+                  shared brand nav. WilderShoppingNav self-guards via
+                  hasPageShoppingNavigation: it renders nothing on pages that already
+                  show their own header (so no double) and renders the header on pages
+                  that don't (e.g. /discover, /city). A store page transition replaces
+                  the custom scrollbar. Other brands keep the standard chrome. */}
+              {company.key === 'wilderworld' ? <StorePageTransition /> : <CustomScrollbar />}
+              {company.key === 'wilderworld' ? (
+                <WilderShoppingNav />
+              ) : (
+                <Nav
+                  wordmark={company.wordmark}
+                  wordmarkLogo={company.wordmarkLogo}
+                  cta={company.cta}
+                  sections={company.nav}
+                  navStyle={company.navStyle}
+                  pageSections={company.pageSections}
+                  homeHref={homeHref}
+                  brandParam={brandParam}
+                />
+              )}
               <main id="page-main">
                 {children}
                 <Footer

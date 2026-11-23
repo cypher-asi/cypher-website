@@ -6,6 +6,8 @@
    missing key as an empty result rather than an error, mirroring the graceful
    fallback in the news route.
    --------------------------------------------------------------------------- */
+import type { OriginalDataProvenance } from './originals-data';
+
 const OPENSEA_BASE = 'https://api.opensea.io/api/v2';
 
 export const OPENSEA_REVALIDATE = 300;
@@ -112,6 +114,18 @@ export type MarketNft = {
   priceEth: number | null;
   /** Traits, when the list endpoint provides them (used for client filtering). */
   traits: Array<{ type: string; value: string }>;
+  /** Source design ID and instance tag are kept distinct from the onchain ID. */
+  sourceAssetId?: string | null;
+  instanceTag?: string | null;
+  /** Where originals data came from and whether live market data is available. */
+  provenance?: OriginalDataProvenance;
+  /**
+   * Store edition-grouping used by the new storefront to collapse a design's
+   * editions into one product. Optional and populated only by the storefront
+   * data layer; it is never set on the live /market path, so existing behaviour
+   * is unaffected.
+   */
+  productGroup?: { id: string; editionCount: number; observedCount: number; observedAt: string; selectedEditionId?: string };
   // --- Z-Chain marketplace listing fields (present only for an active listing) ---
   /** NFTMarketplace listingId — for buy/cancel — when this token is listed. */
   listingId?: string;
