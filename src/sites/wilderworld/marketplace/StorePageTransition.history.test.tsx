@@ -47,17 +47,18 @@ it('starts navigation immediately and keeps the grid visible while the route loa
   const ui=render(view(false));
   fireEvent.click(ui.getByAltText('Hat'));
   expect(route.push).toHaveBeenCalledWith('/store/HDWR_001?color=chalk',{scroll:false});
-  expect(moves[0].frames).toEqual([{opacity:1},{opacity:.86}]);
+  // The page is never dimmed, hidden or faded (that caused a visible blink).
+  expect(moves.some(move=>move.element.id==='page-main')).toBe(false);
   expect(document.querySelectorAll('.ww-transition-image')).toHaveLength(1);
   expect(ui.getByAltText('Hat').style.visibility).toBe('');
   expect(document.querySelector<HTMLElement>('.ww-transition-image')?.style.visibility).toBe('hidden');
-  await act(async()=>finishExit!());
+  await act(async()=>finishExit?.());
   await waitFor(()=>expect(route.push).toHaveBeenCalledWith('/store/HDWR_001?color=chalk',{scroll:false}));
   expect(document.getElementById('page-main')?.style.opacity).toBe('');
   await act(async()=>{route.path='/store/HDWR_001';ui.rerender(view(true));});
   await waitFor(()=>expect(document.querySelector('.ww-transition-image')).toBeNull());
-  expect(moves[1].frames).toEqual([{opacity:0},{opacity:1}]);
-  expect(moves[2].frames).toEqual([
+  expect(moves.some(move=>move.element.id==='page-main')).toBe(false);
+  expect(moves[0].frames).toEqual([
     {transform:'translate(0px, 0px) scale(1, 1)'},
     {transform:'translate(-270px, 0px) scale(2, 2)'},
   ]);
@@ -82,8 +83,8 @@ it('returns to a delayed grid and the exact saved scroll without adding history 
   await waitFor(()=>expect(pop).toHaveBeenCalledTimes(1));
   await act(async()=>{y=800;ui.rerender(view(false));});
   await waitFor(()=>expect(document.querySelector('.ww-transition-image')).toBeNull());
-  expect(moves[5].y).toBe(1200);
-  expect(moves[5].frames[1]).toEqual({transform:'translate(270px, 0px) scale(0.5, 0.5)'});
+  expect(moves[1].y).toBe(1200);
+  expect(moves[1].frames[1]).toEqual({transform:'translate(270px, 0px) scale(0.5, 0.5)'});
   expect(HTMLImageElement.prototype.decode).not.toHaveBeenCalled();
   expect(pushState).not.toHaveBeenCalled();
   expect(route.push).toHaveBeenCalledTimes(1);
@@ -158,7 +159,7 @@ it('captures Back before a synchronous router replaces the product', async () =>
     await act(async()=>window.dispatchEvent(new PopStateEvent('popstate')));
     expect(routerPop).toHaveBeenCalledTimes(1);
     expect(document.querySelector<HTMLElement>('.ww-transition-image')?.style.width).toBe('600px');
-    await act(async()=>finishExit!());
+    await act(async()=>finishExit?.());
     await waitFor(()=>expect(document.querySelector('.ww-transition-image')).toBeNull());
     expect(routerPop).toHaveBeenCalledTimes(1);
     expect(moves.at(-1)?.frames[1]).toEqual({transform:'translate(270px, 0px) scale(0.5, 0.5)'});

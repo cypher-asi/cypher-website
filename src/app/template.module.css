@@ -22,3 +22,11 @@
     animation-duration: 1ms;
   }
 }
+
+/* Wilder World: no page fade. The template remounts whenever the top-level
+   route segment changes (e.g. /store -> /markets or /portfolio), so the fade
+   made the whole page, header included, blink on those navigations. Other
+   brands keep their fade. */
+:global(body[data-company='wilderworld']) .pageTransition {
+  animation: none;
+}

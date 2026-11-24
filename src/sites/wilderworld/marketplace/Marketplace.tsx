@@ -1,5 +1,6 @@
 'use client';
 import { ProductCard } from './ProductCard';
+import BackToTop from './BackToTop';
 export { ProductCard } from './ProductCard';
 import { MarketHeader } from './MarketHeader';
 export { MarketHeader } from './MarketHeader';
@@ -107,5 +108,5 @@ export function MarketplaceBrowse({initialDepartment='all',initialCategory='all'
         {result.length>0&&<div ref={loadSentinel} className={styles.loadMore} data-testid="product-load-sentinel"><p role="status">{limit<result.length?`Showing ${Math.min(limit,result.length)} of ${result.length} · More products load as you scroll`:`You've seen all ${result.length} products`}</p>{result.length>limit&&<button className={styles.primary} onClick={()=>setLimit(n=>Math.min(n+24,result.length))}>Show more products <ArrowRight size={16}/></button>}</div>}
       </section>
     </div>
-  </div></main>;
+  </div><BackToTop/></main>;
 }

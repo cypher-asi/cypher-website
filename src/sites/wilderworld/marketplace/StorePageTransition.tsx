@@ -43,7 +43,7 @@ function navigationState(): NavigationState {
   return state;
 }
 const nextFrame = () => new Promise<void>(done => requestAnimationFrame(() => done()));
-const motion = {exit: 90, enter: 120, image: 220, easing: 'cubic-bezier(.22,1,.36,1)'};
+const motion = {enter: 120, image: 220, easing: 'cubic-bezier(.22,1,.36,1)'};
 
 function visibleImage(image: HTMLImageElement | null) {
   if (!image?.complete || !image.naturalWidth) return null;
@@ -182,7 +182,6 @@ export default function StorePageTransition() {
         if (returning) {
           session.stopScroll = restoreCatalogScroll(returning, findImage, () => session.navigationId === navigationId && previous.current === destination.pathname);
         } else if (!destination.hash) window.scrollTo({left: 0, top: 0, behavior: 'instant'});
-        if (hasMotion) page.style.opacity = '0';
         if (image) image.style.visibility = 'visible';
         resolve();
       }, skip: cleanup};
@@ -191,9 +190,8 @@ export default function StorePageTransition() {
       const timer = setTimeout(cleanup, 5000);
 
       void (async () => {
-        // Fetch immediately, in parallel with subtle click feedback. Never put
-        // an exit animation in front of the network request (including Back).
-        void animate(page, [{opacity: 1}, {opacity: .86}], {duration: motion.exit, easing: 'ease-out'});
+        // Fetch immediately. The page itself is never dimmed, hidden or faded:
+        // swapping it in place avoids a visible blink on every click.
         navigate();
         // Some routers publish the history URL before popstate. In that case
         // pathname has already changed; there will be no second hook update.
@@ -218,14 +216,13 @@ export default function StorePageTransition() {
           image.style.objectPosition = getComputedStyle(target).objectPosition;
         }
         document.documentElement.dataset.storeTransition = 'entering';
-        const reveal = animate(page, [{opacity: 0}, {opacity: 1}], {duration: motion.enter, easing: 'ease-out'});
         const travel = image && to && from
           ? animate(image, [
               {transform: 'translate(0px, 0px) scale(1, 1)'},
               {transform: `translate(${to.left-from.left}px, ${to.top-from.top}px) scale(${to.width/from.width}, ${to.height/from.height})`},
             ], {duration: motion.image, easing: motion.easing})
           : image ? animate(image, [{opacity: 1}, {opacity: 0}], {duration: motion.enter}) : Promise.resolve();
-        await Promise.all([reveal, travel]);
+        await travel;
       })().catch(() => {}).finally(cleanup);
     }
 

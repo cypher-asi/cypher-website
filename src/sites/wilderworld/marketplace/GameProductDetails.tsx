@@ -43,6 +43,6 @@ export default function GameProductDetails({productId,variantId,specifications=[
       <dl className={styles.facts}>{visibleSpecifications.map(fact=><div key={fact.label}><dt>{fact.label}</dt><dd>{fact.value}</dd></div>)}{supportedFits.length>0&&<div><dt>Recorded fit</dt><dd>{supportedFits.join(', ')}</dd></div>}<div><dt>Item identifier</dt><dd>{productId}</dd></div>{variantId&&<div><dt>Variant</dt><dd>{variantId}</dd></div>}{sourceIds.length>0&&<div><dt>Source SKU</dt><dd>{sourceIds.join(' · ')}</dd></div>}</dl>
       {unsupportedFits.length>0&&<p>Not supported: {unsupportedFits.join(', ')}.</p>}
     </div></details>
-    <details className={styles.disclosure}><summary>Availability & delivery <ChevronDown size={16} aria-hidden/></summary><div className={styles.disclosureContent}>{clothing?<><p>Accessible in your in-game inventory once purchased.</p><p>Please make sure your Epic Games account is properly linked to your profile.</p></>:<><p>Coming soon. Purchasing and in-game delivery are not yet available.</p><p>Saving an item does not grant ownership or game access.</p></>}</div></details>
+    <details className={styles.disclosure}><summary>Availability & delivery <ChevronDown size={16} aria-hidden/></summary><div className={styles.disclosureContent}>{clothing?<><p>Accessible in your in-game inventory once purchased.</p><p>Please make sure your Epic Games account is properly linked to your profile.</p></>:<><p>Coming soon. Purchasing and in-game delivery are not yet available.</p></>}</div></details>
   </section>;
 }
