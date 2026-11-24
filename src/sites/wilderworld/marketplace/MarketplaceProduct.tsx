@@ -29,6 +29,7 @@ import CollectionSectionHeader from './CollectionSectionHeader';
 import gridStyles from './ProductGridControls.module.css';
 import { useCatalogLimit } from './useCatalogLimit';
 import {useVariantSwipe} from './useVariantSwipe';
+import { websiteProductDescription } from './website-product-copy';
 
 
 
@@ -81,7 +82,7 @@ export function MarketplaceProduct({id,initialVariant}:{id:string;initialVariant
           <div className={styles.detailEyebrow}><Link href={`/store/collections/${section}`} className={styles.detailBrand}>{product.brand??'Wilder World'}</Link><span>{subcategoryName(product.subcategory)}</span></div>
           <h1 className={typography.title}>{product.name}</h1>
           {STORE_SECONDARY_PANELS_ENABLED&&<ProductRating productId={product.id} variantIds={product.variants.map(option=>option.id)}/>}
-          <p className={styles.detailDescription}>{product.description}</p>
+          <p className={styles.detailDescription}>{websiteProductDescription(product)}</p>
           <div className={styles.detailPrice}><div><strong>{product.priceCents!==null?`$${(product.priceCents/100).toFixed(product.priceCents%100?2:0)}`:isLegacy?'Existing collectible':isSource?'Coming soon':'Coming soon'}</strong>{product.priceCents!==null&&<WildPriceQuote usdCents={product.priceCents}/>}</div>{product.priceCents!==null&&<span>USD</span>}</div>
           <ProductMaterialPicker productId={product.id} options={product.variants} selectedId={variant?.id} onSelect={nextId=>selectVariant(product.variants.find(option=>option.id===nextId)!)}/>
           <aside className={styles.purchasePanel} aria-label="Availability">
@@ -89,7 +90,7 @@ export function MarketplaceProduct({id,initialVariant}:{id:string;initialVariant
           </aside>
           {STORE_SECONDARY_PANELS_ENABLED&&variant&&<ProductTradingCard productId={product.id} variantId={variant.id} variantName={variant.name} previewPriceCents={product.priceCents}/>}
           <EditionSummary productId={product.id} variantId={variant?.id}/>
-          <GameProductDetails productId={product.id} variantId={variant?.id} story={product.description}/>
+          <GameProductDetails productId={product.id} variantId={variant?.id}/>
           {isLegacy&&<details className={styles.detailAccordion}><summary>About these material studies</summary><p>Visual material studies only. These are not additional editions or colors granted to existing owners.</p>{product.imageSourceReference&&<a href={product.imageSourceReference} target="_blank" rel="noreferrer">Official Trinity Totem reference <ArrowUpRight size={13}/></a>}</details>}
         </section>
       </div>

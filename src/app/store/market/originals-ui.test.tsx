@@ -162,7 +162,7 @@ describe('Original collection shopping', () => {
   it('delegates grouped search and sorting to the full-catalog API rather than re-filtering one loaded page',async()=>{
     render(<OriginalsBrowse initialSlug="pack-weapons"/>);
     expect(screen.getByText('Weapons and weapon attachments revealed from opening a Wilder Pack.')).toBeInTheDocument();
-    expect(screen.getByText('Explore each item, compare editions, and find your next addition.')).toBeInTheDocument();
+    expect(screen.getByText('Browse items from this collection.')).toBeInTheDocument();
     expect(screen.queryByText(/Matching copies share a product page/)).not.toBeInTheDocument();
     expect(mocks.nfts).toHaveBeenCalledWith('pack-weapons','all',{}, {enabled:true,query:'',sort:'collection'});
     fireEvent.change(screen.getByLabelText('Search products'),{target:{value:'a later-page weapon'}});
@@ -174,7 +174,7 @@ describe('Original collection shopping', () => {
   it('shows retry instead of claiming an unavailable source is empty', () => {
     mocks.nfts.mockReturnValue({ data: undefined, isLoading: false, isError: true, refetch: mocks.refetch, fetchNextPage: vi.fn() });
     render(<OriginalsBrowse initialSlug="wilderworld"/>);
-    expect(screen.getByText('Inventory is unavailable')).toBeInTheDocument();
+    expect(screen.getByText('Unable to load this collection.')).toBeInTheDocument();
     fireEvent.click(screen.getByText('Try again')); expect(mocks.refetch).toHaveBeenCalled();
   });
   it('keeps ETH prices visible without a USD conversion feed', () => {

@@ -31,7 +31,7 @@ describe('USD anchored catalog and native WILD asks',()=>{
   });
   it('fails closed without hiding native prices and identifies stale source time',()=>{
     vi.mocked(useWildUsdRate).mockReturnValue({status:'unavailable',rate:null});const {rerender}=render(<><WildPriceQuote usdCents={1200}/><LocalCurrencyPrice amountAtomic="240000000000000000000" currency="WILD"/></>);
-    expect(screen.getByText('WILD rate unavailable')).toBeTruthy();expect(screen.getByText('USD estimate unavailable')).toBeTruthy();expect(screen.getByText('240 WILD').tagName).toBe('STRONG');expect(screen.queryByText(/\$/)).toBeNull();
+    expect(screen.getByText('WILD estimate unavailable')).toBeTruthy();expect(screen.getByText('USD estimate unavailable')).toBeTruthy();expect(screen.getByText('240 WILD').tagName).toBe('STRONG');expect(screen.queryByText(/\$/)).toBeNull();
     vi.mocked(useWildUsdRate).mockReturnValue({status:'stale',rate:rate()});rerender(<WildPriceQuote usdCents={1200}/>);expect(screen.getByText(/Last rate 12:00 UTC · stale/)).toBeTruthy();
   });
   it('does not convert historical USD listing terms',()=>{

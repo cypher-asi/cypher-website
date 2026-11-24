@@ -148,7 +148,7 @@ describe('continuous browsing and material selection',()=>{
     const featured=catalog.featuredMaterial(product);
     if(featured?.image)expect(imagery.getByRole('img',{name:product.name})).toHaveAttribute('src',featured.image);
     else expect(imagery.queryByRole('img',{name:product.name})).not.toBeInTheDocument();
-    expect(screen.getByText('Coming soon. Release dates, final contents and in-game delivery will be confirmed before launch.')).toBeInTheDocument();
+    expect(screen.getByText('Coming soon. Purchasing and in-game delivery are not yet available.')).toBeInTheDocument();
     expect(screen.getByRole('button',{name:'Coming soon'})).toBeDisabled();
     expect(screen.queryByText('Original Trinity Totem artwork.')).not.toBeInTheDocument();
     expect(product.plannedVariants).toHaveLength(9);

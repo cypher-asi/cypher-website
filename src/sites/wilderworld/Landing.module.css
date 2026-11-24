@@ -10,12 +10,13 @@
 
 .hero {
   position: relative;
-  height: 100vh;
-  height: 100dvh;
+  /* Fill the viewport below the shopping header (--hero-offset is its measured
+     height, set by Landing.tsx) so the headline and buttons stay on screen. */
+  height: calc(100vh - var(--hero-offset, 0px));
+  height: calc(100dvh - var(--hero-offset, 0px));
   display: flex;
   flex-direction: column;
-  padding: calc(72px + clamp(0.75rem, 2vh, 1.5rem)) clamp(0.75rem, 2vw, 1.5rem)
-    clamp(0.75rem, 2vh, 1.5rem);
+  padding: clamp(0.75rem, 2vh, 1.5rem) clamp(0.75rem, 2vw, 1.5rem);
 }
 
 /* Subsequent full-height framed sections (e.g. Enter Wiami). Same framed look

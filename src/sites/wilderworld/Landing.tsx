@@ -50,6 +50,7 @@ const GAMEPLAY_MODES: GameplayCardProps[] = [
 
 export default function WilderworldLanding() {
   const { isMobile, format } = useMobileMedia();
+  const heroRef = useRef<HTMLElement>(null);
   const heroVideoRef = useRef<HTMLVideoElement>(null);
   const [heroReady, setHeroReady] = useState(false);
   const [typed, setTyped] = useState('');
@@ -62,6 +63,27 @@ export default function WilderworldLanding() {
     if (heroVideoRef.current && heroVideoRef.current.readyState >= 3) {
       setHeroReady(true);
     }
+  }, []);
+
+  // The shopping header sits above the hero in the page flow, so the hero takes only
+  // the viewport height left below it; otherwise the headline and buttons fall off
+  // the bottom of the screen. Re-measured on resize (the header changes height at
+  // its breakpoints).
+  useEffect(() => {
+    const hero = heroRef.current;
+    if (!hero) return;
+    const measure = () => {
+      const offset = Math.max(0, hero.getBoundingClientRect().top + window.scrollY);
+      hero.style.setProperty('--hero-offset', `${offset}px`);
+    };
+    measure();
+    const observer = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(measure);
+    observer?.observe(document.body);
+    window.addEventListener('resize', measure);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener('resize', measure);
+    };
   }, []);
 
   // Type out the heading, then fade in the description, then slide up the buttons.
@@ -88,7 +110,7 @@ export default function WilderworldLanding() {
 
   return (
     <div className={styles.page}>
-      <section className={styles.hero}>
+      <section ref={heroRef} className={styles.hero}>
         <div className={styles.frame}>
           <video
             ref={heroVideoRef}

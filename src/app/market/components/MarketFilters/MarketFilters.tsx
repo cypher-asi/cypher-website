@@ -30,6 +30,7 @@ export function MarketFilters({
   onToggleGroup,
   onClear,
 }: Props) {
+  if (!showAvailability && traitCategories.length === 0 && selectedCount === 0) return null;
   return (
     <>
       <div className={styles.filtersHead}>
@@ -65,9 +66,7 @@ export function MarketFilters({
         </div>
       )}
       <div key={activeSlug} className={styles.filterSwap}>
-        {!activeSlug ? null : traitCategories.length === 0 ? (
-          <p className={styles.filtersEmpty}>No trait filters available.</p>
-        ) : (
+        {!activeSlug || traitCategories.length === 0 ? null : (
           <div className={styles.traitGroups}>
             {traitCategories.map((cat) => {
               const open = openTraitGroups[cat.type] ?? false;
